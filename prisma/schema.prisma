@@ -1,0 +1,188 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Accounts {
+  id            Int             @id @default(autoincrement())
+  email         String          @unique
+  name          String
+  password      String
+  username      String
+  isAdmin       Boolean         @default(false)
+  channel       Channels?
+  comment       Comment[]
+  Likes         Likes[]
+  Notifications Notifications[]
+  Subcribes     Subcribes[]
+  createdAt     DateTime        @default(now()) // Thêm trường createdAt
+  updatedAt     DateTime        @updatedAt // Thêm trường updatedAt
+  Member        Member[]
+}
+
+model Channels {
+  id            Int             @id @default(autoincrement())
+  name          String
+  tagName       String          @unique
+  des           String          @default("")
+  account       Accounts        @relation(fields: [accountId], references: [id])
+  accountId     Int             @unique
+  ListVideo     ListVideo[]
+  Notifications Notifications[]
+  Subcribes     Subcribes[]
+  Posts         Posts[]
+  Videos        Videos[]
+  createdAt     DateTime        @default(now()) // Thêm trường createdAt
+  updatedAt     DateTime        @updatedAt // Thêm trường updatedAt
+}
+
+model Videos {
+  id              Int               @id @default(autoincrement())
+  title           String
+  des             String            @default("")
+  view            Int              @default(0)
+  status          Int
+  link            String
+  channel         Channels          @relation(fields: [channelId], references: [id])
+  channelId       Int               @default(3)
+  comment         Comment[]
+  DetailListVideo DetailListVideo[]
+  DetailTags      DetailTags[]
+  Likes           Likes[]
+  createdAt       DateTime          @default(now()) // Thêm trường createdAt
+  updatedAt       DateTime          @updatedAt // Thêm trường updatedAt
+}
+
+model Categories {
+  id   Int    @id @default(autoincrement())
+  name String
+}
+
+model Comment {
+  id          Int       @id @default(autoincrement())
+  video       Videos    @relation(fields: [videoId], references: [id])
+  videoId     Int
+  account     Accounts  @relation(fields: [accountId], references: [id])
+  accountId   Int
+  content     String
+  status      Int
+  comments    Comment[] @relation("ParentComment")
+  referenceId Int?      @map("referenceId")
+  reference   Comment?  @relation("ParentComment", fields: [referenceId], references: [id])
+  createdAt   DateTime  @default(now()) // Thêm trường createdAt
+  updatedAt   DateTime  @updatedAt // Thêm trường updatedAt
+}
+
+model ListVideo {
+  id              Int               @id @default(autoincrement())
+  channel         Channels          @relation(fields: [channelId], references: [id])
+  channelId       Int
+  name            String            @default("")
+  DetailListVideo DetailListVideo[]
+}
+
+model DetailListVideo {
+  id      Int       @id @default(autoincrement())
+  video   Videos    @relation(fields: [videoId], references: [id])
+  videoId Int
+  list    ListVideo @relation(fields: [listId], references: [id])
+  listId  Int
+}
+
+model Tags {
+  id         Int          @id @unique @default(autoincrement())
+  name       String
+  DetailTags DetailTags[]
+}
+
+model DetailTags {
+  id      Int    @id @unique @default(autoincrement())
+  video   Videos @relation(fields: [videoId], references: [id])
+  videoId Int    @unique
+  tag     Tags   @relation(fields: [tagId], references: [id])
+  tagId   Int    @unique
+}
+
+model Likes {
+  video     Videos   @relation(fields: [videoId], references: [id])
+  videoId   Int      @unique
+  account   Accounts @relation(fields: [accountId], references: [id])
+  accountId Int      @unique
+  type      Int
+  createdAt DateTime @default(now()) // Thêm trường createdAt
+  updatedAt DateTime @updatedAt // Thêm trường updatedAt
+
+  @@id([videoId, accountId])
+}
+
+model Notifications {
+  account   Accounts @relation(fields: [accountId], references: [id])
+  accountId Int
+  channel   Channels @relation(fields: [channelId], references: [id])
+  channelId Int
+  createdAt DateTime @default(now()) // Thêm trường createdAt
+  updatedAt DateTime @updatedAt // Thêm trường updatedAt
+
+  @@id([accountId, channelId])
+}
+
+model Subcribes {
+  account   Accounts @relation(fields: [accountId], references: [id])
+  accountId Int
+  channel   Channels @relation(fields: [channelId], references: [id])
+  channelId Int
+  createdAt DateTime @default(now()) // Thêm trường createdAt
+  updatedAt DateTime @updatedAt // Thêm trường updatedAt
+
+  @@id([accountId, channelId])
+}
+
+model Posts {
+  id          Int      @id @unique @default(autoincrement())
+  channel     Channels @relation(fields: [channelId], references: [id])
+  channelId   Int      @unique
+  title       String
+  description String
+  createdAt   DateTime @default(now()) // Thêm trường createdAt
+  updatedAt   DateTime @updatedAt // Thêm trường updatedAt
+}
+
+model Room {
+  id      Int       @id @default(autoincrement())
+  name    String
+  Member  Member[]
+  Message Message[]
+}
+
+model Member {
+  id        Int       @id @default(autoincrement())
+  roomId    Int
+  accountId Int
+  name      String
+  Account   Accounts  @relation(fields: [accountId], references: [id])
+  Room      Room      @relation(fields: [roomId], references: [id])
+  Message   Message[]
+
+  @@index([accountId], map: "Member_accountId_fkey")
+  @@index([roomId], map: "Member_roomId_fkey")
+}
+
+model Message {
+  id        Int      @id @default(autoincrement())
+  roomId    Int
+  memberId  Int
+  content   String
+  createdAt DateTime @default(now())
+  Member    Member   @relation(fields: [memberId], references: [id])
+  Room      Room     @relation(fields: [roomId], references: [id])
+
+  @@index([roomId, memberId], name: "Messages_roomId_memberId_unique")
+  @@index([memberId], map: "Messages_memberId_fkey")
+}
