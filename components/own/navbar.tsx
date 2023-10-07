@@ -1,7 +1,6 @@
 'use client'
 import { BsYoutube, BsBell, BsChatLeftDots } from 'react-icons/bs'
 import { AiOutlineMenu, AiOutlineClose, AiOutlineRight, AiOutlineLeft, AiOutlineUpload, AiOutlineSearch } from 'react-icons/ai'
-import Link from 'next/link'
 
 import { useSession } from 'next-auth/react'
 import { AppDispatch, useAppSelector } from '@/redux/storage';
@@ -10,9 +9,30 @@ import { close, reverse, open } from '@/redux/features/sidebar-slice';
 import { useMediaQuery } from 'usehooks-ts'
 
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Separator } from "@/components/ui/separator"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { LoadingOutlined } from '@ant-design/icons'
 
+import {
+    Collapsible,
+    CollapsibleContent,
+    CollapsibleTrigger,
+} from "@/components/ui/collapsible"
+
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover"
+import { cn } from '@/lib/utils'
+
+import Image from 'next/image'
+import Link from 'next/link'
+import { ChannelDataType } from '@/type/type';
+import axios from 'axios';
+import { ref, getDownloadURL } from "firebase/storage";
+import { storage } from '@/lib/firebase'
 
 export default () => {
 
@@ -28,25 +48,25 @@ export default () => {
     const { data: session } = useSession()
     const sidebar = useAppSelector(state => state.sidebarReducer.value.sidebar)
 
-    const ActionIsLogged = () => {
-        if (session && session.user) {
-            return (
-                <div className='flex gap-3'>
-                    {deviceType.isPc ? <AiOutlineSearch /> : <></>}
-                    <AiOutlineUpload />
-                    <BsBell />
-                    <BsChatLeftDots />
-                </div>
-            )
-        } else {
-            return (<Link href={'/register'}>
-                <button>
-                    reg
-                </button>
-            </Link>)
+    const [personalChannelData, setPersonalChannelData] = useState<ChannelDataType>();
+    const [channelAvatar, setChannelAvatar] = useState<string>('');
+    useEffect(() => {
+        if (personalChannelData) {
+            const channelAvatarStorageRef = ref(storage, `/channel/avatars/${personalChannelData.tagName}`)
+            getDownloadURL(channelAvatarStorageRef).then(url => setChannelAvatar(url))
         }
+    }, [personalChannelData])
 
-    }
+    useEffect(() => {
+        if (session && session.user) {
+            axios.get('/api/channel/data', {
+                params: {
+                    //@ts-ignore
+                    accountId: session.user.id
+                }
+            }).then(res => { if (res.status == 200) { setPersonalChannelData(res.data) } })
+        }
+    }, [session])
 
     const handleResponsive = () => {
         if (deviceType.isMobile) {
@@ -57,7 +77,12 @@ export default () => {
                         <button>
                             <AiOutlineClose onClick={() => setResponsiveShowing(false)} />
                         </button>
-                        {ActionIsLogged()}
+                        <div className='flex gap-3'>
+                            <div className='lg:hidden'><AiOutlineSearch /></div>
+                            <AiOutlineUpload />
+                            <BsBell />
+                            <BsChatLeftDots />
+                        </div>
                     </>
                 )
             } else {
@@ -66,9 +91,14 @@ export default () => {
                     <>
                         <div className='flex gap-5'>
                             {sidebar ? <AiOutlineRight onClick={() => { dispatch(reverse()) }} /> : <AiOutlineLeft onClick={() => { dispatch(reverse()) }} />}
-                            <Link href={'/'}><button className=''><BsYoutube/></button></Link>
+                            <Link href={'/'}><button className=''><BsYoutube /></button></Link>
                         </div>
-                        {ActionIsLogged()}
+                        <div className='flex gap-3'>
+                            <div className='lg:hidden'><AiOutlineSearch /></div>
+                            <AiOutlineUpload />
+                            <BsBell />
+                            <BsChatLeftDots />
+                        </div>
                     </>
                 )
             }
@@ -95,10 +125,77 @@ export default () => {
                     </div>
                     <div className='flex gap-1 rounded-2xl border-2 border-black'>
                         <input className='bg-transparent w-60 focus:outline-none ml-3 my-1' />
-                        <Separator orientation='vertical' className='m-0 p-0 w-fit'/>
-                        <div className='h-full w-8 flex flex-col pl-2 justify-center cursor-pointer hover:bg-slate-400 rounded-r-2xl'><AiOutlineSearch/></div>
+                        <Separator orientation='vertical' className='m-0 p-0 w-fit' />
+                        <div className='h-full w-8 flex flex-col pl-2 justify-center cursor-pointer hover:bg-slate-400 rounded-r-2xl'><AiOutlineSearch /></div>
                     </div>
-                    {ActionIsLogged()}
+                    <div className='flex gap-3 items-center'>
+                        <div className='lg:hidden text-2xl'><AiOutlineSearch /></div>
+                        <div className='text-2xl'><AiOutlineUpload /></div>
+                        <div className='text-2xl'><BsBell /></div>
+                        <div className='text-2xl'><BsChatLeftDots /></div>
+
+                        <Popover>
+                            <PopoverTrigger>
+                                <Avatar className='w-9 h-9'>
+                                    <AvatarImage src="https://github.com/shadcn.png" />
+                                    <AvatarFallback><LoadingOutlined /></AvatarFallback>
+                                </Avatar>
+                            </PopoverTrigger>
+                            <PopoverContent>
+                                {session && session.user ? <>
+                                    {personalChannelData ? <MenuItem className=''>
+                                        <div className='flex gap-4'>
+                                            <div className='flex items-center'>
+                                                <div className='relative w-8 h-8'>
+                                                    <Image src={channelAvatar} alt='' fill />
+                                                </div>
+                                            </div>
+                                            <div className='flex items-center'>
+                                                <p className='text-xl'>{session.user.name}</p>
+                                            </div>
+                                        </div>
+                                    </MenuItem> : <></>}
+                                    <MenuItem className=''>
+                                        <Link href={'/station'}>
+                                            Station
+                                        </Link>
+                                    </MenuItem>
+                                    <Collapsible>
+                                        <CollapsibleTrigger className='w-full'><MenuItem className='text-start'>Chế độ sáng</MenuItem></CollapsibleTrigger>
+                                        <CollapsibleContent>
+                                            <MenuItem className=''>
+                                                <div className='flex flex-col w-full px-3 rounded-sm text-start'>
+                                                    <button className='text-start py-1'>Sáng</button>
+                                                    <button className='text-start py-1'>Tối</button>
+                                                    <button className='text-start py-1'>Hệ thống</button>
+                                                </div>
+                                            </MenuItem>
+                                        </CollapsibleContent>
+                                    </Collapsible>
+                                </> :
+                                    <div className='flex flex-col gap-2'>
+                                        <MenuItem className='bg-gradient-to-r from-cyan-200 to-cyan-400'>
+                                            <Link href={'/register'}>
+                                                Đăng nhập
+                                            </Link>
+                                        </MenuItem>
+                                        <Collapsible>
+                                            <CollapsibleTrigger className='w-full'><MenuItem className='text-start'>Chế độ sáng</MenuItem></CollapsibleTrigger>
+                                            <CollapsibleContent>
+                                                <MenuItem className=''>
+                                                    <div className='flex flex-col w-full px-3 rounded-sm text-start'>
+                                                        <button className='text-start py-1'>Sáng</button>
+                                                        <button className='text-start py-1'>Tối</button>
+                                                        <button className='text-start py-1'>Hệ thống</button>
+                                                    </div>
+                                                </MenuItem>
+                                            </CollapsibleContent>
+                                        </Collapsible>
+                                    </div>
+                                }
+                            </PopoverContent >
+                        </Popover >
+                    </div >
                 </>
             )
         }
@@ -107,6 +204,15 @@ export default () => {
     return (
         <div className='w-screen h-16 flex justify-between fixed top-0 left-0 px-8 py-4 bg-white z-10'>
             {handleResponsive()}
+        </div>
+    )
+}
+
+
+const MenuItem = ({ children, className, ...props }: { children: React.ReactNode, className: string | undefined }) => {
+    return (
+        <div className={cn('w-full px-3 py-3 rounded-sm', className)} {...props}>
+            <p className='w-full select-none'>{children}</p>
         </div>
     )
 }
