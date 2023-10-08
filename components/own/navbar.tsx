@@ -74,7 +74,7 @@ export default () => {
                 //device type: mobile, trạng thái: show search input
                 return (
                     <>
-                        <button>
+                        <button className='text-xl'>
                             <AiOutlineClose onClick={() => setResponsiveShowing(false)} />
                         </button>
                         <div className='flex gap-3'>
@@ -89,7 +89,7 @@ export default () => {
                 // device type: mobile, trạng thái: ẩn search input
                 return (
                     <>
-                        <div className='flex gap-5'>
+                        <div className='flex gap-5 text-xl'>
                             {sidebar ? <AiOutlineRight onClick={() => { dispatch(reverse()) }} /> : <AiOutlineLeft onClick={() => { dispatch(reverse()) }} />}
                             <Link href={'/'}><button className=''><BsYoutube /></button></Link>
                         </div>
@@ -109,19 +109,24 @@ export default () => {
                     <div className='w-40 flex gap-8'>
                         {sidebar
                             ?
-                            <AiOutlineRight
-                                onClick={() => {
-                                    dispatch(reverse())
-                                }}
-                            />
+                            <div className='text-xl flex items-center cursor-pointer'>
+                                <AiOutlineRight
+                                    onClick={() => {
+                                        dispatch(reverse())
+                                    }}
+                                />
+                            </div>
                             :
-                            <AiOutlineLeft
-                                onClick={() => {
-                                    dispatch(reverse())
-                                    setResponsiveShowing(!responsiveShowing)
-                                }}
-                            />}
-                        <Link href={'/'}><BsYoutube /></Link>
+                            <div className='text-xl flex items-center cursor-pointer'>
+                                <AiOutlineLeft
+                                    onClick={() => {
+                                        dispatch(reverse())
+                                        setResponsiveShowing(!responsiveShowing)
+                                    }}
+                                />
+                            </div>
+                        }
+                        <Link href={'/'} className='text-xl flex items-center gap-2'><BsYoutube />Lily</Link>
                     </div>
                     <div className='flex gap-1 rounded-2xl border-2 border-black'>
                         <input className='bg-transparent w-60 focus:outline-none ml-3 my-1' />
@@ -129,10 +134,10 @@ export default () => {
                         <div className='h-full w-8 flex flex-col pl-2 justify-center cursor-pointer hover:bg-slate-400 rounded-r-2xl'><AiOutlineSearch /></div>
                     </div>
                     <div className='flex gap-3 items-center'>
-                        <div className='lg:hidden text-2xl'><AiOutlineSearch /></div>
-                        <div className='text-2xl'><AiOutlineUpload /></div>
-                        <div className='text-2xl'><BsBell /></div>
-                        <div className='text-2xl'><BsChatLeftDots /></div>
+                        <div className='lg:hidden text-2xl cursor-pointer'><AiOutlineSearch /></div>
+                        <Link href={'/station/upload'}><div className='text-2xl cursor-pointer'><AiOutlineUpload /></div></Link>
+                        <div className='text-2xl cursor-pointer'><BsBell /></div>
+                        <div className='text-2xl cursor-pointer'><BsChatLeftDots /></div>
 
                         <Popover>
                             <PopoverTrigger>
@@ -142,19 +147,20 @@ export default () => {
                                 </Avatar>
                             </PopoverTrigger>
                             <PopoverContent>
-                                {session && session.user ? <>
-                                    {personalChannelData ? <MenuItem className=''>
-                                        <div className='flex gap-4'>
-                                            <div className='flex items-center'>
-                                                <div className='relative w-8 h-8'>
-                                                    <Image src={channelAvatar} alt='' fill />
+                                {session && session.user ? <div className='shadow-sm border-[1px] bg-cyan-50'>
+                                    {personalChannelData ?
+                                        <MenuItem className='bg-white'>
+                                            <div className='flex gap-4'>
+                                                <div className='flex items-center'>
+                                                    <div className='relative w-8 h-8'>
+                                                        <Image src={channelAvatar} alt='' fill />
+                                                    </div>
+                                                </div>
+                                                <div className='flex items-center'>
+                                                    <p className='text-xl'>{session.user.name}</p>
                                                 </div>
                                             </div>
-                                            <div className='flex items-center'>
-                                                <p className='text-xl'>{session.user.name}</p>
-                                            </div>
-                                        </div>
-                                    </MenuItem> : <></>}
+                                        </MenuItem> : <></>}
                                     <MenuItem className=''>
                                         <Link href={'/station'}>
                                             Station
@@ -172,8 +178,8 @@ export default () => {
                                             </MenuItem>
                                         </CollapsibleContent>
                                     </Collapsible>
-                                </> :
-                                    <div className='flex flex-col gap-2'>
+                                </div> :
+                                    <div className='flex flex-col gap-2 shadow-sm'>
                                         <MenuItem className='bg-gradient-to-r from-cyan-200 to-cyan-400'>
                                             <Link href={'/register'}>
                                                 Đăng nhập
@@ -211,7 +217,7 @@ export default () => {
 
 const MenuItem = ({ children, className, ...props }: { children: React.ReactNode, className: string | undefined }) => {
     return (
-        <div className={cn('w-full px-3 py-3 rounded-sm', className)} {...props}>
+        <div className={cn('w-full px-3 py-3 rounded-sm cursor-pointer hover:bg-slate-300', className)} {...props}>
             <p className='w-full select-none'>{children}</p>
         </div>
     )

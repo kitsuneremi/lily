@@ -75,7 +75,7 @@ const Player = ({ videoData }: { videoData: BigVideoDataType }) => {
     }, []);
 
     return (
-        <div className="rounded-lg mt-3">
+        <div className="rounded-lg mt-3 relative pt-[56.25%]">
             <Plyr
                 ref={videoRef}
                 // source={{
@@ -89,6 +89,7 @@ const Player = ({ videoData }: { videoData: BigVideoDataType }) => {
                 // }}
                 source={{} as PlyrProps["source"]}
                 id="plyr"
+                className="absolute top-0"
             />
         </div>
     )

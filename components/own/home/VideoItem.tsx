@@ -35,9 +35,9 @@ export default ({ videoData, channelData }: { videoData: VideoDataType, channelD
 
     return (
         <Link href={`/watch/${videoData.link}`}>
-            <div className='w-full grid items-center max-[640px]:w-[80vw]' style={{ gridTemplateRows: "subgrid", gridRow: 2 }}>
-                <div className="relative w-full h-fit min-h-[120px]">
-                    <img alt='' className="h-fit min-h-[120px] max-h-[240px]" sizes="1" src={img} />
+            <div className='w-full grid items-center max-[640px]:w-[80vw] max-[640px]:mx-auto h-fit' style={{ gridTemplateRows: "subgrid", gridRow: 2 }}>
+                <div className="relative w-full h-fit min-h-[120px] pt-[56.25%]">
+                    <Image alt='' className="" fill src={img} loading="lazy"/>
                 </div>
                 <div className="flex w-full gap-3 pt-1">
                     <div className="w-[30px]">

@@ -29,9 +29,9 @@ function makeid() {
     return result;
 }
 
-//   const getFileExt = (fileName) => {
-//     return fileName.name.substring(fileName.name.lastIndexOf(".") + 1);
-//   };
+const getFileExt = (file: File) => {
+    return file.name.substring(file.name.lastIndexOf(".") + 1);
+};
 
 
 
@@ -103,14 +103,15 @@ export default function Page() {
                     title: 'Chọn ảnh'
                 })
             } else {
-                const formData: FormData = new FormData();
-                formData.append('video', videoFile)
+                const formData = new FormData();
+                formData.append('video', videoFile, link + '.' + getFileExt(videoFile))
+                formData.append('link', link)
 
-                const videoUpload = await axios.post('http://42.112.184.47:5001/api/decay', {
-                    formData: formData
+                axios.post('http://42.112.184.47:5001/api/decay/video', formData, {
+                    headers: {
+                        ContentType: 'multipart/form-data'
+                    }
                 })
-
-                console.log(videoUpload)
 
                 axios
                     .post("/api/video/create", {
@@ -130,6 +131,8 @@ export default function Page() {
                 const thumbnailStorageRef = ref(storage, `/video/thumbnails/${link}`)
                 uploadBytes(thumbnailStorageRef, originalThumbnail).then(() => { console.log("thumbnail uploaded") })
             }
+        } else {
+            console.log('nope')
         }
     }
 
@@ -206,4 +209,4 @@ export default function Page() {
             </div>
         </div>
     )
-}
+} 

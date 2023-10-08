@@ -39,7 +39,7 @@ export default () => {
                                 <AiOutlineHome />
                             </div>
                             {sidebar ? <div className='flex justify-center items-center'>
-                                <p>Home</p>
+                                <p className='min-w-[100px]'>Home</p>
                             </div> : <></>}
                         </div>
                     </Link>
@@ -47,14 +47,14 @@ export default () => {
             )
         } else if (deviceType.isTablet) {
             return (
-                <div className='flex flex-col gap-2 overflow-y-scroll w-max' ref={sidebarRef}>
+                <div className='flex flex-col gap-2 overflow-y-auto w-max' ref={sidebarRef}>
                     <Link href={'/'}>
                         <div className='flex gap-2 w-full hover:bg-slate-200 py-3 px-5 items-center'>
                             <div className='flex flex-col justify-center'>
                                 <AiOutlineHome />
                             </div>
                             {sidebar ? <div className='flex justify-center items-center'>
-                                <p>Home</p>
+                                <p className='min-w-[100px]'>Home</p>
                             </div> : <></>}
                         </div>
                     </Link>
@@ -62,13 +62,13 @@ export default () => {
             )
         } else if (deviceType.isMobile && sidebar) {
             return (
-                <div className='absolute w-[200px] top-16 left-0 z-10 h-[calc(100vh-64px)] py-3 flex flex-col gap-2 overflow-y-scroll bg-white' ref={sidebarRef}>
+                <div className='absolute w-[200px] top-16 left-0 z-10 h-[calc(100vh-64px)] py-3 flex flex-col gap-2 overflow-y-auto bg-white' ref={sidebarRef}>
                     <Link href={'/'}>
                         <div className='flex justify-around w-full hover:bg-slate-200 py-3 px-2 items-center'>
                             <div className='flex flex-col justify-center'>
                                 <AiOutlineHome />
                             </div>
-                            <p>Home</p>
+                            <p className='min-w-[100px]'>Home</p>
                         </div>
                     </Link>
                     <Link href={'/'}>
@@ -76,7 +76,7 @@ export default () => {
                             <div className='flex flex-col justify-center'>
                                 <AiOutlineHome />
                             </div>
-                            <p>Home</p>
+                            <p className='min-w-[100px]'>Home</p>
                         </div>
                     </Link>
                     <Link href={'/'}>
@@ -84,7 +84,7 @@ export default () => {
                             <div className='flex flex-col justify-center'>
                                 <AiOutlineHome />
                             </div>
-                            <p>Home</p>
+                            <p className='min-w-[100px]'>Home</p>
                         </div>
                     </Link>
                     <Link href={'/'}> 
@@ -92,7 +92,7 @@ export default () => {
                             <div className='flex flex-col justify-center'>
                                 <AiOutlineHome />
                             </div>
-                            <p>Home</p>
+                            <p className='min-w-[100px]'>Home</p>
                         </div>
                     </Link>
                 </div>
