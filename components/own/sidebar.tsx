@@ -49,7 +49,7 @@ export default () => {
             return (
                 <div className='flex flex-col gap-2 overflow-y-scroll w-max' ref={sidebarRef}>
                     <Link href={'/'}>
-                        <div className='flex gap-2 w-full hover:bg-slate-200 py-3 px-5'>
+                        <div className='flex gap-2 w-full hover:bg-slate-200 py-3 px-5 items-center'>
                             <div className='flex flex-col justify-center'>
                                 <AiOutlineHome />
                             </div>
@@ -62,9 +62,9 @@ export default () => {
             )
         } else if (deviceType.isMobile && sidebar) {
             return (
-                <div className='absolute w-[160px] top-16 left-0 z-10 h-[calc(100vh-64px)] py-3 flex flex-col gap-2 overflow-y-scroll bg-white' ref={sidebarRef}>
+                <div className='absolute w-[200px] top-16 left-0 z-10 h-[calc(100vh-64px)] py-3 flex flex-col gap-2 overflow-y-scroll bg-white' ref={sidebarRef}>
                     <Link href={'/'}>
-                        <div className='flex justify-around w-full hover:bg-slate-200 py-3 px-2'>
+                        <div className='flex justify-around w-full hover:bg-slate-200 py-3 px-2 items-center'>
                             <div className='flex flex-col justify-center'>
                                 <AiOutlineHome />
                             </div>
@@ -72,7 +72,7 @@ export default () => {
                         </div>
                     </Link>
                     <Link href={'/'}>
-                        <div className='flex justify-around w-full hover:bg-slate-200 py-3 px-2'>
+                        <div className='flex justify-around w-full hover:bg-slate-200 py-3 px-2 items-center'>
                             <div className='flex flex-col justify-center'>
                                 <AiOutlineHome />
                             </div>
@@ -80,15 +80,15 @@ export default () => {
                         </div>
                     </Link>
                     <Link href={'/'}>
-                        <div className='flex justify-around w-full hover:bg-slate-200 py-3 px-2'>
+                        <div className='flex justify-around w-full hover:bg-slate-200 py-3 px-2 items-center'>
                             <div className='flex flex-col justify-center'>
                                 <AiOutlineHome />
                             </div>
                             <p>Home</p>
                         </div>
                     </Link>
-                    <Link href={'/'}>
-                        <div className='flex justify-around w-full hover:bg-slate-200 py-3 px-2'>
+                    <Link href={'/'}> 
+                        <div className='flex justify-around w-full hover:bg-slate-200 py-3 px-2 items-center'>
                             <div className='flex flex-col justify-center'>
                                 <AiOutlineHome />
                             </div>
