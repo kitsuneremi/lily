@@ -18,7 +18,7 @@ type defaultOption = {
 }
 
 const Player = ({ videoData }: { videoData: BigVideoDataType }) => {
-    const src = `https://erinasaiyukii.com:5001/api/merge/${videoData.videoData.link}/1080`
+    const src = `http://42.112.215.156:5001/api/merge/${videoData.videoData.link}/1080`
 
     const videoRef = useRef(null)
 

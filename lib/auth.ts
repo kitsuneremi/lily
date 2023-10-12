@@ -66,15 +66,15 @@ export const authOptions: NextAuthOptions = {
         signOut: "/register"
     },
     callbacks: {
-        async jwt({ token, user }) {
+        async jwt({ token, user, session }) {
+            console.log("JWT", token, user, session)
             return {
                 ...user,
                 ...token
             }
         },
         async session({ session, token }) {
-            session.user = token;
-            return session;
+            return {...session, user: token};
         }
     },
     session: {

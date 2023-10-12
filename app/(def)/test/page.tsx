@@ -114,6 +114,7 @@ export default function ExampleModal() {
                     src={originalAvatar.file}
                     onLoad={(res) => console.log(res)}
                     onHide={() => setVisible(false)}
+                    //@ts-ignore
                     onProcess={(com) => { console.log(com); setOriginalAvatar({ file: com.dest, width: com.imageState.crop?.width, height: com.imageState.crop?.height}) }}
 
                 />

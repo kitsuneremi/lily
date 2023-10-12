@@ -16,7 +16,6 @@ model Accounts {
   name          String
   password      String
   username      String
-  isAdmin       Boolean         @default(false)
   channel       Channels?
   comment       Comment[]
   Likes         Likes[]

@@ -40,15 +40,20 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
 
     const { data: session } = useSession()
     const [like, setLike] = useState(false);
-    const [dislike, setDislike] = useState(false);
+    const [dislike, setDislike] = useState(false); 
 
     useEffect(() => {
         if (session && session.user) {
+            console.log(session)
             axios.get('/api/like/find', {
                 params: {
                     // @ts-ignore
                     accountId: session.user.id,
                     targetId: videoData.channelData.id
+                },
+                headers: {
+                    //@ts-ignore
+                    Authorization: `Bearer ${session.user.accessToken}` 
                 }
             }).then(val => {
                 if (val.data.type == null) {
