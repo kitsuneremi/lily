@@ -8,7 +8,7 @@ import { useToast } from "@/components/ui/use-toast"
 import axios, { AxiosHeaders } from 'axios'
 import { useRouter } from "next/navigation"
 
-export default () => {
+export default function Page(){
     const router = useRouter()
     const {data: session} = useSession();
 

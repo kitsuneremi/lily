@@ -6,6 +6,15 @@ import Image from 'next/image'
 import { FormatDateTime, ReduceString } from '@/lib/functional'
 import { useEffect, useState } from "react";
 import { VideoDataType, ChannelDataType } from "@/type/type";
+
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/components/ui/tooltip"
+
+
 // const fetchImg = async ({ videoLink, channelTagname }: { videoLink: string, channelTagname: string }) => {
 //     'use server'
 //     const videoImageStorageRef = ref(storage, `/video/thumbnails/${videoLink}`)
@@ -17,7 +26,7 @@ import { VideoDataType, ChannelDataType } from "@/type/type";
 // }
 
 
-export default ({ videoData, channelData }: { videoData: VideoDataType, channelData: ChannelDataType }) => {
+export default function VideoItem({ videoData, channelData }: { videoData: VideoDataType, channelData: ChannelDataType }){
 
 
     const [img, setImg] = useState<string>('')
@@ -34,23 +43,43 @@ export default ({ videoData, channelData }: { videoData: VideoDataType, channelD
     // const {img, channelAvatar} = Promise.all([fetchImg])
 
     return (
-        <Link href={`/watch/${videoData.link}`}>
-            <div className='w-full grid items-center max-[640px]:w-[80vw] max-[640px]:mx-auto h-fit' style={{ gridTemplateRows: "subgrid", gridRow: 2 }}>
-                <div className="relative w-full h-fit min-h-[120px] pt-[56.25%]">
-                    <Image alt='' className="" fill src={img} loading="lazy"/>
+        <Link href={`/watch/${videoData.link}`} className="max-[640px]:max-w-[78vw] w-full">
+            <div className='grid items-center h-fit'>
+                <div className="relative w-full h-fit min-h-[120px] pt-[56.25%] rounded-md">
+                    {img ? <Image alt='' className="rounded-md" fill src={img} loading="lazy" /> : <></>}
                 </div>
                 <div className="flex w-full gap-3 pt-1">
                     <div className="w-[30px]">
-                        <Link href={`/channel/${channelData.tagName}`}><Image alt="img" width={30} height={30} loading="lazy" src={channelAvatar} /></Link>
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger>
+                                    <Link href={`/channel/${channelData.tagName}`}>
+                                        {channelAvatar ? <Image alt="img" width={30} height={30} loading="lazy" src={channelAvatar} /> : <></>}
+                                    </Link>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <p>Chuyển tới kênh {channelData.name}</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
                     </div>
-                    <div className="w-[calc(100%-30px)] grid grid-rows-3">
-                        <p className="text-xl font-bold w-full max-h-14 text-ellipsis overflow-hidden">{videoData.title}</p>
+                    <div className="w-[calc(100%-30px)] flex flex-col">
+                        <p className="text-lg font-bold w-full text-ellipsis overflow-hidden">{videoData.title}</p>
                         <div>
-                            <Link href={`/channel/${channelData.tagName}`}>
-                                <p className="text-lg font-semibold">
-                                    {channelData.name}
-                                </p>
-                            </Link>
+                            <TooltipProvider>
+                                <Tooltip>
+                                    <TooltipTrigger>
+                                        <Link href={`/channel/${channelData.tagName}`}>
+                                            <p className="text-md font-semibold hover:underline">
+                                                {channelData.name}
+                                            </p>
+                                        </Link>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        <p>Chuyển tới kênh {channelData.name}</p>
+                                    </TooltipContent>
+                                </Tooltip>
+                            </TooltipProvider>
                         </div>
                         <div>
                             <p className="text-sm">{videoData.view} lượt xem</p>

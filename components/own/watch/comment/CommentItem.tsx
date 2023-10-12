@@ -18,7 +18,7 @@ type AccountDataType = {
     updatedAt: Date
 }
 
-export default ({ cmt }: { cmt: CommentDataType }) => {
+export default function CommentItem({ cmt }: { cmt: CommentDataType }){
     const [like, setLike] = useState<boolean>(false);
     const [dislike, setDislike] = useState<boolean>(false);
     const [imgSrc, setSrc] = useState<string>('')

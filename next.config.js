@@ -12,6 +12,7 @@ const nextConfig = {
             }
         ]
     },
+    transpilePackages: ['@pqina/pintura', '@pqina/react-pintura'],
     experimental: {
         serverActions: true,
     },

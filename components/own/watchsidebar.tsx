@@ -10,7 +10,7 @@ import { AiOutlineMenu, AiOutlineClose, AiOutlineRight, AiOutlineLeft, AiOutline
 import Link from 'next/link';
 import { Separator } from "@/components/ui/separator"
 
-export default () => {
+export default function WatchSidebar(){
 
     const deviceType = {
         isPc: useMediaQuery('(min-width: 1200px'),

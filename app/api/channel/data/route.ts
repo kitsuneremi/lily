@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
         if (channel) {
             return new NextResponse(JSON.stringify(channel), { status: 200 })
         } else {
-            return new NextResponse(JSON.stringify({ message: 'cannot find channel' }), { status: 404 })
+            return new NextResponse(JSON.stringify({}), { status: 404 })
         }
     } else {
         return new NextResponse(JSON.stringify({ message: '???' }), { status: 403 })

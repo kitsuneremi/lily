@@ -15,26 +15,6 @@ import { useSession } from "next-auth/react"
 
 
 
-function makeid() {
-    let length = 8;
-    let result = "";
-    const characters =
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    const charactersLength = characters.length;
-    let counter = 0;
-    while (counter < length) {
-        result += characters.charAt(Math.floor(Math.random() * charactersLength));
-        counter += 1;
-    }
-    return result;
-}
-
-const getFileExt = (file: File) => {
-    return file.name.substring(file.name.lastIndexOf(".") + 1);
-};
-
-
-
 
 export default function Page() {
 
@@ -42,19 +22,38 @@ export default function Page() {
     const [des, setDes] = useState<string>('')
     const [link, setLink] = useState<string>('')
 
-    const [videoFile, setVideoFile] = useState<File>();
-    const [originalThumbnail, setOriginalThumbnail] = useState<File>();
+    const [videoFile, setVideoFile] = useState<File | null>(null);
+    const [originalThumbnail, setOriginalThumbnail] = useState<File | null>(null);
     const [accept, setAccept] = useState<boolean>(false)
 
-    const [previewVideo, setPreviewVideo] = useState<string>();
+    const [previewVideo, setPreviewVideo] = useState<string>('');
 
     const { toast } = useToast()
 
     const { data: session } = useSession()
 
+    function makeid() {
+        let length = 8;
+        let result = "";
+        const characters =
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        const charactersLength = characters.length;
+        let counter = 0;
+        while (counter < length) {
+            result += characters.charAt(Math.floor(Math.random() * charactersLength));
+            counter += 1;
+        }
+        return result;
+    }
+
+    const getFileExt = (file: File) => {
+        return file.name.substring(file.name.lastIndexOf(".") + 1);
+    };
+
     useEffect(() => {
         setLink(makeid())
     }, [])
+
     const onAvatarDrop = useCallback((acceptedFiles: File[]) => {
         setVideoFile(acceptedFiles[0])
         if (acceptedFiles[0]) {
@@ -88,51 +87,53 @@ export default function Page() {
 
 
 
-    const handleFinish = async () => {
-        if (session && session.user) {
-            if (name.trim().length == 0) {
-                toast({
-                    title: 'điền tên video'
-                })
-            } else if (!videoFile) {
-                toast({
-                    title: 'Chọn video'
-                })
-            } else if (!originalThumbnail) {
-                toast({
-                    title: 'Chọn ảnh'
-                })
+    const handleFinish = () => {
+        if (toast) {
+            if (session && session.user) {
+                if (name.trim().length == 0) {
+                    toast({
+                        title: 'điền tên video'
+                    })
+                } else if (!videoFile) {
+                    toast({
+                        title: 'Chọn video'
+                    })
+                } else if (!originalThumbnail) {
+                    toast({
+                        title: 'Chọn ảnh'
+                    })
+                } else {
+                    const formData = new FormData();
+                    formData.append('video', videoFile, link + '.' + getFileExt(videoFile))
+                    formData.append('link', link)
+
+                    axios.post('http://42.112.184.47:5001/api/decay/video', formData, {
+                        headers: {
+                            ContentType: 'multipart/form-data'
+                        }
+                    })
+
+                    axios
+                        .post("/api/video/create", {
+                            title: name,
+                            des: des,
+                            link: link,
+                            //@ts-ignore
+                            channelId: session?.user.id,
+                        })
+                        .then((response) => {
+                            console.log(response.data);
+                        })
+                        .catch((error) => {
+                            console.error(error);
+                        });
+
+                    const thumbnailStorageRef = ref(storage, `/video/thumbnails/${link}`)
+                    uploadBytes(thumbnailStorageRef, originalThumbnail).then(() => { console.log("thumbnail uploaded") })
+                }
             } else {
-                const formData = new FormData();
-                formData.append('video', videoFile, link + '.' + getFileExt(videoFile))
-                formData.append('link', link)
-
-                axios.post('http://42.112.184.47:5001/api/decay/video', formData, {
-                    headers: {
-                        ContentType: 'multipart/form-data'
-                    }
-                })
-
-                axios
-                    .post("/api/video/create", {
-                        title: name,
-                        des: des,
-                        link: link,
-                        //@ts-ignore
-                        channelId: session?.user.id,
-                    })
-                    .then((response) => {
-                        console.log(response.data);
-                    })
-                    .catch((error) => {
-                        console.error(error);
-                    });
-
-                const thumbnailStorageRef = ref(storage, `/video/thumbnails/${link}`)
-                uploadBytes(thumbnailStorageRef, originalThumbnail).then(() => { console.log("thumbnail uploaded") })
+                console.log('nope')
             }
-        } else {
-            console.log('nope')
         }
     }
 
@@ -157,7 +158,7 @@ export default function Page() {
                     </div>
                     <label className="flex flex-col gap-2">
                         mô tả
-                        <textarea className="w-full border-[1px] border-slate-600 rounded-sm p-1 h-fit" />
+                        <textarea className="w-full border-[1px] border-slate-600 rounded-sm p-1 h-fit" value={des} onChange={e => setDes(e.target.value)} />
                     </label>
 
                     <div className="flex flex-col">
@@ -209,4 +210,4 @@ export default function Page() {
             </div>
         </div>
     )
-} 
+}

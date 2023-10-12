@@ -5,6 +5,7 @@ import Hls from "hls.js";
 import { useRef, useEffect } from 'react'
 import { VideoDataType, BigVideoDataType } from "@/type/type";
 import { memo } from "react";
+import { baseURL } from "@/lib/functional";
 
 type defaultOption = {
     controls?: string[]
@@ -17,7 +18,7 @@ type defaultOption = {
 }
 
 const Player = ({ videoData }: { videoData: BigVideoDataType }) => {
-    const src = `http://42.112.184.47:5001/api/merge/${videoData.videoData.link}/1080`
+    const src = `https://erinasaiyukii.com:5001/api/merge/${videoData.videoData.link}/1080`
 
     const videoRef = useRef(null)
 

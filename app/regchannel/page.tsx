@@ -1,44 +1,122 @@
 'use client'
-import Image from "next/image"
-import { useState, useCallback } from "react"
+import NextImage from "next/image"
+import { useState, useCallback, useRef, useEffect } from "react"
 import { useDropzone, Accept } from 'react-dropzone'
-
-import { InboxOutlined } from '@ant-design/icons';
-import type { UploadProps } from 'antd';
-import { message, Upload } from 'antd';
-
+import { PinturaEditorModal } from "@pqina/react-pintura";
 import { uploadBytes, ref } from 'firebase/storage'
 import { storage } from '@/lib/firebase'
-import { Checkbox } from "@/components/ui/checkbox"
 import Link from "next/link";
+import { useToast } from "@/components/ui/use-toast"
+import axios from "axios"
+import { useSession } from "next-auth/react"
+import { baseURL } from "@/lib/functional"
 
+import "@pqina/pintura/pintura.css";
+import {
+    // editor
+    locale_en_gb,
+    createDefaultImageReader,
+    createDefaultImageWriter,
+    createDefaultShapePreprocessor,
 
+    // plugins
+    setPlugins,
+    plugin_crop,
+    plugin_crop_locale_en_gb,
+    plugin_finetune,
+    plugin_finetune_locale_en_gb,
+    plugin_finetune_defaults,
+    plugin_filter,
+    plugin_filter_locale_en_gb,
+    plugin_filter_defaults,
+    plugin_annotate,
+    plugin_annotate_locale_en_gb,
+    markup_editor_defaults,
+    markup_editor_locale_en_gb,
+} from "@pqina/pintura";
 
-const { Dragger } = Upload;
+setPlugins(plugin_crop, plugin_finetune, plugin_filter, plugin_annotate);
 
-
+const editorDefaults = {
+    utils: [
+        "crop",
+        // "finetune",
+        // "filter",
+        // "annotate"
+    ],
+    imageReader: createDefaultImageReader(),
+    imageWriter: createDefaultImageWriter(),
+    shapePreprocessor: createDefaultShapePreprocessor(),
+    ...plugin_finetune_defaults,
+    ...plugin_filter_defaults,
+    ...markup_editor_defaults,
+    locale: {
+        ...locale_en_gb,
+        ...plugin_crop_locale_en_gb,
+        ...plugin_finetune_locale_en_gb,
+        ...plugin_filter_locale_en_gb,
+        ...plugin_annotate_locale_en_gb,
+        ...markup_editor_locale_en_gb,
+    },
+};
 
 
 export default function Page() {
+    const { toast } = useToast()
 
     const [name, setName] = useState<string>('')
     const [tagName, setTagName] = useState<string>('')
+    const [des, setDes] = useState<string>('')
+    const [which, setWhich] = useState<number>(0)
 
-    const [originalAvatar, setOriginalAvatar] = useState<File>();
-    const [originalThumbnail, setOriginalThumbnail] = useState<File>();
+    const [originalAvatar, setOriginalAvatar] = useState<{ file: File, width: number, height: number } | null>(null);
+    const [originalThumbnail, setOriginalThumbnail] = useState<{ file: File, width: number, height: number } | null>(null);
     const [accept, setAccept] = useState<boolean>(false)
 
+    const [visible, setVisible] = useState<boolean>(false)
 
+    const { data: session } = useSession();
+
+    const PinturaRef = useRef<PinturaEditorModal>(null)
 
     const onAvatarDrop = useCallback((acceptedFiles: File[]) => {
-        setOriginalAvatar(acceptedFiles[0])
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const image = new Image();
+            //@ts-ignore
+            image.src = event.target!.result;
+
+            image.onload = () => {
+                if (image.width != image.height) {
+                    handleEditImage({ file: acceptedFiles[0], ratio: 1 / 1, num: 0 })
+                } else {
+                    setOriginalAvatar({ file: acceptedFiles[0], width: image.width, height: image.height })
+                }
+            }
+        }
+        reader.readAsDataURL(acceptedFiles[0])
     }, [])
 
     const onThumbnailDrop = useCallback((acceptedFiles: File[]) => {
-        setOriginalThumbnail(acceptedFiles[0])
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const image = new Image();
+            //@ts-ignore
+            image.src = event.target!.result;
+
+            image.onload = () => {
+                if (image.width / image.height !== 16 / 9) {
+                    handleEditImage({ file: acceptedFiles[0], ratio: 16 / 9, num: 1 })
+                } else {
+                    setOriginalThumbnail({ file: acceptedFiles[0], width: image.width, height: image.height })
+                }
+            }
+        }
+        reader.readAsDataURL(acceptedFiles[0])
+
     }, [])
 
-    const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    const { getRootProps: getRootAvatarProps, getInputProps: getAvatarInputProps, isDragActive: isAvatarDragActive } = useDropzone({
         onDrop: onAvatarDrop,
         accept: {
             'image/*': []
@@ -53,19 +131,62 @@ export default function Page() {
             'image/*': []
         },
         maxFiles: 1,
-        multiple: false
+        multiple: false,
     })
+
+    const handleEditImage = ({ file, ratio, num }: { file: File, ratio: number, num: number }) => {
+        setVisible(true);
+        setWhich(num)
+        setTimeout(() => {
+            if(PinturaRef && PinturaRef.current){
+                PinturaRef.current.editor
+                //@ts-ignore
+                .loadImage(file, { imageCropAspectRatio: ratio })
+                .then((imageReaderResult) => {
+                    // Logs loaded image data
+                    console.log(imageReaderResult);
+                });
+            }
+        }, 1000)
+    }
 
 
     const handleFinish = () => {
-        if (originalAvatar && originalThumbnail) {
+        if (originalAvatar && originalAvatar.height != originalAvatar.width) {
+            handleEditImage({ file: originalAvatar.file, ratio: 1 / 1, num: 0 })
+        }
+        if (originalThumbnail && originalThumbnail.width % originalThumbnail.height != 7) {
+            handleEditImage({ file: originalThumbnail.file, ratio: 16 / 9, num: 1 })
+        }
+
+        if (originalAvatar && originalThumbnail && name.trim().length > 0 && tagName.trim().length > 0 && des.trim().length > 0) {
             const avatarStorageRef = ref(storage, `/channel/avatars/${tagName}`)
             const bannerStorageRef = ref(storage, `/channel/banners/${tagName}`)
-            uploadBytes(avatarStorageRef, originalAvatar)
-            uploadBytes(bannerStorageRef, originalThumbnail)
-
+            uploadBytes(avatarStorageRef, originalAvatar.file)
+            uploadBytes(bannerStorageRef, originalThumbnail.file)
+            fetch(`${baseURL}/api/channel/create`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    //@ts-ignore
+                    accountId: session?.user.id,
+                    name: name,
+                    des: des,
+                    tagName: tagName
+                })
+            })
+        } else {
+            toast({
+                title: 'Điền đủ thông tin trước',
+                description: '...'
+            })
         }
+
     }
+
+
 
 
     return (
@@ -85,15 +206,15 @@ export default function Page() {
                     </div>
                     <label className="flex flex-col gap-2">
                         mô tả
-                        <textarea className="w-full border-[1px] border-slate-600 rounded-sm p-1 h-fit" />
+                        <textarea className="w-full border-[1px] border-slate-600 rounded-sm p-1 h-fit" value={des} onChange={e => setDes(e.target.value)} />
                     </label>
                     <div className="flex flex-col">
                         <div className="flex flex-col">
                             <p>Chọn ảnh chính cho kênh</p>
-                            <div {...getRootProps()} className='h-12 border-[1px] border-cyan-900 border-dashed flex items-center text-center justify-center'>
-                                <input {...getInputProps()} className='w-full h-full' />
+                            <div {...getRootAvatarProps()} className='h-12 border-[1px] border-cyan-900 border-dashed flex items-center text-center justify-center'>
+                                <input {...getAvatarInputProps()} className='w-full h-full' />
                                 {
-                                    isDragActive ?
+                                    isAvatarDragActive ?
                                         <p className="text-red-500">Thả ảnh tại đây.</p> :
                                         <div className="flex gap-1"><p className="max-lg:hidden">Kéo thả hoặc</p>bấm để chọn file ảnh</div>
                                 }
@@ -112,6 +233,15 @@ export default function Page() {
                             </div>
                         </div>
                     </div>
+                    {visible && <PinturaEditorModal
+                        ref={PinturaRef}
+                        {...editorDefaults}
+                        onLoad={(res) => console.log(res)}
+                        onHide={() => setVisible(false)}
+                        //@ts-ignore
+                        onProcess={(com) => { which == 0 ? setOriginalAvatar({ file: com.dest, width: com.imageState.crop?.width, height: com.imageState.crop?.height }) : setOriginalThumbnail({ file: com.dest, width: com.imageState.crop?.width, height: com.imageState.crop?.height }) }}
+
+                    />}
                     <div className="items-top flex space-x-2">
                         <input type="checkbox" id="terms1" checked={accept} onChange={e => setAccept(e.target.checked)} />
                         <div className="grid gap-1.5 leading-none">
@@ -127,7 +257,7 @@ export default function Page() {
                         </div>
                     </div>
                     <div>
-                        <button className={`${accept ? 'bg-gradient-to-r from bg-cyan-200 to-cyan-600 text-black' : 'bg-red-500 text-yellow-50 border-[1px] '} font-bold text-xl w-full h-10`} disabled={!accept}>{accept ? 'Tạo kênh' : 'Đồng ý với điều khoản trước!'}</button>
+                        <button className={`${accept ? 'bg-gradient-to-r from bg-cyan-200 to-cyan-600 text-black' : 'bg-red-500 text-yellow-50 border-[1px] '} font-bold text-xl w-full h-10`} disabled={!accept} onClick={handleFinish}>{accept ? 'Tạo kênh' : 'Đồng ý với điều khoản trước!'}</button>
                     </div>
                 </div>
             </div>
@@ -136,13 +266,13 @@ export default function Page() {
                 <div className="flex flex-col border-[1px] rounded-lg">
                     <div className="w-full h-auto max-h-60">
                         <div className="relative w-full min-h-[140px] h-40">
-                            <Image src={originalThumbnail ? URL.createObjectURL(originalThumbnail) : ''} sizes="16/9" alt="" fill />
+                            {originalThumbnail && originalThumbnail.width / originalThumbnail.height === 16/9 && <NextImage src={URL.createObjectURL(originalThumbnail.file)} sizes="16/9" alt="" fill />}
                         </div>
                     </div>
                     <div className="flex gap-8 mt-2">
                         <div className="flex items-center lg:pl-[20%]">
                             <div className="w-[70px] h-[70px] relative">
-                                <Image src={originalAvatar ? URL.createObjectURL(originalAvatar) : ''} alt="" className="rounded-full" sizes="1/1" fill />
+                                {originalAvatar?.file && originalAvatar.height == originalAvatar.width && <NextImage src={URL.createObjectURL(originalAvatar.file)} alt="" className="rounded-full" sizes="1/1" fill />}
                             </div>
                         </div>
                         <div className="flex flex-col">
