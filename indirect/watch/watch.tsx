@@ -40,7 +40,7 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
 
     const { data: session } = useSession()
     const [like, setLike] = useState(false);
-    const [dislike, setDislike] = useState(false); 
+    const [dislike, setDislike] = useState(false);
 
     useEffect(() => {
         if (session && session.user) {
@@ -53,7 +53,7 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
                 },
                 headers: {
                     //@ts-ignore
-                    Authorization: `Bearer ${session.user.accessToken}` 
+                    Authorization: `Bearer ${session.user.accessToken}`
                 }
             }).then(val => {
                 if (val.data.type == null) {
@@ -167,7 +167,7 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
                                     <div className='flex gap-3'>
                                         <div className='flex flex-col justify-center'>
                                             <div className='relative lg:w-[55px] lg:h-[55px] max-sm:w-[45px] max-sm:h-[45px] w-[40px] h-[40px]'>
-                                                <Image src={channelAvatar!} alt='' className='rounded-xl' fill />
+                                                {channelAvatar && <Image src={channelAvatar} alt='' className='rounded-xl' fill />}
                                             </div>
                                         </div>
                                         <div className='flex flex-col gap-2'>

@@ -30,6 +30,7 @@ import {
 } from "@pqina/pintura";
 
 import NextImage from "next/image";
+import axios from "axios";
 
 
 setPlugins(plugin_crop, plugin_finetune, plugin_filter, plugin_annotate);
@@ -56,73 +57,55 @@ const editorDefaults = {
         ...markup_editor_locale_en_gb,
     },
 };
+const getFileExt = (file: File) => {
+    return file.name.substring(file.name.lastIndexOf(".") + 1);
+};
 
 export default function ExampleModal() {
-    // modal
-    const [visible, setVisible] = useState(false);
-
-    const [originalAvatar, setOriginalAvatar] = useState<{ file: File, width: number, height: number } | null>(null);
+    const [videoFile, setVideoFile] = useState<File | null>(null);
 
     const onAvatarDrop = useCallback((acceptedFiles: File[]) => {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-            const image = new Image();
-            //@ts-ignore
-            image.src = event.target!.result;
-
-            image.onload = () => {
-                setOriginalAvatar({ file: acceptedFiles[0], width: image.width, height: image.height })
-                console.log(image.width, image.height)
-            }
-        }
-        reader.readAsDataURL(acceptedFiles[0])
+        setVideoFile(acceptedFiles[0])
     }, [])
 
-
-    const { getRootProps: getRootAvatarProps, getInputProps: getAvatarInputProps, isDragActive: isAvatarDragActive } = useDropzone({
+    const { getRootProps, getInputProps, isDragActive } = useDropzone({
         onDrop: onAvatarDrop,
         accept: {
-            'image/*': []
+            'video/*': []
         },
         maxFiles: 1,
         multiple: false
     })
 
-    useEffect(() => {
-        console.log(originalAvatar)
-    }, [originalAvatar])
+    const handleFinish = () => {
+
+        const formData = new FormData();
+        formData.append('video', videoFile, 'test' + '.' + getFileExt(videoFile))
+        formData.append('link', 'test')
+
+        axios.post('http://118.68.229.104:5001/api/decay/video', formData, {
+            headers: {
+                ContentType: 'multipart/form-data'
+            }
+        })
+    }
+
+
+
 
     return (
         <div>
-            <div {...getRootAvatarProps()} className='h-12 border-[1px] border-cyan-900 border-dashed flex items-center text-center justify-center'>
-                <input {...getAvatarInputProps()} className='w-full h-full' />
+            <div {...getRootProps()} className='h-12 border-[1px] border-cyan-900 border-dashed flex items-center text-center justify-center'>
+                <input {...getInputProps()} className='w-full h-full' />
                 {
-                    isAvatarDragActive ?
-                        <p className="text-red-500">Thả ảnh tại đây.</p> :
-                        <div className="flex gap-1"><p className="max-lg:hidden">Kéo thả hoặc</p>bấm để chọn file ảnh</div>
+                    isDragActive ?
+                        <p className="text-red-500">Thả video tại đây.</p> :
+                        <div className="flex gap-1"><p className="max-lg:hidden">Kéo thả hoặc</p>bấm để chọn file video</div>
                 }
             </div>
 
-            <p>
-                {originalAvatar?.file && <button onClick={() => setVisible(true)}>Chỉnh sửa ảnh</button>}
-            </p>
 
-            {visible && originalAvatar && (
-                <PinturaEditorModal
-                    {...editorDefaults}
-                    imageCropAspectRatio={1 / 1}
-                    src={originalAvatar.file}
-                    onLoad={(res) => console.log(res)}
-                    onHide={() => setVisible(false)}
-                    //@ts-ignore
-                    onProcess={(com) => { console.log(com); setOriginalAvatar({ file: com.dest, width: com.imageState.crop?.width, height: com.imageState.crop?.height}) }}
-
-                />
-            )}
-
-            <div className="relative w-32 h-32">
-                {originalAvatar && originalAvatar.height == originalAvatar.width && <NextImage src={URL.createObjectURL(originalAvatar.file)} alt='' fill />}
-            </div>
+            <button onClick={handleFinish}>upload</button>
         </div>
     );
 }

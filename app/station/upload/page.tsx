@@ -14,7 +14,23 @@ import axios from "axios"
 import { useSession } from "next-auth/react"
 
 
+function makeid() {
+    let length = 8;
+    let result = "";
+    const characters =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    const charactersLength = characters.length;
+    let counter = 0;
+    while (counter < length) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        counter += 1;
+    }
+    return result;
+}
 
+const getFileExt = (file: File) => {
+    return file.name.substring(file.name.lastIndexOf(".") + 1);
+};
 
 export default function Page() {
 
@@ -22,7 +38,7 @@ export default function Page() {
     const [des, setDes] = useState<string>('')
     const [link, setLink] = useState<string>('')
 
-    const [videoFile, setVideoFile] = useState<File | null>(null);
+    const [videoFile, setVideoFile] = useState<File | null>(null); 
     const [originalThumbnail, setOriginalThumbnail] = useState<File | null>(null);
     const [accept, setAccept] = useState<boolean>(false)
 
@@ -30,25 +46,7 @@ export default function Page() {
 
     const { toast } = useToast()
 
-    const { data: session } = useSession()
-
-    function makeid() {
-        let length = 8;
-        let result = "";
-        const characters =
-            "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        const charactersLength = characters.length;
-        let counter = 0;
-        while (counter < length) {
-            result += characters.charAt(Math.floor(Math.random() * charactersLength));
-            counter += 1;
-        }
-        return result;
-    }
-
-    const getFileExt = (file: File) => {
-        return file.name.substring(file.name.lastIndexOf(".") + 1);
-    };
+    const { data: session } = useSession();
 
     useEffect(() => {
         setLink(makeid())
