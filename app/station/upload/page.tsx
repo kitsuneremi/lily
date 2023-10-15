@@ -38,7 +38,7 @@ export default function Page() {
     const [des, setDes] = useState<string>('')
     const [link, setLink] = useState<string>('')
 
-    const [videoFile, setVideoFile] = useState<File | null>(null); 
+    const [videoFile, setVideoFile] = useState<File | null>(null);
     const [originalThumbnail, setOriginalThumbnail] = useState<File | null>(null);
     const [accept, setAccept] = useState<boolean>(false)
 
@@ -105,29 +105,33 @@ export default function Page() {
                     formData.append('video', videoFile, link + '.' + getFileExt(videoFile))
                     formData.append('link', link)
 
-                    axios.post('http://42.112.184.47:5001/api/decay/video', formData, {
+                    axios.post('https://file.erinasaiyukii.com/api/decay/video', formData, {
                         headers: {
                             ContentType: 'multipart/form-data'
                         }
+                    }).then(res => {
+                        if (res.status == 200) {
+                            axios
+                                .post("/api/video/create", {
+                                    title: name,
+                                    des: des,
+                                    link: link,
+                                    //@ts-ignore
+                                    channelId: session?.user.id,
+                                })
+                                .then((response) => {
+                                    console.log(response.data);
+                                })
+                                .catch((error) => {
+                                    console.error(error);
+                                });
+
+                            const thumbnailStorageRef = ref(storage, `/video/thumbnails/${link}`)
+                            uploadBytes(thumbnailStorageRef, originalThumbnail).then(() => { console.log("thumbnail uploaded") })
+                        }
                     })
 
-                    axios
-                        .post("/api/video/create", {
-                            title: name,
-                            des: des,
-                            link: link,
-                            //@ts-ignore
-                            channelId: session?.user.id,
-                        })
-                        .then((response) => {
-                            console.log(response.data);
-                        })
-                        .catch((error) => {
-                            console.error(error);
-                        });
 
-                    const thumbnailStorageRef = ref(storage, `/video/thumbnails/${link}`)
-                    uploadBytes(thumbnailStorageRef, originalThumbnail).then(() => { console.log("thumbnail uploaded") })
                 }
             } else {
                 console.log('nope')
@@ -189,7 +193,7 @@ export default function Page() {
                                 className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                             >
                                 Accept terms and conditions
-                            </label>
+                            </label> 
                             <p className="text-sm text-muted-foreground font-bold">
                                 You agree to our <Link className="underline text-red-500" href={'/Term'}>Terms of Service and Privacy Policy.</Link>
                             </p>

@@ -6,22 +6,6 @@ import { BsFillPlayFill, BsFillPauseFill, BsArrowsFullscreen, BsFullscreenExit }
 import { MdSkipNext } from 'react-icons/md'
 import { AiFillSetting } from 'react-icons/ai'
 import { Slider } from 'antd';
-
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible"
-
 import type { MenuProps } from 'antd';
 import { Dropdown, Space } from 'antd';
 
@@ -32,7 +16,7 @@ import { Dropdown, Space } from 'antd';
 const formatter = (value: number) => `${value}%`;
 
 const PlyrComponent = () => {
-  const [src, setSrc] = useState<any>('https://file.erinasaiyukii.com/api/merge/vttu6y18/1080');
+  const [src, setSrc] = useState<any>('https://file.erinasaiyukii.com/api/video/test');
   const [volume, setVolume] = useState<number>(100);
   const [currentTime, setCurrentTime] = useState<number>(0);
   const [loadedProgress, setLoadedProgress] = useState<number>(0);

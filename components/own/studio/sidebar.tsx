@@ -58,7 +58,7 @@ const Sidebar = () => {
 
     const sidebar = useAppSelector(state => state.sidebarReducer.value.sidebar)
     const dispatch = useDispatch();
-    const { data: session } = useSession({required: true, onUnauthenticated: () => redirect('/register')});
+    const { data: session } = useSession({ required: true, onUnauthenticated: () => redirect('/register') });
 
     const [channelData, setChannelData] = useState<ChannelDataType>();
 
@@ -71,19 +71,19 @@ const Sidebar = () => {
 
     useEffect(() => {
         if (session && session.user) {
-                axios.get('/api/channel/data', {
-                    params: {
-                        //@ts-ignore
-                        accountId: session?.user.id
-                    }
-                }).then(res => {
-                    console.log(res)
-                    setChannelData(res.data)
-                }).catch(e => {
-                    router.push('/regchannel')
-                })
+            axios.get('/api/channel/data', {
+                params: {
+                    //@ts-ignore
+                    accountId: session?.user.id
+                }
+            }).then(res => {
+                console.log(res)
+                setChannelData(res.data)
+            }).catch(e => {
+                router.push('/regchannel')
+            })
         }
-    }, [{}])
+    }, [session])
 
     useEffect(() => {
         if (channelData) {
@@ -99,8 +99,6 @@ const Sidebar = () => {
             }
         })
     }, [url])
-
-
 
     return (
         <div className="flex-0">

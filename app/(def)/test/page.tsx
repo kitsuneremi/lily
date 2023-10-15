@@ -83,7 +83,7 @@ export default function ExampleModal() {
         formData.append('video', videoFile, 'test' + '.' + getFileExt(videoFile))
         formData.append('link', 'test')
 
-        axios.post('http://118.68.229.104:5001/api/decay/video', formData, {
+        axios.post('https://file.erinasaiyukii.com/api/decay/video', formData, {
             headers: {
                 ContentType: 'multipart/form-data'
             }
