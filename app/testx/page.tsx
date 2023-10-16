@@ -10,6 +10,10 @@ import type { MenuProps } from 'antd';
 import { Dropdown, Space } from 'antd';
 
 
+type quality = {
+  available: number[],
+  current: number
+}
 
 
 
@@ -21,6 +25,8 @@ const PlyrComponent = () => {
   const [currentTime, setCurrentTime] = useState<number>(0);
   const [loadedProgress, setLoadedProgress] = useState<number>(0);
   const [speed, setSpeed] = useState<number>(1);
+  const [quality, setQuality] = useState<quality>({ current: 0, available: [] });
+
 
   const ref = useRef<HTMLVideoElement>(null);
 
@@ -32,9 +38,9 @@ const PlyrComponent = () => {
         console.log('video and hls.js are now bound together !');
       });
       hls.on(Hls.Events.MANIFEST_PARSED, function (event, data) {
-        console.log(
-          'manifest loaded, found ' + data.levels.length + ' quality level',
-        );
+        setQuality(prev => { return { current: prev.current, available: data.levels.map(e => e.height) } })
+        console.log(quality.current)
+        hls.loadLevel = quality.current;
       });
 
       hls.on(Hls.Events.FRAG_LOADED, function (event, data) {
@@ -50,7 +56,7 @@ const PlyrComponent = () => {
       hls.attachMedia(video);
     }
     loadVideo();
-  }, [src]);
+  }, [src, quality.current]);
 
   useEffect(() => {
     const video = ref.current;
@@ -66,7 +72,6 @@ const PlyrComponent = () => {
     }
   }, [volume])
 
-
   useEffect(() => {
     const t = (e: any) => {
       if (e.code === 'Space') {
@@ -80,7 +85,7 @@ const PlyrComponent = () => {
     return (
       window.removeEventListener('keydown', t)
     )
-  }, [{}])
+  }, [])
 
   const VolumeIcon = () => {
     if (volume > 75) {
@@ -133,24 +138,20 @@ const PlyrComponent = () => {
     }
   }
 
-
-
-
   const items: MenuProps['items'] = [
     {
       key: '1',
       type: 'group',
       label: 'Chất lượng',
-      children: [
-        {
-          key: '1-1',
-          label: '1920x1080',
-        },
-        {
-          key: '1-2',
-          label: '1280x720',
-        },
-      ],
+      children: quality.available.map((q, index) => {
+        return (
+          {
+            key: `1-${index}`,
+            label: q,
+            onClick: () => { setQuality(prev => { return { current: index, available: prev.available } }) },
+          }
+        )
+      })
     },
     {
       key: '2',

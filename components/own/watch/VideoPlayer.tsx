@@ -19,12 +19,13 @@ const formatter = (value: number) => `${value}%`;
 
 
 const Player = ({ videoData }: { videoData: BigVideoDataType }) => {
-    const [quality, setQuality] = useState<quality>({ current: 1080, available: [] });
-    const [src, setSrc] = useState<any>(`https://file.erinasaiyukii.com/api/video/${videoData.videoData.link}`);
+    const [src, setSrc] = useState<string>(`https://file.erinasaiyukii.com/api/video/${videoData.videoData.link}`);
     const [volume, setVolume] = useState<number>(100);
     const [currentTime, setCurrentTime] = useState<number>(0);
     const [loadedProgress, setLoadedProgress] = useState<number>(0);
     const [speed, setSpeed] = useState<number>(1);
+    const [quality, setQuality] = useState<quality>({ current: 0, available: [] });
+
 
     const ref = useRef<HTMLVideoElement>(null);
 
@@ -36,10 +37,9 @@ const Player = ({ videoData }: { videoData: BigVideoDataType }) => {
                 console.log('video and hls.js are now bound together !');
             });
             hls.on(Hls.Events.MANIFEST_PARSED, function (event, data) {
-                setQuality({ current: data.levels[0].height, available: data.levels.map(e => e.height) })
-                console.log(
-                    'manifest loaded, found ' + data.levels.length + ' quality level',
-                );
+                setQuality(prev => { return { current: prev.current, available: data.levels.map(e => e.height) } })
+                console.log(quality.current)
+                hls.loadLevel = quality.current;
             });
 
             hls.on(Hls.Events.FRAG_LOADED, function (event, data) {
@@ -55,7 +55,7 @@ const Player = ({ videoData }: { videoData: BigVideoDataType }) => {
             hls.attachMedia(video);
         }
         loadVideo();
-    }, [src]);
+    }, [src, quality.current]);
 
     useEffect(() => {
         console.log(quality)
@@ -150,16 +150,15 @@ const Player = ({ videoData }: { videoData: BigVideoDataType }) => {
             key: '1',
             type: 'group',
             label: 'Chất lượng',
-            children: [
-                {
-                    key: '1-1',
-                    label: '1920x1080',
-                },
-                {
-                    key: '1-2',
-                    label: '1280x720',
-                },
-            ],
+            children: quality.available.map((q, index) => {
+                return (
+                    {
+                        key: `1-${index}`,
+                        label: q,
+                        onClick: () => { setQuality(prev => { return { current: index, available: prev.available } }) },
+                    }
+                )
+            })
         },
         {
             key: '2',
@@ -190,7 +189,7 @@ const Player = ({ videoData }: { videoData: BigVideoDataType }) => {
     ];
 
     return (
-        <div className="relative">
+        <div className="relative flex justify-center group">
             <video
                 ref={ref}
                 id="video"
@@ -198,8 +197,9 @@ const Player = ({ videoData }: { videoData: BigVideoDataType }) => {
                 onTimeUpdate={onTimeUpdate}
                 onProgress={onProgress}
                 onClick={handlePlayPause}
+                className="max-h-[80vh]"
             />
-            <div className="flex flex-col gap-2 absolute bottom-2 w-full h-8 px-2">
+            <div className="flex flex-col gap-2 absolute bottom-2 w-full h-8 px-2 opacity-0 transform translate-y-[1px] group-hover:opacity-100 group-hover:translate-y-0 transition-opacity duration-300 ease-in-out">
                 {/* timeline */}
                 <div className="flex items-center relative">
                     <div className="w-full h-2 bg-slate-100 absolute top-0 rounded-lg" id="timeline" onClick={onTimelineClick}>
@@ -242,13 +242,13 @@ const Player = ({ videoData }: { videoData: BigVideoDataType }) => {
                         <Dropdown menu={{ items }}>
                             <a onClick={(e) => e.preventDefault()}>
                                 <Space>
-                                    <div className="text-xl cursor-pointer">
+                                    <div className="text-xl cursor-pointer flex items-center">
                                         <AiFillSetting />
                                     </div>
                                 </Space>
                             </a>
                         </Dropdown>
-                        <div className="text-lg cursor-pointer">
+                        <div className="text-lg cursor-pointer flex items-center">
                             {true ? <BsArrowsFullscreen /> : <BsFullscreenExit />}
                         </div>
                     </div>
