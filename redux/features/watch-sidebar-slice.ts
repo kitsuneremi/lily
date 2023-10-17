@@ -2,22 +2,22 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 type init = {
     value: {
-        fullscreen: boolean
+        watchsidebar: boolean
     }
 }
 
-export const fullscreen = createSlice({
-    name: 'fullscreen',
+export const watchsidebar = createSlice({
+    name: 'watchsidebar',
     initialState: {
         value: {
-            fullscreen: true
+            watchsidebar: false
         }
     } as init,
     reducers: {
         set: (state, action: PayloadAction<init>) => {
             return {
                 value: {
-                    fullscreen: action.payload.value.fullscreen
+                    watchsidebar: action.payload.value.watchsidebar
                 }
             }
 
@@ -25,22 +25,30 @@ export const fullscreen = createSlice({
         close: () => {
             return {
                 value: {
-                    fullscreen: false
+                    watchsidebar: false
                 }
             }
         },
         open: () => {
             return {
                 value: {
-                    fullscreen: true
+                    watchsidebar: true
                 }
 
             };
+        },
+        reverse: (state) => {
+            return {
+                value: {
+                    watchsidebar: !state.value.watchsidebar
+                }
+
+            }
         }
     },
 
 }
 )
 
-export default fullscreen.reducer
-export const { set, close, open } = fullscreen.actions
+export default watchsidebar.reducer
+export const { set, close, open, reverse } = watchsidebar.actions

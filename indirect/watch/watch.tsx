@@ -23,7 +23,7 @@ import { handleSubmit } from '@/components/own/watch/comment/CommentInput'
 import { ref as fireRef, getDownloadURL } from "firebase/storage";
 import { storage } from '@/lib/firebase'
 import Hls from "hls.js";
-import { ImVolumeHigh, ImVolumeMedium, ImVolumeLow, ImVolumeMute } from 'react-icons/im'
+import { ImVolumeHigh, ImVolumeMedium, ImVolumeLow, ImVolumeMute, ImVolumeMute2 } from 'react-icons/im'
 import { BsFillPlayFill, BsFillPauseFill, BsArrowsFullscreen, BsFullscreenExit } from 'react-icons/bs'
 import { MdSkipNext } from 'react-icons/md'
 import { AiFillSetting } from 'react-icons/ai'
@@ -31,13 +31,20 @@ import { Slider } from 'antd';
 import type { MenuProps } from 'antd';
 import { Dropdown, Space } from 'antd';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { CiPlay1, CiPause1 } from 'react-icons/ci'
+import { RxTrackNext } from 'react-icons/rx'
 
 type quality = {
     available: number[],
     current: number
 }
 
+type pos = {
+    x: number,
+    y: number
+}
 const formatter = (value: number) => `${value}%`;
+let timer: any;
 
 export default function Page({ videoData }: { videoData: BigVideoDataType }) {
     const [channelAvatar, setChannelAvatar] = useState<string>();
@@ -48,12 +55,17 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
     const [speed, setSpeed] = useState<number>(1);
     const [quality, setQuality] = useState<quality>({ current: 0, available: [] });
     const [fullscreen, setFullscreen] = useState<boolean>(false);
+    const [loadedContent, setLoadedContent] = useState<boolean>(false);
 
     const { data: session } = useSession()
-    const [like, setLike] = useState(false);
-    const [dislike, setDislike] = useState(false);
+    const [like, setLike] = useState<boolean>(false);
+    const [dislike, setDislike] = useState<boolean>(false);
+    const [hide, setHide] = useState<boolean>(false)
+    // const [timer, setTimer] = useState<any>(0);
 
     const ref = useRef<HTMLVideoElement>(null);
+    const fullRef = useRef<HTMLDivElement>(null);
+    const anyRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         const loadVideo = async () => {
@@ -64,8 +76,8 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
             });
             hls.on(Hls.Events.MANIFEST_PARSED, function (event, data) {
                 setQuality(prev => { return { current: prev.current, available: data.levels.map(e => e.height) } })
-                console.log(quality.current)
                 hls.loadLevel = quality.current;
+                setLoadedContent(true);
             });
 
             hls.on(Hls.Events.FRAG_LOADED, function (event, data) {
@@ -85,7 +97,6 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
 
     useEffect(() => {
         if (session && session.user) {
-            console.log(session)
             axios.get('/api/like/find', {
                 params: {
                     // @ts-ignore
@@ -114,10 +125,6 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
     }, [session])
 
     useEffect(() => {
-        console.log(quality)
-    }, [quality])
-
-    useEffect(() => {
         const video = ref.current;
         if (video) {
             video.playbackRate = speed;
@@ -132,23 +139,73 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
     }, [volume])
 
     useEffect(() => {
-        const t = (e: any) => {
+        window.addEventListener('keydown', (e: KeyboardEvent) => {
             if (e.code === 'Space') {
                 e.preventDefault();
                 handlePlayPause();
             }
-        }
-
-        window.addEventListener('keydown', t)
+            if (e.code === 'Escape') {
+                e.preventDefault();
+                setFullscreen(false);
+            }
+        })
 
         return (
-            window.removeEventListener('keydown', t)
+            window.removeEventListener('keydown', (e: any) => {
+                if (e.code === 'Space') {
+                    e.preventDefault();
+                    handlePlayPause();
+                }
+            })
         )
     }, [])
 
     useEffect(() => {
         const channelAvatarStorageRef = fireRef(storage, `/channel/avatars/${videoData.channelData.tagName}`)
         getDownloadURL(channelAvatarStorageRef).then(url => setChannelAvatar(url))
+    }, [])
+
+    useEffect(() => {
+        if (fullRef.current && document) {
+            if (fullscreen) {
+                if (window.innerHeight > window.innerWidth) {
+                    fullRef.current.requestFullscreen();
+                    //@ts-ignore
+                    screen.orientation.lock('landscape');
+                } else {
+                    fullRef.current.requestFullscreen();
+                }
+
+            } else {
+                if (document.fullscreenElement) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+    }, [fullscreen])
+
+    useEffect(() => {
+        const handleMouseMove = (e: MouseEvent) => {
+            clearTimeout(timer);
+            setHide(false)
+            timer = setTimeout(() => {
+                setHide(true)
+            }, 2000)
+
+        }
+
+        const handleMouseLeave = () => {
+            clearTimeout(timer)
+            setHide(true)
+        };
+
+        anyRef.current?.addEventListener('mousemove', handleMouseMove);
+        anyRef.current?.addEventListener('mouseout', handleMouseLeave);
+
+        return () => {
+            anyRef.current?.removeEventListener('mousemove', handleMouseMove);
+            anyRef.current?.removeEventListener('mouseleave', handleMouseLeave);
+        };
     }, [])
 
     const handleLike = () => {
@@ -175,7 +232,9 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
     };
 
     const VolumeIcon = () => {
-        if (volume > 75) {
+        if (volume == 0) {
+            return <ImVolumeMute2 />
+        } else if (volume > 75) {
             return <ImVolumeHigh />
         } else if (volume > 50) {
             return <ImVolumeMedium />
@@ -227,6 +286,7 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
 
     const handleFullscreen = () => {
         setFullscreen(prev => !prev);
+
     }
 
     const items: MenuProps['items'] = [
@@ -323,13 +383,13 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
     }
 
     return (
-        <div className='w-full flex flex-col h-full'>
+        <div className='w-full flex flex-col h-full pt-16'>
             {!fullscreen && <Navbar />}
-            <div className={`relative ${fullscreen ? 'mt-0' : 'mt-16'} gap-10 h-full`}>
+            <div className={`relative ${fullscreen ? 'mt-0' : 'mt-3'} gap-10 h-full`}>
                 {!fullscreen && <Sidebar />}
                 <div className='lg:flex'>
-                    <div className={`flex flex-col w-full max-sm:px-0  ${fullscreen ? 'absolute w-screen top-0 left-0 bg-white dark:bg-slate-600' : 'relative lg:w-3/4 lg:px-10 px-2'}`}>
-                        <div className={`flex justify-center group relative ${fullscreen ? 'w-full h-screen px-3' : ''}`}>
+                    <div ref={fullRef} className={`flex flex-col w-full max-sm:px-0 ${fullscreen ? 'absolute w-screen top-0 left-0 bg-white dark:bg-slate-600 overflow-y-scroll' : `relative lg:w-3/4 lg:px-10 px-2`}`}>
+                        <div ref={anyRef} className={`flex justify-center group relative ${loadedContent ? '' : 'pt-[56.25%] max-h-[80vh]'} ${fullscreen ? 'w-full h-screen px-3' : ''} rounded-xl ${hide ? '' : 'bg-controls'}`}>
                             <video
                                 ref={ref}
                                 id="video"
@@ -337,9 +397,9 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
                                 onTimeUpdate={onTimeUpdate}
                                 onProgress={onProgress}
                                 onClick={handlePlayPause}
-                                className={`${fullscreen ? '' : 'max-h-[80vh]'}`}
+                                className={`${fullscreen ? 'h-screen' : 'max-h-[80vh]'} min-h-[60vh]`}
                             />
-                            <div className="flex flex-col gap-2 absolute bottom-2 w-full h-8 px-2 opacity-0 transform translate-y-[1px] group-hover:opacity-100 group-hover:translate-y-0 transition-opacity duration-300 ease-in-out">
+                            <div className={`flex flex-col gap-2 absolute bottom-0 w-full ${hide ? 'opacity-0' : 'opacity-100 translate-y-0 transition-opacity duration-300 ease-in-out'} h-fit px-2 transform translate-y-[1px]`}>
                                 {/* timeline */}
                                 <div className="flex items-center relative">
                                     <div className="w-full h-2 bg-slate-100 absolute top-0 rounded-lg" id="timeline" onClick={onTimelineClick}>
@@ -360,14 +420,20 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
                                 <div className="flex justify-between items-center">
                                     <div className="flex gap-2">
                                         <div className="flex items-center">
-                                            <div className="text-2xl cursor-pointer" onClick={handlePlayPause}>
+                                            <div className="text-2xl cursor-pointer hidden dark:visible" onClick={handlePlayPause}>
                                                 {ref.current?.paused ? <BsFillPlayFill /> : <BsFillPauseFill />}
                                             </div>
-                                            <div className="text-2xl cursor-pointer">
+                                            <div className='text-2xl cursor-pointer dark:hidden'>
+                                                {ref.current?.paused ? <CiPlay1 /> : <CiPause1 />}
+                                            </div>
+                                            <div className="text-2xl cursor-pointer hidden dark:visible">
                                                 <MdSkipNext />
                                             </div>
+                                            <div className='text-2xl cursor-pointer dark:hidden'>
+                                                <RxTrackNext />
+                                            </div>
                                         </div>
-                                        <div className="flex items-center">
+                                        <div className="flex items-center gap-1">
                                             <div className="text-lg cursor-pointer">
                                                 {VolumeIcon()}
                                             </div>
@@ -376,20 +442,21 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
                                             {/* @ts-ignore */}
                                             <Slider tooltip={{ formatter }} value={volume} onChange={e => setVolume(e)} className="w-24" />
                                         </div>
+                                        <div className='flex items-center max-sm:hidden'>
+                                            <p className='text-red-600'>{ref.current?.currentTime}/{ref.current?.duration}</p>
+                                        </div>
                                     </div>
 
-                                    <div className="flex gap-2 items-center">
-                                        <Dropdown menu={{ items }}>
+                                    <div className="flex gap-3 items-center">
+                                        <Dropdown menu={{ items }} placement='topRight'>
                                             <a onClick={(e) => e.preventDefault()}>
-                                                <Space>
-                                                    <div className="text-xl cursor-pointer flex items-center">
-                                                        <AiFillSetting />
-                                                    </div>
-                                                </Space>
+                                                <div className="text-xl cursor-pointer flex items-center">
+                                                    <AiFillSetting />
+                                                </div>
                                             </a>
                                         </Dropdown>
-                                        <div className="text-lg cursor-pointer flex items-center" onClick={handleFullscreen}>
-                                            {true ? <BsArrowsFullscreen /> : <BsFullscreenExit />}
+                                        <div className="text-md cursor-pointer flex items-center" onClick={handleFullscreen}>
+                                            {fullscreen ? <BsFullscreenExit /> : <BsArrowsFullscreen />}
                                         </div>
                                     </div>
                                 </div>
@@ -522,59 +589,3 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
         </div>
     )
 }
-
-
-
-
-// useEffect(() => {
-//     const handleSpacebar = (e) => {
-//         if (e.code === "Space" && e.target.tagName !== "INPUT") {
-//             e.preventDefault();
-//             e.target.value += " ";
-//             const video = playerRef.current;
-//             if (video.paused) {
-//                 video.play();
-//             } else {
-//                 video.pause();
-//             }
-//         }
-//     };
-
-//     document.addEventListener("keydown", handleSpacebar);
-
-//     return () => {
-//         document.removeEventListener("keydown", handleSpacebar);
-//     };
-// }, []);
-
-// useEffect(() => {
-//     const videoElement = playerRef.current;
-
-//     const handleTimeUpdate = () => {
-//         const { currentTime, duration } = videoElement;
-//         const seventyFivePercent = duration * 0.75;
-//         if (currentTime >= seventyFivePercent && (triggerView == false)) {
-//             setTriggerView(true)
-//             axios.post('/api/video/increaseview', {
-//                 link: link
-//             })
-//         }
-//     }
-//     videoElement.addEventListener('timeupdate', handleTimeUpdate);
-
-//     return () => {
-//         videoElement.removeEventListener('timeupdate', handleTimeUpdate);
-//     };
-// }, [videoDuration, triggerView])
-
-
-
-
-
-// useEffect(() => {
-//     axios.get(`/api/video/findbylink`, {
-//         params: {
-//             link: link
-//         }
-//     }).then(res => { setVideoData(res.data); })
-// }, [link])

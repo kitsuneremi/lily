@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-*::-webkit-scrollbar{
+*::-webkit-scrollbar {
   width: 0;
   height: 0;
 }
@@ -71,13 +71,13 @@
   }
 
 
-  .lightitem{
+  .lightitem {
     color: white;
     background-color: black;
 
   }
 
-  .darkitem{
+  .darkitem {
     color: black;
     background-color: white;
   }
@@ -90,6 +90,16 @@
 
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  .bg-controls {
+    
+  }
+
+  .bg-controls:hover {
+    background-image: linear-gradient(to top, rgba(129, 129, 129, 0.507), rgba(255, 250, 205, 0.135));
   }
 }
 

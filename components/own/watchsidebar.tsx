@@ -2,27 +2,18 @@
 
 import { useDispatch } from 'react-redux'
 import { AppDispatch, useAppSelector } from '@/redux/storage';
-import { useMediaQuery } from 'usehooks-ts'
+import { useMediaQuery, useIsomorphicLayoutEffect } from 'usehooks-ts'
 import { close, reverse, open } from '@/redux/features/sidebar-slice';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useLayoutEffect } from 'react';
 import { BsYoutube, BsBell, BsChatLeftDots } from 'react-icons/bs'
 import { AiOutlineMenu, AiOutlineClose, AiOutlineRight, AiOutlineLeft, AiOutlineUpload, AiOutlineSearch, AiOutlineHome } from 'react-icons/ai'
 import Link from 'next/link';
-import { Separator } from "@/components/ui/separator"
 
 export default function WatchSidebar(){
-
-    const deviceType = {
-        isPc: useMediaQuery('(min-width: 1200px'),
-        isTablet: useMediaQuery('(min-width:700px) and (max-width: 1199px)'),
-        isMobile: useMediaQuery('(max-width: 699px)')
-    }
-
     const sidebar = useAppSelector(state => state.sidebarReducer.value.sidebar)
     const dispatch = useDispatch();
-    const [responsiveShowing, setResponsiveShowing] = useState(false)
 
-    useEffect(() => {
+    useIsomorphicLayoutEffect(() => {
         dispatch(close())
     }, [])
 
