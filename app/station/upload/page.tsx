@@ -109,27 +109,24 @@ export default function Page() {
                         headers: {
                             ContentType: 'multipart/form-data'
                         }
-                    }).then(res => {
-                        if (res.status == 200) {
-                            axios
-                                .post("/api/video/create", {
-                                    title: name,
-                                    des: des,
-                                    link: link,
-                                    //@ts-ignore
-                                    channelId: session?.user.id,
-                                })
-                                .then((response) => {
-                                    console.log(response.data);
-                                })
-                                .catch((error) => {
-                                    console.error(error);
-                                });
-
-                            const thumbnailStorageRef = ref(storage, `/video/thumbnails/${link}`)
-                            uploadBytes(thumbnailStorageRef, originalThumbnail).then(() => { console.log("thumbnail uploaded") })
-                        }
                     })
+                    axios
+                        .post("/api/video/create", {
+                            title: name,
+                            des: des,
+                            link: link,
+                            //@ts-ignore
+                            channelId: session?.user.id,
+                        })
+                        .then((response) => {
+                            console.log(response.data);
+                        })
+                        .catch((error) => {
+                            console.error(error);
+                        });
+
+                    const thumbnailStorageRef = ref(storage, `/video/thumbnails/${link}`)
+                    uploadBytes(thumbnailStorageRef, originalThumbnail).then(() => { console.log("thumbnail uploaded") })
 
 
                 }
@@ -193,7 +190,7 @@ export default function Page() {
                                 className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                             >
                                 Accept terms and conditions
-                            </label> 
+                            </label>
                             <p className="text-sm text-muted-foreground font-bold">
                                 You agree to our <Link className="underline text-red-500" href={'/Term'}>Terms of Service and Privacy Policy.</Link>
                             </p>

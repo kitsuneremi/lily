@@ -20,7 +20,7 @@ export default function WatchSidebar(){
     const handleResponsive = () => {
         if (sidebar) {
             return (
-                <div className='absolute top-0 left-0 w-fit py-3 flex flex-col gap-2 overflow-y-scroll' style={{ width: sidebar ? '160px' : '100px' }}>
+                <div className='fixed top-16 left-0 w-40 h-full py-3 flex flex-col gap-2 overflow-y-scroll bg-slate-50 z-20'>
                     <Link href={'/'}>
                         <div className='flex justify-around w-full hover:bg-slate-200 py-3 px-2'>
                             <div className='flex flex-col justify-center'>
@@ -63,8 +63,8 @@ export default function WatchSidebar(){
     }
 
     return (
-        <div className='h-full relative bg-white'>
+        <>
             {handleResponsive()}
-        </div>
+        </>
     )
 }

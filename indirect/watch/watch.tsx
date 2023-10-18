@@ -158,12 +158,12 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
                 }
             })
         )
-    }, [])
+    }, [''])
 
     useEffect(() => {
         const channelAvatarStorageRef = fireRef(storage, `/channel/avatars/${videoData.channelData.tagName}`)
         getDownloadURL(channelAvatarStorageRef).then(url => setChannelAvatar(url))
-    }, [])
+    }, [''])
 
     useEffect(() => {
         if (fullRef.current && document) {
@@ -206,7 +206,7 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
             anyRef.current?.removeEventListener('mousemove', handleMouseMove);
             anyRef.current?.removeEventListener('mouseleave', handleMouseLeave);
         };
-    }, [])
+    }, [''])
 
     const handleLike = () => {
         if (session && session.user) {
@@ -383,23 +383,23 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
     }
 
     return (
-        <div className='w-full flex flex-col h-full pt-16'>
+        <div className='w-full flex flex-col h-screen pt-16'>
             {!fullscreen && <Navbar />}
             <div className={`relative ${fullscreen ? 'mt-0' : 'mt-3'} gap-10 h-full`}>
                 {!fullscreen && <Sidebar />}
                 <div className='lg:flex'>
-                    <div ref={fullRef} className={`flex flex-col w-full max-sm:px-0 ${fullscreen ? 'absolute w-screen top-0 left-0 bg-white dark:bg-slate-600 overflow-y-scroll' : `relative lg:w-3/4 lg:px-10 px-2`}`}>
-                        <div ref={anyRef} className={`flex justify-center group relative ${loadedContent ? '' : 'pt-[56.25%] max-h-[80vh]'} ${fullscreen ? 'w-full h-screen px-3' : ''} rounded-xl ${hide ? '' : 'bg-controls'}`}>
-                            <video
-                                ref={ref}
-                                id="video"
-                                autoPlay
-                                onTimeUpdate={onTimeUpdate}
-                                onProgress={onProgress}
-                                onClick={handlePlayPause}
-                                className={`${fullscreen ? 'h-screen' : 'max-h-[80vh]'} min-h-[60vh]`}
-                            />
-                            <div className={`flex flex-col gap-2 absolute bottom-0 w-full ${hide ? 'opacity-0' : 'opacity-100 translate-y-0 transition-opacity duration-300 ease-in-out'} h-fit px-2 transform translate-y-[1px]`}>
+                    <div ref={fullRef} className={`flex group flex-col w-full max-sm:px-2 px-5 ${fullscreen ? 'absolute w-screen top-0 left-0 bg-white dark:bg-slate-600 overflow-y-scroll px-0 py-0' : `relative lg:w-3/4 lg:px-10 px-2`}`}>
+                        <div ref={anyRef} className={`flex justify-center relative ${loadedContent ? '' : 'pt-[56.25%] max-h-[80vh]'} ${fullscreen ? 'w-full h-screen px-3' : ''} rounded-xl`}>
+                                <video
+                                    ref={ref}
+                                    id="video"
+                                    autoPlay
+                                    onTimeUpdate={onTimeUpdate}
+                                    onProgress={onProgress}
+                                    onClick={handlePlayPause}
+                                    className={`${fullscreen ? 'h-screen' : 'max-h-[80vh]'}`}
+                                />
+                            <div className={`flex flex-col gap-2 z-20 absolute bottom-0 w-full ${hide ? 'opacity-0' : 'opacity-100 translate-y-0 transition-opacity duration-300 ease-in-out'} h-fit px-2 transform translate-y-[1px]`}>
                                 {/* timeline */}
                                 <div className="flex items-center relative">
                                     <div className="w-full h-2 bg-slate-100 absolute top-0 rounded-lg" id="timeline" onClick={onTimelineClick}>
@@ -420,17 +420,11 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
                                 <div className="flex justify-between items-center">
                                     <div className="flex gap-2">
                                         <div className="flex items-center">
-                                            <div className="text-2xl cursor-pointer hidden dark:visible" onClick={handlePlayPause}>
+                                            <div className="text-2xl cursor-pointer" onClick={handlePlayPause}>
                                                 {ref.current?.paused ? <BsFillPlayFill /> : <BsFillPauseFill />}
                                             </div>
-                                            <div className='text-2xl cursor-pointer dark:hidden'>
-                                                {ref.current?.paused ? <CiPlay1 /> : <CiPause1 />}
-                                            </div>
-                                            <div className="text-2xl cursor-pointer hidden dark:visible">
+                                            <div className="text-2xl cursor-pointer">
                                                 <MdSkipNext />
-                                            </div>
-                                            <div className='text-2xl cursor-pointer dark:hidden'>
-                                                <RxTrackNext />
                                             </div>
                                         </div>
                                         <div className="flex items-center gap-1">
@@ -443,7 +437,7 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
                                             <Slider tooltip={{ formatter }} value={volume} onChange={e => setVolume(e)} className="w-24" />
                                         </div>
                                         <div className='flex items-center max-sm:hidden'>
-                                            <p className='text-red-600'>{ref.current?.currentTime}/{ref.current?.duration}</p>
+                                            {ref.current && <p className='text-slate-200'>{ref.current?.currentTime.toFixed(0)} / {isNaN(ref.current?.duration) ? 0 : ref.current?.duration.toFixed(0)}</p>}
                                         </div>
                                     </div>
 
@@ -461,10 +455,11 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
                                     </div>
                                 </div>
                             </div>
+                            <div className={`${hide ? '' : 'bg-controls'} absolute bottom-0 w-full h-[20%] z-10`} />
                         </div>
 
                         {/* video property */}
-                        <div className='max-sm:px-2'>
+                        <div className={`max-sm:px-2 ${fullscreen ? 'px-3' : ''}`}>
                             <p className='text-2xl font-bold'>{videoData.videoData.title}</p>
                             <div className='flex justify-between max-sm:flex-col'>
                                 <div className='flex gap-2 max-sm:flex-col'>

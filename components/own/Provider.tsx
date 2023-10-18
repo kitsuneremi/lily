@@ -6,6 +6,7 @@ import { SessionProvider } from "next-auth/react";
 import { Session } from "next-auth";
 import { ThemeProvider } from "@/components/theme-provider"
 import ValProvider from "@/redux/provider";
+import { NextUIProvider } from '@nextui-org/react'
 
 // eslint-disable-next-line react/display-name
 export default ({ children }: { children: ReactNode }): ReactNode => {
@@ -18,6 +19,6 @@ export default ({ children }: { children: ReactNode }): ReactNode => {
                     </ThemeProvider>
                 </SessionProvider>
             </ValProvider>
-        </div>
+        </div >
     )
 }

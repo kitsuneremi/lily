@@ -6,25 +6,12 @@ import { signOut, useSession } from 'next-auth/react'
 import { AppDispatch, useAppSelector } from '@/redux/storage';
 import { useDispatch } from 'react-redux'
 import { close, reverse, open } from '@/redux/features/sidebar-slice';
-import { useMediaQuery } from 'usehooks-ts'
+import { useMediaQuery, useOnClickOutside } from 'usehooks-ts'
 
 import { useRouter } from 'next/navigation'
-import { useEffect, useState, useRef } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { Separator } from "@/components/ui/separator"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { LoadingOutlined } from '@ant-design/icons'
-
-import {
-    Collapsible,
-    CollapsibleContent,
-    CollapsibleTrigger,
-} from "@/components/ui/collapsible"
-
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover"
 import { cn } from '@/lib/utils'
 
 import Image from 'next/image'
@@ -40,6 +27,7 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { useTheme } from "next-themes";
 
 
 export default function Navbar() {
@@ -51,19 +39,27 @@ export default function Navbar() {
     }
 
     const dispatch = useDispatch();
-    const [responsiveShowing, setResponsiveShowing] = useState(false)
     const router = useRouter()
+    const { data: session } = useSession();
+    const sidebar = useAppSelector(state => state.sidebarReducer.value.sidebar);
+    const { setTheme, theme } = useTheme();
 
-    const searchResultRef = useRef<HTMLDivElement>(null)
-    const { data: session } = useSession()
-    const sidebar = useAppSelector(state => state.sidebarReducer.value.sidebar)
+    const searchResultRef = useRef<HTMLDivElement>(null);
+    const popoverTriggerRef = useRef<HTMLDivElement>(null);
+    const popoverContentRef = useRef<HTMLDivElement>(null);
 
+    const [responsiveShowing, setResponsiveShowing] = useState(false)
     const [personalChannelData, setPersonalChannelData] = useState<ChannelDataType>();
     const [channelAvatar, setChannelAvatar] = useState<string>('');
     const [searchValue, setSearchValue] = useState<string>('');
     const [focusing, setFocus] = useState<boolean>(false);
-
     const [mobileShowSearch, setMobileShowSearch] = useState<boolean>(false)
+    const [showPopover, setShowPopover] = useState<{ click: boolean, menuFocus: boolean }>({ click: false, menuFocus: false });
+    const [show, setShow] = useState<boolean>(false);
+
+
+    useOnClickOutside(popoverTriggerRef, () => { setTimeout(() => setShowPopover(prev => { return { click: false, menuFocus: prev.menuFocus } }), 200) })
+    useOnClickOutside(popoverContentRef, () => { setTimeout(() => setShowPopover(prev => { return { click: prev.click, menuFocus: false } }), 200) })
 
     useEffect(() => {
         if (personalChannelData) {
@@ -210,7 +206,7 @@ export default function Navbar() {
                                     <div className='text-2xl cursor-pointer'><BsBell /></div>
                                 </TooltipTrigger>
                                 <TooltipContent>
-                                    <p>Thông báo</p>
+                                    <p>Thông báo (phát triển trong tương lai)</p>
                                 </TooltipContent>
                             </Tooltip>
                         </TooltipProvider>
@@ -233,84 +229,98 @@ export default function Navbar() {
         }
     }
 
+    const Collapse = ({ trigger, content }: { trigger: React.ReactNode, content: React.ReactNode }) => {
+        return (
+            <div className='flex flex-col gap-1 w-max group/box' onMouseEnter={() => { setShow(true) }} onMouseLeave={() => { setShow(false) }}>
+                <div>
+                    {trigger}
+                </div>
+                {/* hidden group-hover/box:block hover:bg-transparent hover:block */}
+                {show && <div className=''>
+                    {content}
+                </div>}
+            </div>
+        )
+
+    }
+
     const DropMenu = () => {
         return (
             <>
-                <Popover>
-                    <PopoverTrigger>
-                        <Avatar className='w-6 h-6 lg:w-9 lg:h-9'>
-                            <AvatarImage src="https://github.com/shadcn.png" />
-                            <AvatarFallback><LoadingOutlined /></AvatarFallback>
-                        </Avatar>
-                    </PopoverTrigger>
-                    <PopoverContent>
-                        {session && session.user ? <div className='shadow-sm border-[1px] bg-cyan-50'>
-                            {personalChannelData ?
-                                <MenuItem className='bg-white'>
-                                    <div className='flex gap-4'>
-                                        <div className='flex items-center'>
-                                            <div className='relative w-8 h-8'>
-                                                <Image src={channelAvatar} alt='' fill />
+                <div className='relative'>
+                    <div className='w-6 h-6 lg:w-8 lg:h-8 relative shadow-sm' onClick={() => { setShowPopover(prev => { return { click: !prev.click, menuFocus: false } }) }} ref={popoverTriggerRef}>
+                        <Image src={'https://github.com/shadcn.png'} className='rounded-full' fill sizes='1/1' alt='' />
+                    </div>
+                    {
+                        (showPopover.click || showPopover.menuFocus) && <div className='absolute w-max top-9 right-0 h-fit' ref={popoverContentRef} onClick={() => { console.log('menu clicked'); setShowPopover({ click: false, menuFocus: true }) }}>
+                            {session && session.user ?
+                                <div className='shadow-sm border-[1px] bg-cyan-50'>
+                                    {personalChannelData ?
+                                        <MenuItem className='bg-white'>
+                                            <div className='flex gap-4'>
+                                                <div className='flex items-center'>
+                                                    <div className='relative w-8 h-8'>
+                                                        <Image src={channelAvatar} alt='' fill />
+                                                    </div>
+                                                </div>
+                                                <div className='flex items-center'>
+                                                    <p className='text-xl'>{session.user.name}</p>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div className='flex items-center'>
-                                            <p className='text-xl'>{session.user.name}</p>
-                                        </div>
-                                    </div>
-                                </MenuItem> : <></>}
-                            {
-                                personalChannelData ?
-                                    <MenuItem className=''>
-                                        <Link href={'/station'}>
-                                            Station
-                                        </Link>
-                                    </MenuItem> :
-                                    <MenuItem className=''>
-                                        <Link href={'/regchannel'}>
-                                            Chưa có kênh? Tạo ngay!
+                                        </MenuItem> : <></>}
+                                    {
+                                        personalChannelData ?
+                                            <MenuItem className=''>
+                                                <Link href={'/station'}>
+                                                    Station
+                                                </Link>
+                                            </MenuItem> :
+                                            <MenuItem className=''>
+                                                <Link href={'/regchannel'}>
+                                                    Chưa có kênh? Tạo ngay!
+                                                </Link>
+                                            </MenuItem>
+                                    }
+                                    <Collapse
+                                        trigger={
+                                            <MenuItem className='text-start'>Chế độ sáng</MenuItem>
+                                        } content={
+                                            <div className='flex flex-col w-full px-3 rounded-sm text-start bg-red-300'>
+                                                <button className='text-start py-1' onClick={() => { setTheme('light') }}>Sáng</button>
+                                                <button className='text-start py-1' onClick={() => { setTheme('dark') }}>Tối</button>
+                                                <button className='text-start py-1' onClick={() => { setTheme('system') }}>Hệ thống</button>
+                                            </div>
+                                        }
+                                    />
+                                    <MenuItem className='text-start'><div onClick={() => { signOut({ redirect: true, callbackUrl: '/register' }) }}>Đăng xuất</div></MenuItem>
+                                </div>
+                                :
+                                <div className='flex flex-col gap-2 shadow-sm'>
+                                    <MenuItem className='bg-gradient-to-r from-cyan-200 to-cyan-400 hover:from-cyan-300 hover:to-cyan-600'>
+                                        <Link href={'/register'}>
+                                            Đăng nhập
                                         </Link>
                                     </MenuItem>
+                                    <Collapse
+                                        trigger={
+                                            <MenuItem className='text-start'>Chế độ sáng</MenuItem>
+                                        } content={
+                                            <div className='flex flex-col w-full rounded-sm text-start'>
+                                                <button className='text-start py-1 pl-5 hover:bg-slate-200 rounded-md'>Sáng</button>
+                                                <button className='text-start py-1 pl-5 hover:bg-slate-600 rounded-md hover:text-white'>Tối</button>
+                                                <button className='text-start py-1 pl-5 hover:bg-gradient-to-r from-slate-200 to-slate-600 rounded-md hover:text-white'>Hệ thống</button>
+                                            </div>
+                                        }
+                                    />
+                                </div>
                             }
-                            <Collapsible>
-                                <CollapsibleTrigger className='w-full'><MenuItem className='text-start'>Chế độ sáng</MenuItem></CollapsibleTrigger>
-                                <CollapsibleContent>
-                                    <MenuItem className=''>
-                                        <div className='flex flex-col w-full px-3 rounded-sm text-start'>
-                                            <button className='text-start py-1'>Sáng</button>
-                                            <button className='text-start py-1'>Tối</button>
-                                            <button className='text-start py-1'>Hệ thống</button>
-                                        </div>
-                                    </MenuItem>
-                                </CollapsibleContent>
-                            </Collapsible>
-                            <MenuItem className='text-start'><div onClick={() => { signOut({ redirect: true, callbackUrl: '/register' }) }}>Đăng xuất</div></MenuItem>
-                        </div> :
-                            <div className='flex flex-col gap-2 shadow-sm'>
-                                <MenuItem className='bg-gradient-to-r from-cyan-200 to-cyan-400'>
-                                    <Link href={'/register'}>
-                                        Đăng nhập
-                                    </Link>
-                                </MenuItem>
-                                <Collapsible>
-                                    <CollapsibleTrigger className='w-full'><MenuItem className='text-start'>Chế độ sáng</MenuItem></CollapsibleTrigger>
-                                    <CollapsibleContent>
-                                        <MenuItem className=''>
-                                            <div className='flex flex-col w-full px-3 rounded-sm text-start'>
-                                                <button className='text-start py-1'>Sáng</button>
-                                                <button className='text-start py-1'>Tối</button>
-                                                <button className='text-start py-1'>Hệ thống</button>
-                                            </div>
-                                        </MenuItem>
-                                    </CollapsibleContent>
-                                </Collapsible>
-                            </div>
-                        }
-                    </PopoverContent >
-                </Popover >
+                        </div >
+                    }
+                </div >
+
             </>
         )
     }
-
 
     return (
         <div className='w-screen h-16 flex justify-between fixed top-0 left-0 px-3 lg:px-8 py-4 bg-white z-10'>
@@ -319,7 +329,6 @@ export default function Navbar() {
     )
 }
 
-
 const MenuItem = ({ children, className, ...props }: { children: React.ReactNode, className: string | undefined }) => {
     return (
         <div className={cn('w-full px-3 py-3 rounded-sm cursor-pointer hover:bg-slate-300', className)} {...props}>
@@ -327,3 +336,4 @@ const MenuItem = ({ children, className, ...props }: { children: React.ReactNode
         </div>
     )
 }
+
