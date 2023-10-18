@@ -244,6 +244,23 @@ export default function Navbar() {
 
     }
 
+    const lightModeSetting = () => {
+
+        return (
+            <Collapse
+                trigger={
+                    <MenuItem className='text-start'>Chế độ sáng</MenuItem>
+                } content={
+                    <div className='flex flex-col w-full rounded-sm text-start'>
+                        <button className='text-start py-1 pl-5 hover:bg-slate-200 rounded-md'>Sáng</button>
+                        <button className='text-start py-1 pl-5 hover:bg-slate-600 rounded-md hover:text-white'>Tối</button>
+                        <button className='text-start py-1 pl-5 hover:bg-gradient-to-r from-slate-200 to-slate-600 rounded-md hover:text-white'>Hệ thống</button>
+                    </div>
+                }
+            />
+        )
+    }
+
     const DropMenu = () => {
         return (
             <>
@@ -281,17 +298,7 @@ export default function Navbar() {
                                                 </Link>
                                             </MenuItem>
                                     }
-                                    <Collapse
-                                        trigger={
-                                            <MenuItem className='text-start'>Chế độ sáng</MenuItem>
-                                        } content={
-                                            <div className='flex flex-col w-full px-3 rounded-sm text-start bg-red-300'>
-                                                <button className='text-start py-1' onClick={() => { setTheme('light') }}>Sáng</button>
-                                                <button className='text-start py-1' onClick={() => { setTheme('dark') }}>Tối</button>
-                                                <button className='text-start py-1' onClick={() => { setTheme('system') }}>Hệ thống</button>
-                                            </div>
-                                        }
-                                    />
+                                    {lightModeSetting()}
                                     <MenuItem className='text-start'><div onClick={() => { signOut({ redirect: true, callbackUrl: '/register' }) }}>Đăng xuất</div></MenuItem>
                                 </div>
                                 :
@@ -301,17 +308,7 @@ export default function Navbar() {
                                             Đăng nhập
                                         </Link>
                                     </MenuItem>
-                                    <Collapse
-                                        trigger={
-                                            <MenuItem className='text-start'>Chế độ sáng</MenuItem>
-                                        } content={
-                                            <div className='flex flex-col w-full rounded-sm text-start'>
-                                                <button className='text-start py-1 pl-5 hover:bg-slate-200 rounded-md'>Sáng</button>
-                                                <button className='text-start py-1 pl-5 hover:bg-slate-600 rounded-md hover:text-white'>Tối</button>
-                                                <button className='text-start py-1 pl-5 hover:bg-gradient-to-r from-slate-200 to-slate-600 rounded-md hover:text-white'>Hệ thống</button>
-                                            </div>
-                                        }
-                                    />
+                                    {lightModeSetting()}
                                 </div>
                             }
                         </div >

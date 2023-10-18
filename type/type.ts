@@ -41,3 +41,19 @@ export type VideoDataType = {
     updatedAt: Date,
     like: number
 }
+
+export type SessionDataType = {
+    user: {
+        id: number,
+        email: string,
+        name: string,
+        username: string,
+        createdAt: Date,
+        updatedAt: Date,
+        accessToken: string,
+        sub: '2',
+        iat: number,
+        exp: number,
+        jti: string
+    }
+}
