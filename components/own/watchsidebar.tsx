@@ -17,42 +17,29 @@ export default function WatchSidebar(){
         dispatch(close())
     }, [])
 
+    const Item = () => {
+        return (
+            <Link href={'/'}>
+                <div className={`flex justify-center items-center gap-2 w-full rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 py-3 px-5`}>
+                    <div className='flex flex-col justify-center'>
+                        <AiOutlineHome />
+                    </div>
+                    <div className={`flex justify-center items-center ${sidebar ? '' : 'hidden'}`}>
+                        <p className=''>Home</p>
+                    </div>
+                </div>
+            </Link>
+        )
+    }
+
     const handleResponsive = () => {
         if (sidebar) {
             return (
-                <div className='fixed top-16 left-0 w-40 h-full py-3 flex flex-col gap-2 overflow-y-scroll bg-slate-50 z-20'>
-                    <Link href={'/'}>
-                        <div className='flex justify-around w-full hover:bg-slate-200 py-3 px-2'>
-                            <div className='flex flex-col justify-center'>
-                                <AiOutlineHome />
-                            </div>
-                            {sidebar ? <p>Home</p> : <></>}
-                        </div>
-                    </Link>
-                    <Link href={'/'}>
-                        <div className='flex justify-around w-full hover:bg-slate-200 py-3 px-2'>
-                            <div className='flex flex-col justify-center'>
-                                <AiOutlineHome />
-                            </div>
-                            {sidebar ? <p>Home</p> : <></>}
-                        </div>
-                    </Link>
-                    <Link href={'/'}>
-                        <div className='flex justify-around w-full hover:bg-slate-200 py-3 px-2'>
-                            <div className='flex flex-col justify-center'>
-                                <AiOutlineHome />
-                            </div>
-                            {sidebar ? <p>Home</p> : <></>}
-                        </div>
-                    </Link>
-                    <Link href={'/'}>
-                        <div className='flex justify-around w-full hover:bg-slate-200 py-3 px-2'>
-                            <div className='flex flex-col justify-center'>
-                                <AiOutlineHome />
-                            </div>
-                            {sidebar ? <p>Home</p> : <></>}
-                        </div>
-                    </Link>
+                <div className='fixed top-16 left-0 w-40 h-full py-3 flex flex-col gap-2 overflow-y-scroll z-20 hidden-scrollbar'>
+                    <Item />
+                    <Item />
+                    <Item />
+                    <Item />
                 </div>
             )
         } else {

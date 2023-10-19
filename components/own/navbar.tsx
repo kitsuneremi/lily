@@ -161,7 +161,11 @@ export default function Navbar() {
                         <TooltipProvider>
                             <Tooltip>
                                 <TooltipTrigger>
-                                    <Link href={'/'} className='text-xl flex items-center gap-2'><BsYoutube />Lily</Link>
+                                    <Link href={'/'} className='text-xl flex items-center gap-2'>
+                                        <div className='relative w-5 h-5 lg:w-9 lg:h-9'>
+                                            <Image className='rounded-full animate-spin' src={'https://danviet.mediacdn.vn/upload/2-2019/images/2019-04-02/Vi-sao-Kha-Banh-tro-thanh-hien-tuong-dinh-dam-tren-mang-xa-hoi-khabanh-1554192528-width660height597.jpg'} fill sizes='1/1' alt='khá bảnh' />
+                                        </div>
+                                    </Link>
                                 </TooltipTrigger>
                                 <TooltipContent>
                                     <p>Quay về trang chủ</p>
@@ -170,11 +174,11 @@ export default function Navbar() {
                         </TooltipProvider>
 
                     </div>
-                    <div className='relative flex gap-1 items-center rounded-2xl border-2 border-black'>
-                        <div className='w-max flex gap-1 items-center'>
-                            <input className='bg-transparent w-60 focus:outline-none ml-3 my-1' onChange={e => { setSearchValue(e.target.value) }} onFocus={() => { setFocus(true) }} onBlur={() => setFocus(false)} />
-                            <Separator orientation='vertical' className='m-0 p-0 w-fit' />
-                            <div className='h-full w-8 flex flex-col pl-2 justify-center cursor-pointer hover:bg-slate-400 rounded-r-2xl'><AiOutlineSearch /></div>
+                    <div className='relative flex gap-1 items-center rounded-2xl shadow-[0_0_2px_black] dark:bg-white'>
+                        <div className='w-max flex items-center h-full'>
+                            <input className='bg-transparent pr-1 w-60 focus:outline-none ml-3 my-1' onChange={e => { setSearchValue(e.target.value) }} onFocus={() => { setFocus(true) }} onBlur={() => setFocus(false)} />
+                            <div className='w-[2px] h-full relative after:absolute after:bg-slate-300 after:h-[90%] after:top-[5%] after:left-0 after:w-full'/>
+                            <div className='h-full w-8 flex flex-col pl-2 justify-center cursor-pointer hover:bg-slate-400 dark:hover:bg-slate-300 text-[#020817] rounded-r-2xl'><AiOutlineSearch /></div>
                         </div>
 
                         {focusing ? <div className='absolute w-80 h-fit left-[-16px] items-center top-12 max-w-[95vw] bg-white dark:bg-slate-600 border-[1px] border-slate-400 rounded-lg' ref={searchResultRef}>
@@ -252,9 +256,9 @@ export default function Navbar() {
                     <MenuItem className='text-start'>Chế độ sáng</MenuItem>
                 } content={
                     <div className='flex flex-col w-full rounded-sm text-start'>
-                        <button className='text-start py-1 pl-5 hover:bg-slate-200 rounded-md'>Sáng</button>
-                        <button className='text-start py-1 pl-5 hover:bg-slate-600 rounded-md hover:text-white'>Tối</button>
-                        <button className='text-start py-1 pl-5 hover:bg-gradient-to-r from-slate-200 to-slate-600 rounded-md hover:text-white'>Hệ thống</button>
+                        <button onClick={() => {setTheme('light')}} className='text-start py-1 pl-5 hover:bg-slate-200 rounded-md'>Sáng</button>
+                        <button onClick={() => {setTheme('dark')}} className='text-start py-1 pl-5 hover:bg-slate-600 rounded-md hover:text-white'>Tối</button>
+                        <button onClick={() => {setTheme('system')}} className='text-start py-1 pl-5 hover:bg-gradient-to-r from-slate-200 to-slate-600 rounded-md hover:text-white'>Hệ thống</button>
                     </div>
                 }
             />
@@ -271,13 +275,13 @@ export default function Navbar() {
                     {
                         (showPopover.click || showPopover.menuFocus) && <div className='absolute w-max top-9 right-0 h-fit' ref={popoverContentRef} onClick={() => { console.log('menu clicked'); setShowPopover({ click: false, menuFocus: true }) }}>
                             {session && session.user ?
-                                <div className='shadow-sm border-[1px] bg-cyan-50'>
+                                <div className='shadow-[0_0_5px_purple] border-[1px] p-3 bg-white dark:bg-[#020817]'>
                                     {personalChannelData ?
-                                        <MenuItem className='bg-white'>
+                                        <MenuItem className='bg-transparent'>
                                             <div className='flex gap-4'>
                                                 <div className='flex items-center'>
                                                     <div className='relative w-8 h-8'>
-                                                        <Image src={channelAvatar} alt='' fill />
+                                                        <Image className='rounded-full' src={channelAvatar} alt='' fill sizes='1/1' />
                                                     </div>
                                                 </div>
                                                 <div className='flex items-center'>
@@ -302,8 +306,8 @@ export default function Navbar() {
                                     <MenuItem className='text-start'><div onClick={() => { signOut({ redirect: true, callbackUrl: '/register' }) }}>Đăng xuất</div></MenuItem>
                                 </div>
                                 :
-                                <div className='flex flex-col gap-2 shadow-sm'>
-                                    <MenuItem className='bg-gradient-to-r from-cyan-200 to-cyan-400 hover:from-cyan-300 hover:to-cyan-600'>
+                                <div className='flex flex-col gap-2 shadow-[0_0_5px_purple] p-3 rounded-lg'>
+                                    <MenuItem className='bg-gradient-to-r from-cyan-200 to-cyan-400 dark:from-cyan-400 dark:to-cyan-200 dark:hover:from-cyan-600 dark:hover:to-cyan-300 hover:bg-gradient-to-l hover:from-cyan-300 hover:to-cyan-600'>
                                         <Link href={'/register'}>
                                             Đăng nhập
                                         </Link>
@@ -320,7 +324,7 @@ export default function Navbar() {
     }
 
     return (
-        <div className='w-screen h-16 flex justify-between fixed top-0 left-0 px-3 lg:px-8 py-4 bg-white z-10'>
+        <div className='w-screen h-16 flex justify-between fixed top-0 left-0 px-3 lg:px-8 py-4 bg-white dark:bg-[#020817] z-10'>
             {handleResponsive()}
         </div>
     )
@@ -328,8 +332,8 @@ export default function Navbar() {
 
 const MenuItem = ({ children, className, ...props }: { children: React.ReactNode, className: string | undefined }) => {
     return (
-        <div className={cn('w-full px-3 py-3 rounded-sm cursor-pointer hover:bg-slate-300', className)} {...props}>
-            <p className='w-full select-none'>{children}</p>
+        <div className={cn('w-full px-3 py-3 rounded-sm cursor-pointer hover:bg-slate-300 dark:hover:bg-slate-700', className)} {...props}>
+            <p className='w-full min-w-[160px] select-none'>{children}</p>
         </div>
     )
 }

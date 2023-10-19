@@ -98,6 +98,13 @@
     background-image: linear-gradient(to top, rgba(163, 163, 163, 0.219), rgba(255, 255, 255, 0));
   }
 
+
+  .hidden-scrollbar {}
+
+  .hidden-scrollbar::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+  }
 }
 
 ::-webkit-scrollbar {

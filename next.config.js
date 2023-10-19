@@ -13,6 +13,10 @@ const nextConfig = {
             {
                 hostname: 'github.com',
                 protocol: 'https'
+            },
+            {
+                hostname: 'danviet.mediacdn.vn',
+                protocol: 'https'
             }
         ]
     },

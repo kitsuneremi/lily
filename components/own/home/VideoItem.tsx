@@ -45,8 +45,8 @@ export default function VideoItem({ videoData, channelData }: { videoData: Video
     return (
         <Link href={`/watch/${videoData.link}`} className="max-[640px]:max-w-[78vw] w-full">
             <div className='grid items-center h-fit'>
-                <div className="relative w-full h-fit min-h-[120px] pt-[56.25%] rounded-md">
-                    {img ? <Image alt='' className="rounded-md" fill src={img} loading="lazy" /> : <></>}
+                <div className="relative w-full h-fit min-h-[120px] pt-[56.25%] rounded-md bg-transparent">
+                    {img ? <Image alt='' className="rounded-md bg-transparent" fill src={img} loading="lazy" /> : <></>}
                 </div>
                 <div className="flex w-full gap-3 pt-1">
                     <div className="w-[30px]">
@@ -54,7 +54,7 @@ export default function VideoItem({ videoData, channelData }: { videoData: Video
                             <Tooltip>
                                 <TooltipTrigger>
                                     <Link href={`/channel/${channelData.tagName}`}>
-                                        {channelAvatar ? <Image alt="img" width={30} height={30} loading="lazy" src={channelAvatar} /> : <></>}
+                                        {channelAvatar ? <Image className="rounded-full bg-transparent" alt="img" width={30} height={30} loading="lazy" src={channelAvatar} /> : <></>}
                                     </Link>
                                 </TooltipTrigger>
                                 <TooltipContent>

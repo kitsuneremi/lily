@@ -9,18 +9,31 @@ import { Slider } from 'antd';
 import type { MenuProps } from 'antd';
 import { Dropdown, Space } from 'antd';
 
+import 'https://nerdonthestreet.com/player/videojs-http-streaming.js'
+import 'https://nerdonthestreet.com/player/video.js'
+
 
 type quality = {
   available: number[],
   current: number
 }
 
+const cc = new Hls({
+  liveSyncDurationCount: 3,
+  liveMaxLatencyDurationCount: Infinity,
+  autoStartLoad: true,
+  // fetchSetup: (context, params) => {
+  //   return new Request('')
+  // }
+});
+cc.loadSource('https://live.erinasaiyukii.com/api/live/abcd')
+setInterval(() => {
+}, 1000)
 
 
 const formatter = (value: number) => `${value}%`;
 
 const PlyrComponent = () => {
-  const [src, setSrc] = useState<any>('https://file.erinasaiyukii.com/api/video/test');
   const [volume, setVolume] = useState<number>(100);
   const [currentTime, setCurrentTime] = useState<number>(0);
   const [loadedProgress, setLoadedProgress] = useState<number>(0);
@@ -29,34 +42,37 @@ const PlyrComponent = () => {
 
 
   const ref = useRef<HTMLVideoElement>(null);
+  const hls = useRef();
 
-  useEffect(() => {
-    const loadVideo = async () => {
-      const video = document.getElementById("video") as HTMLVideoElement;
-      var hls = new Hls();
-      hls.on(Hls.Events.MEDIA_ATTACHED, function () {
-        console.log('video and hls.js are now bound together !');
-      });
-      hls.on(Hls.Events.MANIFEST_PARSED, function (event, data) {
-        setQuality(prev => { return { current: prev.current, available: data.levels.map(e => e.height) } })
-        console.log(quality.current)
-        hls.loadLevel = quality.current;
-      });
+  const loadVideo = async () => {
+    const video = document.getElementById("video") as HTMLVideoElement;
 
-      hls.on(Hls.Events.FRAG_LOADED, function (event, data) {
-        // @ts-ignore
-        const totalChunks = hls.media.duration;
-        // @ts-ignore
-        const loadedChunks = hls.buffered.end(0);
-        const progress = (loadedChunks / totalChunks) * 100;
-        setLoadedProgress(progress);
-      });
+    cc.attachMedia(video);
 
-      hls.loadSource(src);
-      hls.attachMedia(video);
-    }
-    loadVideo();
-  }, [src, quality.current]);
+    // hls.current = new Hls();
+    // hls.current.on(Hls.Events.MEDIA_ATTACHED, function () {
+    //   console.log('video and hls.js are now bound together !');
+    // });
+    // hls.current.on(Hls.Events.MANIFEST_PARSED, function (event, data) {
+
+    // });
+
+    // hls.current.on(Hls.Events.FRAG_LOADED, function (event, data) {
+    //   // @ts-ignore
+    //   const totalChunks = hls.media.duration;
+    //   // @ts-ignore
+    //   const loadedChunks = hls.buffered.end(0);
+    //   const progress = (loadedChunks / totalChunks) * 100;
+    //   setLoadedProgress(progress);
+    // });
+    // cc.media
+    // hls.current.attachMedia(ref.current);
+  }
+
+  // useEffect(() => {
+
+  //   loadVideo();
+  // }, []);
 
   useEffect(() => {
     const video = ref.current;
@@ -191,7 +207,11 @@ const PlyrComponent = () => {
           onTimeUpdate={onTimeUpdate}
           onProgress={onProgress}
           onClick={handlePlayPause}
-        />
+          preload="auto"
+          datatype="application/x-mpegURL"
+        >
+          <source src="https://live.erinasaiyukii.com/api/live/cccc" type="application/x-mpegURL"></source>
+        </video>
         <div className="flex flex-col gap-2 absolute bottom-2 w-full h-8 px-2">
           {/* timeline */}
           <div className="flex items-center relative">

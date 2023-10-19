@@ -33,16 +33,21 @@ import { Dropdown, Space } from 'antd';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { CiPlay1, CiPause1 } from 'react-icons/ci'
 import { RxTrackNext } from 'react-icons/rx'
+import { NotificationOutlined } from '@ant-design/icons'
+import Link from 'next/link'
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/components/ui/tooltip"
+
 
 type quality = {
     available: number[],
     current: number
 }
 
-type pos = {
-    x: number,
-    y: number
-}
 const formatter = (value: number) => `${value}%`;
 let timer: any;
 
@@ -56,12 +61,12 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
     const [quality, setQuality] = useState<quality>({ current: 0, available: [] });
     const [fullscreen, setFullscreen] = useState<boolean>(false);
     const [loadedContent, setLoadedContent] = useState<boolean>(false);
+    const [currentAccountAvatar, setCurrentAccountAvatar] = useState<string>();
 
     const { data: session } = useSession()
     const [like, setLike] = useState<boolean>(false);
     const [dislike, setDislike] = useState<boolean>(false);
     const [hide, setHide] = useState<boolean>(false)
-    // const [timer, setTimer] = useState<any>(0);
 
     const ref = useRef<HTMLVideoElement>(null);
     const fullRef = useRef<HTMLDivElement>(null);
@@ -163,6 +168,15 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
     useEffect(() => {
         const channelAvatarStorageRef = fireRef(storage, `/channel/avatars/${videoData.channelData.tagName}`)
         getDownloadURL(channelAvatarStorageRef).then(url => setChannelAvatar(url))
+        if (session) {
+            try {
+                //@ts-ignore
+                const currentAccountStorageRef = fireRef(storage, `/accounts/${session?.user.id}`)
+                getDownloadURL(currentAccountStorageRef).then(url => setCurrentAccountAvatar(url))
+            } catch (error) {
+
+            }
+        }
     }, [''])
 
     useEffect(() => {
@@ -388,17 +402,17 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
             <div className={`relative ${fullscreen ? 'mt-0' : 'mt-3'} gap-10 h-full`}>
                 {!fullscreen && <Sidebar />}
                 <div className='lg:flex'>
-                    <div ref={fullRef} className={`flex group flex-col w-full max-sm:px-2 px-5 ${fullscreen ? 'absolute w-screen top-0 left-0 bg-white dark:bg-slate-600 overflow-y-scroll px-0 py-0' : `relative lg:w-3/4 lg:px-10 px-2`}`}>
+                    <div ref={fullRef} className={`flex group flex-col w-full max-sm:px-2 px-5 ${fullscreen ? 'absolute w-screen top-0 left-0 bg-white dark:bg-slate-600 overflow-y-scroll px-0 py-0 hidden-scrollbar' : `relative lg:w-3/4 lg:px-10 px-2`}`}>
                         <div ref={anyRef} className={`flex justify-center relative ${loadedContent ? '' : 'pt-[56.25%] max-h-[80vh]'} ${fullscreen ? 'w-full h-screen px-3' : ''} rounded-xl`}>
-                                <video
-                                    ref={ref}
-                                    id="video"
-                                    autoPlay
-                                    onTimeUpdate={onTimeUpdate}
-                                    onProgress={onProgress}
-                                    onClick={handlePlayPause}
-                                    className={`${fullscreen ? 'h-screen' : 'max-h-[80vh]'}`}
-                                />
+                            <video
+                                ref={ref}
+                                id="video"
+                                autoPlay
+                                onTimeUpdate={onTimeUpdate}
+                                onProgress={onProgress}
+                                onClick={handlePlayPause}
+                                className={`${fullscreen ? 'h-screen' : 'max-h-[80vh]'} w-full`}
+                            />
                             <div className={`flex flex-col gap-2 z-20 absolute bottom-0 w-full ${hide ? 'opacity-0' : 'opacity-100 translate-y-0 transition-opacity duration-300 ease-in-out'} h-fit px-2 transform translate-y-[1px]`}>
                                 {/* timeline */}
                                 <div className="flex items-center relative">
@@ -459,18 +473,38 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
                         </div>
 
                         {/* video property */}
-                        <div className={`max-sm:px-2 ${fullscreen ? 'px-3' : ''}`}>
-                            <p className='text-2xl font-bold'>{videoData.videoData.title}</p>
+                        <div className={`max-sm:px-2 mt-2 ${fullscreen ? 'px-3' : ''}`}>
+                            <p className='text-3xl font-bold my-3'>{videoData.videoData.title}</p>
                             <div className='flex justify-between max-sm:flex-col'>
                                 <div className='flex gap-2 max-sm:flex-col'>
                                     <div className='flex gap-3'>
                                         <div className='flex flex-col justify-center'>
-                                            <div className='relative lg:w-[55px] lg:h-[55px] max-sm:w-[45px] max-sm:h-[45px] w-[40px] h-[40px]'>
-                                                {channelAvatar && <Image src={channelAvatar} alt='' className='rounded-xl' fill />}
-                                            </div>
+                                            <TooltipProvider>
+                                                <Tooltip>
+                                                    <TooltipTrigger>
+                                                        <Link href={`/channel/${videoData.channelData.tagName}`}>
+                                                            <div className='relative lg:w-[55px] lg:h-[55px] max-sm:w-[45px] max-sm:h-[45px] w-[40px] h-[40px]'>
+                                                                {channelAvatar && <Image src={channelAvatar} alt='' className='rounded-full bg-transparent' sizes='1/1' fill />}
+                                                            </div>
+                                                        </Link>
+                                                    </TooltipTrigger>
+                                                    <TooltipContent>
+                                                        <p>chuyển hướng tới kênh {videoData.channelData.name}</p>
+                                                    </TooltipContent>
+                                                </Tooltip>
+                                            </TooltipProvider>
                                         </div>
                                         <div className='flex flex-col gap-2'>
-                                            <p className='text-xl font-semibold'>{videoData.channelData.name}</p>
+                                            <TooltipProvider>
+                                                <Tooltip>
+                                                    <TooltipTrigger>
+                                                        <Link href={`/channel/${videoData.channelData.tagName}`}><p className='text-xl font-semibold'>{videoData.channelData.name}</p></Link>
+                                                    </TooltipTrigger>
+                                                    <TooltipContent>
+                                                        <p>chuyển hướng tới kênh {videoData.channelData.name}</p>
+                                                    </TooltipContent>
+                                                </Tooltip>
+                                            </TooltipProvider>
                                             <p>{videoData.channelData.sub} Người đăng ký</p>
                                         </div>
                                     </div>
@@ -478,9 +512,9 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
                                     <div className='flex px-3 py-2 max-sm:w-full'>
                                         <DropdownMenu>
                                             <DropdownMenuTrigger className='outline-none max-sm:w-full'>
-                                                <div className='flex gap-2 px-4 py-2 rounded-[24px] border-[1px] hover:bg-slate-300'>
-                                                    <div className='flex flex-col justify-center'>
-                                                        <GrNotification />
+                                                <div className='flex gap-2 px-4 py-2 rounded-[24px] border-[1px] hover:bg-slate-300 dark:bg-slate-900 dark:hover:bg-slate-800'>
+                                                    <div className='flex flex-col justify-center animate-bounce dark:text-white'>
+                                                        <NotificationOutlined />
                                                     </div>
                                                     <p className='my-auto max-sm:w-full'>Đã đăng ký</p>
                                                     <div className='flex flex-col justify-center'>
@@ -489,37 +523,39 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
                                                 </div>
                                             </DropdownMenuTrigger>
                                             <DropdownMenuContent>
-                                                <DropdownMenuLabel>Nhận thông báo</DropdownMenuLabel>
-                                                <DropdownMenuSeparator />
-                                                <DropdownMenuItem>Tất cả</DropdownMenuItem>
-                                                <DropdownMenuItem>Hạn chế</DropdownMenuItem>
-                                                <DropdownMenuItem>Không</DropdownMenuItem>
-                                                <DropdownMenuItem>Hủy đăng ký</DropdownMenuItem>
+                                                <div className='p-2 rounded-lg'>
+                                                    <DropdownMenuLabel>Nhận thông báo</DropdownMenuLabel>
+                                                    <DropdownMenuSeparator />
+                                                    <DropdownMenuItem>Tất cả</DropdownMenuItem>
+                                                    <DropdownMenuItem>Hạn chế</DropdownMenuItem>
+                                                    <DropdownMenuItem>Không</DropdownMenuItem>
+                                                    <DropdownMenuItem>Hủy đăng ký</DropdownMenuItem>
+                                                </div>
                                             </DropdownMenuContent>
                                         </DropdownMenu>
                                     </div>
                                 </div>
                                 <div className='flex justify-around items-center gap-3'>
-                                    <div className='flex my-auto border-slate-300 border-[1px] rounded-[24px]'>
-                                        <div className='flex gap-1 hover:bg-slate-300 py-2 px-3 rounded-s-3xl cursor-pointer'>
+                                    <div className='flex my-auto shadow-[0_0_5px_#0f0f0f] rounded-[24px] border-[1px]'>
+                                        <div className='flex gap-1 dark:bg-slate-900 hover:bg-slate-300 dark:hover:bg-slate-800 py-2 px-3 rounded-s-3xl cursor-pointer'>
                                             <div className='flex flex-col justify-center' onClick={handleLike}>
                                                 {like ? <AiFillLike /> : <AiOutlineLike />}
                                             </div>
                                             <p>{videoData.videoData.like}</p>
                                         </div>
                                         <div className='relative after:absolute after:bg-slate-300 after:h-[80%] after:top-[10%] after:w-[1px]'></div>
-                                        <div className='flex flex-col justify-center hover:bg-slate-300 py-2 px-3 rounded-e-3xl cursor-pointer' onClick={handleDislike}>
+                                        <div className='flex flex-col justify-center dark:bg-slate-900 hover:bg-slate-300 dark:hover:bg-slate-800 py-2 px-3 rounded-e-3xl cursor-pointer' onClick={handleDislike}>
                                             {dislike ? <AiFillDislike /> : <AiOutlineDislike />}
                                         </div>
                                     </div>
-                                    <div className='flex items-center justify-center h-fit p-3 rounded-full border-[1px] border-slate-300'>
+                                    <div className='flex items-center justify-center h-fit p-3 dark:bg-slate-900 hover:bg-slate-300 dark:hover:bg-slate-800 border-[1px] rounded-full shadow-[0_0_5px_#0f0f0f]'>
                                         <AiOutlineShareAlt />
                                     </div>
                                 </div>
                             </div>
                         </div>
                         {/* des */}
-                        <div className='rounded-xl p-3 m-2 flex flex-col gap-2 bg-slate-200'>
+                        <div className='rounded-xl p-3 my-4 flex flex-col gap-2 bg-slate-200 dark:bg-slate-900'>
                             <div className='flex gap-3'>
                                 <p>{videoData.videoData.view} lượt xem</p>
                                 <p>{FormatDateTime(videoData.videoData.createdAt)}</p>
@@ -528,27 +564,33 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
                         </div>
                         {/* comment */}
                         <div className='flex flex-col gap-2'>
-                            <div className='flex gap-1 px-3'>
+                            <div className='flex gap-3 px-3'>
                                 <p className='my-auto h-fit'>{videoData.commentData.length} bình luận</p>
                                 <DropdownMenu>
                                     <DropdownMenuTrigger className='outline-none'>
-                                        <div className='flex items-center gap-2 px-3 py-2 rounded-[24px] hover:bg-slate-300'>
+                                        <div className='flex items-center gap-2 px-3 py-2 rounded-[24px] hover:bg-slate-300 dark:hover:bg-slate-800'>
                                             <BiMenuAltLeft />
                                             Sắp xếp theo
                                         </div>
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent>
-                                        <DropdownMenuItem>Bình luận hàng đầu</DropdownMenuItem>
-                                        <DropdownMenuItem>Thời gian </DropdownMenuItem>
+                                        <div className='p-1 rounded-lg'>
+                                            <DropdownMenuItem>Bình luận hàng đầu</DropdownMenuItem>
+                                            <DropdownMenuItem>Thời gian </DropdownMenuItem>
+                                        </div>
                                     </DropdownMenuContent>
                                 </DropdownMenu>
                             </div>
 
-                            <div className='flex'>
-                                {/* <Image alt='' className='my-auto' src={src} width={45} height={45} /> */}
-                                <div className='w-[45px] h-[45px] my-auto'></div>
+                            <div className='flex gap-3'>
+                                <div className='h-9 w-9 relative'>
+                                    {currentAccountAvatar ?
+                                        <Image alt='' className='my-auto bg-transparent rounded-full' src={currentAccountAvatar} sizes='1/1' fill />
+                                        :
+                                        <Image alt='' className='my-auto rounded-full bg-transparent animate-spin' src={'https://danviet.mediacdn.vn/upload/2-2019/images/2019-04-02/Vi-sao-Kha-Banh-tro-thanh-hien-tuong-dinh-dam-tren-mang-xa-hoi-khabanh-1554192528-width660height597.jpg'} fill sizes='1/1' />}
+                                </div>
                                 <form action={handleSubmit} className='flex-grow'>
-                                    <input type='text' name="cmt" className='w-full outline-none border-b-[1px] border-slate-400 focus:border-slate-500 flex-grow' />
+                                    <input type='text' name="cmt" className='w-full outline-none border-b-[1px] bg-transparent border-slate-400 focus:border-slate-500 flex-grow' />
                                     <input type='hidden' name='videoId' value={videoData.videoData.id} />
                                     {/* @ts-ignore */}
                                     <input type='hidden' name='accountId' value={session?.user.id} />
@@ -575,7 +617,7 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
                         </div>
                     </div>
                     <div className='hidden lg:flex flex-grow'>
-                        <div className='h-[70vh] overflow-y-scroll w-full'>
+                        <div className='h-[70vh] overflow-y-scroll w-full hidden-scrollbar'>
                             {VideoSuggest()}
                         </div>
                     </div>
