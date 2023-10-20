@@ -80,6 +80,4 @@ export const authOptions: NextAuthOptions = {
         strategy: "jwt"
     },
     secret: process.env.SECRET_KEY,
-    debug: process.env.NODE_ENV === "development"
-
 }

@@ -141,23 +141,23 @@ export default function Page() {
         <div className="flex flex-1 flex-shrink-0 flex-col lg:flex-row px-12">
             <div className="w-full lg:w-1/3 px-3">
                 <div className="flex flex-col gap-3">
-                    <p className="text-3xl font-semibold">Điền thông tin</p>
+                    <p className="text-3xl font-semibold mb-3">Điền thông tin</p>
                     <div className="flex flex-col gap-3">
                         <label className="w-full flex gap-2 whitespace-nowrap">
                             Tên video
-                            <input className="relative flex-1 w-32 border-b-2 border-slate-600 focus:border-slate-800 outline-none" value={name} onChange={e => setName(e.target.value)} />
+                            <input className="relative flex-1 w-32 border-b-2 bg-transparent border-slate-600 focus:border-slate-800 outline-none" value={name} onChange={e => setName(e.target.value)} />
                         </label>
                         <label className="w-full flex flex-col gap-2">
                             Đường dẫn
                             <div className="flex gap-2">
-                                <input disabled className="relative flex-1 w-full border-b-2 border-slate-600 focus:border-slate-800 outline-none" value={`erinasaiyukii.com/watch/${link}`} />
+                                <input disabled className="relative flex-1 w-full border-b-2 bg-transparent border-slate-600 focus:border-slate-800 outline-none" value={`erinasaiyukii.com/watch/${link}`} />
                                 <button onClick={() => { }} className="flex items-center justify-center w-7 h-7"><AiOutlineCopy /></button>
                             </div>
                         </label>
                     </div>
                     <label className="flex flex-col gap-2">
                         mô tả
-                        <textarea className="w-full border-[1px] border-slate-600 rounded-sm p-1 h-fit" value={des} onChange={e => setDes(e.target.value)} />
+                        <textarea className="w-full border-[1px] bg-transparent border-slate-600 rounded-sm p-1 h-fit" value={des} onChange={e => setDes(e.target.value)} />
                     </label>
 
                     <div className="flex flex-col">
@@ -204,7 +204,7 @@ export default function Page() {
             <div className="flex flex-col  px-[5%]">
                 <p className="text-3xl font-semibold">Xem trước video</p>
                 <div className="flex flex-col border-[1px] rounded-lg">
-                    <video src={previewVideo} controls autoPlay className="lg:w-[45vw] h-fit"></video>
+                    <video src={previewVideo} controls className="lg:w-[45vw] h-fit"></video>
                 </div>
             </div>
         </div>

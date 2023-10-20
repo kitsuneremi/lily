@@ -60,7 +60,7 @@ export default function Sidebar() {
             )
         } else if (deviceType.isMobile && sidebar) {
             return (
-                <div className='absolute w-[200px] top-16 left-0 z-10 h-[calc(100vh-64px)] py-3 flex flex-col gap-2 bg-white' ref={sidebarRef}>
+                <div className='fixed w-[200px] top-16 left-0 z-10 h-[calc(100vh-64px)] py-3 flex flex-col gap-2 bg-white dark:bg-slate-800' ref={sidebarRef}>
                     <Link href={'/'}>
                         <div className='flex justify-around w-full rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 py-3 px-2 items-center'>
                             <div className='flex flex-col justify-center'>

@@ -138,7 +138,7 @@ export default function Navbar() {
             return (
                 // device type: desktop hoặc tablet
                 <>
-                    <div className='w-40 flex gap-8'>
+                    <div className='w-40 flex gap-8 select-none'>
                         {sidebar
                             ?
                             <div className='text-xl flex items-center cursor-pointer'>
@@ -173,12 +173,12 @@ export default function Navbar() {
                             </Tooltip>
                         </TooltipProvider>
 
-                    </div>
-                    <div className='relative flex gap-1 items-center rounded-2xl shadow-[0_0_2px_black] dark:bg-white'>
+                    </div> 
+                    <div className='relative flex gap-1 items-center rounded-2xl shadow-[0_0_2px_black] dark:bg-slate-800'>
                         <div className='w-max flex items-center h-full'>
                             <input className='bg-transparent pr-1 w-60 focus:outline-none ml-3 my-1' onChange={e => { setSearchValue(e.target.value) }} onFocus={() => { setFocus(true) }} onBlur={() => setFocus(false)} />
                             <div className='w-[2px] h-full relative after:absolute after:bg-slate-300 after:h-[90%] after:top-[5%] after:left-0 after:w-full'/>
-                            <div className='h-full w-8 flex flex-col pl-2 justify-center cursor-pointer hover:bg-slate-400 dark:hover:bg-slate-300 text-[#020817] rounded-r-2xl'><AiOutlineSearch /></div>
+                            <div className='h-full w-8 flex flex-col pl-2 justify-center cursor-pointer hover:bg-slate-400 dark:hover:bg-slate-300 text-[#020817] dark:text-[white] rounded-r-2xl'><AiOutlineSearch /></div>
                         </div>
 
                         {focusing ? <div className='absolute w-80 h-fit left-[-16px] items-center top-12 max-w-[95vw] bg-white dark:bg-slate-600 border-[1px] border-slate-400 rounded-lg' ref={searchResultRef}>

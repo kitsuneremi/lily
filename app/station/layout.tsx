@@ -24,7 +24,7 @@ export default async function Layout({ children }: { children: React.ReactNode }
     return (
         <div className="w-screen h-screen">
             <Navbar />
-            <div className="flex">
+            <div className="flex h-[calc(100vh-64px)]">
                 <Sidebar />
                 <Layoutx children={children} />
             </div>
