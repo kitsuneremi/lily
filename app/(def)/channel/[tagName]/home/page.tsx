@@ -32,6 +32,10 @@ export const metadata: Metadata = {
 
 export default async function Page({ params }: { params: { tagName: string } }) {
     const channelData = await fetchData({ tagName: params.tagName })
+    if(!channelData){
+        redirect('/channel/not-found')
+    }
+
     return (
         <Home channelData={channelData} />
     )
