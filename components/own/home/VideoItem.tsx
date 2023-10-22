@@ -26,7 +26,7 @@ import {
 // }
 
 
-export default function VideoItem({ videoData, channelData }: { videoData: VideoDataType, channelData: ChannelDataType }){
+export default function VideoItem({ videoData, channelData }: { videoData: VideoDataType, channelData: ChannelDataType }) {
 
 
     const [img, setImg] = useState<string>('')
@@ -64,7 +64,17 @@ export default function VideoItem({ videoData, channelData }: { videoData: Video
                         </TooltipProvider>
                     </div>
                     <div className="w-[calc(100%-30px)] flex flex-col">
-                        <p className="text-lg font-bold w-full text-ellipsis overflow-hidden">{videoData.title}</p>
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger>
+                                    <p className="text-lg font-bold w-full text-start overflow-hidden">{ReduceString({ string: videoData.title, maxLength: 30 })}</p>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <p>{videoData.title}</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
+
                         <div>
                             <TooltipProvider>
                                 <Tooltip>
