@@ -13,6 +13,7 @@ import { useToast } from "@/components/ui/use-toast"
 import axios from "axios"
 import { useSession } from "next-auth/react"
 import { ChannelDataType } from "@/type/type"
+import { useCopyToClipboard } from 'usehooks-ts'
 
 
 function makeid() {
@@ -34,6 +35,8 @@ const getFileExt = (file: File) => {
 };
 
 export default function Page() {
+
+    const [value, copy] = useCopyToClipboard()
 
     const [name, setName] = useState<string>('')
     const [des, setDes] = useState<string>('')
@@ -151,7 +154,7 @@ export default function Page() {
                             Đường dẫn
                             <div className="flex gap-2">
                                 <input disabled className="relative flex-1 w-full border-b-2 bg-transparent border-slate-600 focus:border-slate-800 outline-none" value={`erinasaiyukii.com/watch/${link}`} />
-                                <button onClick={() => { }} className="flex items-center justify-center w-7 h-7"><AiOutlineCopy /></button>
+                                <button onClick={() => {copy(`erinasaiyukii.com/watch/${link}`)}} className="flex items-center justify-center w-7 h-7"><AiOutlineCopy /></button>
                             </div>
                         </label>
                     </div>
