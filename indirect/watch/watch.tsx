@@ -16,7 +16,7 @@ import {
 import { BiMenuAltLeft } from 'react-icons/bi'
 import { GrNotification } from 'react-icons/gr'
 import { AiOutlineDown, AiFillLike, AiOutlineLike, AiFillDislike, AiOutlineDislike, AiOutlineShareAlt } from 'react-icons/ai'
-import { FormatDateTime } from '@/lib/functional'
+import { FormatDateTime, fileURL, videoTimeFormater } from '@/lib/functional'
 import { useSession } from 'next-auth/react';
 import CommentItem from '@/components/own/watch/comment/CommentItem'
 import { handleSubmit } from '@/components/own/watch/comment/CommentInput'
@@ -41,7 +41,8 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from "@/components/ui/tooltip"
-
+import { useLocalStorage } from 'usehooks-ts'
+import { useEffectOnce } from 'usehooks-ts'
 
 type quality = {
     available: number[],
@@ -52,9 +53,11 @@ const formatter = (value: number) => `${value}%`;
 let timer: any;
 
 export default function Page({ videoData }: { videoData: BigVideoDataType }) {
+
+    const [volume, setVolume] = useLocalStorage('volume', 100)
+
     const [channelAvatar, setChannelAvatar] = useState<string>();
-    const [src, setSrc] = useState<string>(`https://file.erinasaiyukii.com/api/video/${videoData.videoData.link}`);
-    const [volume, setVolume] = useState<number>(100);
+    const [src, setSrc] = useState<string>(`${fileURL}/api/video/${videoData.videoData.link}`);
     const [currentTime, setCurrentTime] = useState<number>(0);
     const [loadedProgress, setLoadedProgress] = useState<number>(0);
     const [speed, setSpeed] = useState<number>(1);
@@ -72,33 +75,35 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
     const fullRef = useRef<HTMLDivElement>(null);
     const anyRef = useRef<HTMLDivElement>(null);
 
+    const loadVideo = async () => {
+        const video = document.getElementById("video") as HTMLVideoElement;
+        var hls = new Hls({ startPosition: currentTime });
+        hls.on(Hls.Events.MEDIA_ATTACHED, function () {
+            console.log('video and hls.js are now bound together !');
+        });
+        hls.on(Hls.Events.MANIFEST_PARSED, function (event, data) {
+            setQuality(prev => { return { current: prev.current, available: data.levels.map(e => e.height) } })
+            hls.loadLevel = quality.current;
+            setLoadedContent(true);
+        });
+
+        hls.on(Hls.Events.FRAG_LOADED, function (event, data) {
+            // @ts-ignore
+            const totalChunks = hls.media.duration;
+            // @ts-ignore
+            const loadedChunks = hls.buffered.end(0);
+            const progress = (loadedChunks / totalChunks) * 100;
+            setLoadedProgress(progress);
+        });
+
+        hls.loadSource(src);
+        hls.attachMedia(video);
+    }
+
     useEffect(() => {
-        const loadVideo = async () => {
-            const video = document.getElementById("video") as HTMLVideoElement;
-            var hls = new Hls();
-            hls.on(Hls.Events.MEDIA_ATTACHED, function () {
-                console.log('video and hls.js are now bound together !');
-            });
-            hls.on(Hls.Events.MANIFEST_PARSED, function (event, data) {
-                setQuality(prev => { return { current: prev.current, available: data.levels.map(e => e.height) } })
-                hls.loadLevel = quality.current;
-                setLoadedContent(true);
-            });
-
-            hls.on(Hls.Events.FRAG_LOADED, function (event, data) {
-                // @ts-ignore
-                const totalChunks = hls.media.duration;
-                // @ts-ignore
-                const loadedChunks = hls.buffered.end(0);
-                const progress = (loadedChunks / totalChunks) * 100;
-                setLoadedProgress(progress);
-            });
-
-            hls.loadSource(src);
-            hls.attachMedia(video);
-        }
         loadVideo();
     }, [src, quality.current]);
+
 
     useEffect(() => {
         if (session && session.user) {
@@ -451,7 +456,7 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
                                             <Slider tooltip={{ formatter }} value={volume} onChange={e => setVolume(e)} className="w-24" />
                                         </div>
                                         <div className='flex items-center max-sm:hidden'>
-                                            {ref.current && <p className='text-slate-200'>{ref.current?.currentTime.toFixed(0)} / {isNaN(ref.current?.duration) ? 0 : ref.current?.duration.toFixed(0)}</p>}
+                                            {ref.current && <p className='text-slate-200'>{videoTimeFormater(Number.parseInt(ref.current?.currentTime.toFixed(0)), isNaN(ref.current?.duration) ? 0 : Number.parseInt(ref.current?.duration.toFixed(0)))}</p>}
                                         </div>
                                     </div>
 
