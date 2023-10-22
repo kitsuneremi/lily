@@ -39,7 +39,6 @@ export default function Navbar() {
     }
 
     const dispatch = useDispatch();
-    const router = useRouter()
     const { data: session } = useSession();
     const sidebar = useAppSelector(state => state.sidebarReducer.value.sidebar);
     const { setTheme, theme } = useTheme();
