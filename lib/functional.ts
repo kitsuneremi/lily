@@ -1,5 +1,5 @@
 export function ReduceString({ string, maxLength }: { string: string, maxLength: number }) {
-    if(!string){
+    if (!string) {
         return '';
     }
     if (string.length > maxLength) {
@@ -56,5 +56,19 @@ export const getFileExt = (fileName: File) => {
     return fileName.name.substring(fileName.name.lastIndexOf(".") + 1);
 };
 
+export const baseURL = process.env.NODE_ENV == "production" ? 'https://erinasaiyukii.com' : 'http://localhost:3000'
+export const fileURL = process.env.NODE_ENV == "production" ? 'https://file.erinasaiyukii.com' : 'http://localhost:5001'
 
-export const baseURL = 'https://erinasaiyukii.com'
+const formatHelper = (time: number) => {
+    if(time >= 3600){
+        return `${Math.floor(time / 3600)}:${Math.floor(time % 3600 / 60)}:${time % 60}`;
+    }else if (time >= 60) {
+        return `${Math.floor(time / 60)}:${time % 60}`;
+    }else{
+        return `0:${time}`;
+    }
+}
+
+export const videoTimeFormater = (current: number, duration: number) => {
+    return `${formatHelper(current)}/${formatHelper(duration)}`;
+}
