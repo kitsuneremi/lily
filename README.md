@@ -8,6 +8,9 @@ Nếu thấy web không vào được/sập thì có thể do 1 vài nguyên nh�
 - đang ngủ -> tắt laptop
 - đang chơi game -> tắt visual code
 - bọn cờ hó fpt đổi địa chỉ ip public
+- lỡ tay rút/ mèo cắn dây mạng
+- mất điện
+- đang thao tác config nginx proxy
 
 ### hãy báo cho tôi nếu thấy web sập ;~: [facebook](https://facebook.com/kitsuneremi)
 
