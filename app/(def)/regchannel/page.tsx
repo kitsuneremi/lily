@@ -76,9 +76,11 @@ export default function Page() {
 
     const [visible, setVisible] = useState<boolean>(false)
 
-    const { data: session } = useSession({required: true, onUnauthenticated() {
-        redirect('/register')
-    },});
+    const { data: session } = useSession({
+        required: true, onUnauthenticated() {
+            redirect('/register')
+        },
+    });
 
     const PinturaRef = useRef<PinturaEditorModal>(null)
 
@@ -179,6 +181,11 @@ export default function Page() {
                     des: des,
                     tagName: tagName
                 })
+            }).then(async res => {
+                if (res.status === 201) {
+                    const channelData = await res.json();
+                    redirect(`/channel/${channelData.tagName}`)
+                }
             })
         } else {
             toast({

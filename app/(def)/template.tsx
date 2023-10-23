@@ -40,7 +40,7 @@ export default function Template({ children }: { children: React.ReactNode }) {
     const [mobileShowSearch, setMobileShowSearch] = useState<boolean>(false)
     const [showPopover, setShowPopover] = useState<{ click: boolean, menuFocus: boolean }>({ click: false, menuFocus: false });
     const [show, setShow] = useState<boolean>(false);
-    const [openSidebar, setOpenSidebar] = useState<boolean>()
+    const [openSidebar, setOpenSidebar] = useState<boolean>();
 
     const deviceType = {
         isPc: useMediaQuery('(min-width: 1200px'),
@@ -60,6 +60,13 @@ export default function Template({ children }: { children: React.ReactNode }) {
     })
 
     useEffect(() => {
+        if(personalChannelData){
+            const channelRef = ref(storage, `/channel/avatars/${personalChannelData.tagName}`);
+            getDownloadURL(channelRef).then(url => { setChannelAvatar(url) }).catch(e => { console.log(e) });
+        }
+    },[personalChannelData])
+
+    useEffect(() => {
         if (session && session.user) {
             axios.get('/api/channel/data', {
                 params: {
@@ -68,7 +75,7 @@ export default function Template({ children }: { children: React.ReactNode }) {
                 }
             }).then(res => { if (res.status == 200) { setPersonalChannelData(res.data) } }).catch(e => { console.log(e) })
         }
-    }, [session])
+    }, [''])
 
 
     const Item = ({ name, href, icon }: { name: string, href: string, icon: React.ReactElement }) => {

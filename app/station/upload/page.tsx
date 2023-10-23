@@ -14,6 +14,7 @@ import axios from "axios"
 import { useSession } from "next-auth/react"
 import { ChannelDataType } from "@/type/type"
 import { useCopyToClipboard } from 'usehooks-ts'
+import { fileURL } from "@/lib/functional"
 
 
 function makeid() {
@@ -123,9 +124,21 @@ export default function Page() {
                     formData.append('des', des)
                     formData.append('channelId', channelData.id.toString())
 
-                    axios.post('https://file.erinasaiyukii.com/api/decay/video', formData, {
+                    axios.post(`${fileURL}/api/decay/video`, formData, {
                         headers: {
                             ContentType: 'multipart/form-data'
+                        }
+                    }).then(res => {
+                        if(res.status === 201){
+                            toast({
+                                title: 'Tạo video thành công',
+                                description: 'Video của bạn đã được tải lên thành công vui lòng kiên nhẫn chờ thêm chút đến khi nó thực sự có thể xem được'
+                            })
+                        }else{
+                            toast({
+                                title: 'Lỗi',
+                                description: 'Đã có lỗi xảy ra vui lòng thử lại sau'
+                            })
                         }
                     })
                     const thumbnailStorageRef = ref(storage, `/video/thumbnails/${link}`)

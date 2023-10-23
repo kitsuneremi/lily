@@ -10,5 +10,7 @@ export async function GET(req: NextRequest){
         const data = await prisma.notifications.findMany()
 
         return new NextResponse(JSON.stringify(data), {status: 200})
+    }else{
+        return new NextResponse(JSON.stringify({message: 'No account id provided'}), {status: 400})
     }
 }
