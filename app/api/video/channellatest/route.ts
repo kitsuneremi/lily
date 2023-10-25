@@ -16,13 +16,22 @@ export async function GET(req: NextRequest) {
                 createdAt: 'desc'
             }
         })
+
+
+
         if (lastestVideo) {
             const like = await prisma.likes.count({
                 where: {
                     videoId: lastestVideo.id
                 }
             })
-            const videoData: VideoDataType = { like: like, ...lastestVideo }
+
+            const comment = await prisma.comment.count({
+                where: {
+                    videoId: lastestVideo.id
+                }
+            })
+            const videoData: VideoDataType = { like: like, comment: comment, ...lastestVideo }
 
             return new NextResponse(JSON.stringify(videoData))
         } else {
