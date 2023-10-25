@@ -17,7 +17,7 @@ model Accounts {
   updatedAt     DateTime        @updatedAt
   channel       Channels?
   comment       Comment[]
-  Likes         Likes?
+  Likes         Likes[]
   Member        Member[]
   Notifications Notifications[]
   Subcribes     Subcribes[]
@@ -52,7 +52,7 @@ model Videos {
   comment         Comment[]
   DetailListVideo DetailListVideo[]
   DetailTags      DetailTags?
-  Likes           Likes?
+  Likes           Likes[]
   channel         Channels          @relation(fields: [channelId], references: [id])
 
   @@index([channelId], map: "Videos_channelId_fkey")
@@ -118,18 +118,18 @@ model DetailTags {
 }
 
 model Likes {
-  videoId   Int      @unique
-  accountId Int      @unique
+  id        Int      @id @default(autoincrement())
+  videoId   Int
+  accountId Int
   type      Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   account   Accounts @relation(fields: [accountId], references: [id])
   video     Videos   @relation(fields: [videoId], references: [id])
-
-  @@id([videoId, accountId])
 }
 
 model Notifications {
+  id        Int      @id @default(autoincrement())
   accountId Int
   channelId Int
   createdAt DateTime @default(now())
@@ -138,9 +138,6 @@ model Notifications {
   content   String
   account   Accounts @relation(fields: [accountId], references: [id])
   channel   Channels @relation(fields: [channelId], references: [id])
-
-  @@id([accountId, channelId])
-  @@index([channelId], map: "Notifications_channelId_fkey")
 }
 
 model Subcribes {
