@@ -39,7 +39,8 @@ export type VideoDataType = {
     channelId: number,
     createdAt: Date,
     updatedAt: Date,
-    like: number
+    like: number,
+    comment: number
 }
 
 export type SessionDataType = {
@@ -56,4 +57,11 @@ export type SessionDataType = {
         exp: number,
         jti: string
     }
+}
+
+export type SubcribeType = {
+    accountId: number,
+    channelId: number,
+    createdAt: Date,
+    updatedAt: Date
 }
