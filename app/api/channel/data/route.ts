@@ -10,12 +10,19 @@ export async function GET(req: NextRequest) {
                 accountId: Number.parseInt(accountId)
             }
         })
+
         if (channel) {
-            return new NextResponse(JSON.stringify(channel), { status: 200 })
+            const sub = await prisma.subcribes.count({
+                where: {
+                    channelId: channel.id
+                }
+            })
+
+            return new NextResponse(JSON.stringify({ sub, ...channel }), { status: 200 })
         } else {
             return new NextResponse(JSON.stringify({ message: 'cannot find channel' }), { status: 404 })
         }
-    }else if(tagName){
+    } else if (tagName) {
         const channel = await prisma.channels.findUnique({
             where: {
                 tagName: tagName
@@ -23,7 +30,13 @@ export async function GET(req: NextRequest) {
         })
 
         if (channel) {
-            return new NextResponse(JSON.stringify(channel), { status: 200 })
+
+            const sub = await prisma.subcribes.count({
+                where: {
+                    channelId: channel.id
+                }
+            })
+            return new NextResponse(JSON.stringify({ sub, ...channel }), { status: 200 })
         } else {
             return new NextResponse(JSON.stringify({}), { status: 404 })
         }
