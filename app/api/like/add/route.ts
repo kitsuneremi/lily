@@ -8,41 +8,36 @@ interface RequestBody {
 
 export async function POST(request: Request) {
     const data: RequestBody = await request.json();
-    const x = await prisma.likes.findFirst({
+
+    if(!data){
+        return new Response(null, { status: 400 })
+    }
+
+    const find = await prisma.likes.findFirst({
         where: {
             accountId: data.accountId,
             videoId: data.targetId
         }
-    })
-    var like = null;
-    if (x == null) {
-        like = await prisma.likes.create(
-            {
-                data: {
-                    accountId: data.accountId,
-                    videoId: data.targetId,
-                    type: data.type
-                }
-            }
-        )
-    } else {
-        like = await prisma.likes.update({
+    });
+
+    if (find) {
+        await prisma.likes.delete({
             where: {
-                videoId_accountId: {
-                    accountId: data.accountId,
-                    videoId: data.targetId,
-                }
-            },
+                id: find.id
+            }
+        })
+
+        return new Response(null, { status: 200 })
+    } else {
+        const like = await prisma.likes.create({
             data: {
+                accountId: data.accountId,
+                videoId: data.targetId,
                 type: data.type
             }
         })
+
+        return new Response(JSON.stringify(like), { status: 201 })
     }
-    const count = await prisma.likes.count({
-        where: {
-            type: 0
-        }
-    })
-    const likewithcount = {...like, count: count}
-    return new Response(JSON.stringify(likewithcount))
+
 }
