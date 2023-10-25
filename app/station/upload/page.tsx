@@ -129,10 +129,10 @@ export default function Page() {
                             ContentType: 'multipart/form-data'
                         }
                     }).then(res => {
-                        if(res.status === 201){
+                        if(res.data){
                             toast({
-                                title: 'Tạo video thành công',
-                                description: 'Video của bạn đã được tải lên thành công vui lòng kiên nhẫn chờ thêm chút đến khi nó thực sự có thể xem được'
+                                title: res.data.title,
+                                description: res.data.content
                             })
                         }else{
                             toast({
