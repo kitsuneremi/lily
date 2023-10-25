@@ -7,7 +7,7 @@ import { Session } from "next-auth";
 import { ThemeProvider } from "@/components/theme-provider"
 import ValProvider from "@/redux/provider";
 import { NextUIProvider } from '@nextui-org/react'
-import Notification from './notification'
+import Notification from './ToastNotification'
 
 // eslint-disable-next-line react/display-name
 export default function Provider({ children }: { children: ReactNode }): ReactNode{
