@@ -6,15 +6,14 @@ import { useTheme } from "next-themes"
 import { signIn, useSession } from "next-auth/react"
 import { useToast } from "@/components/ui/use-toast"
 import axios, { AxiosHeaders } from 'axios'
-import { useRouter } from "next/navigation"
+import { redirect, useRouter } from "next/navigation"
 
 export default function Page(){
-    const router = useRouter()
     const {data: session} = useSession();
 
     useEffect(() => {
         if(session && session.user){
-            router.push('/')
+            redirect('/')
         }
     },[])
 
@@ -77,9 +76,9 @@ export default function Page(){
     }
 
     return (
-        <div className="w-full h-full p-8 flex items-center mt-[-100px]">
-            <div className="w-[500px] h-fit p-6 mx-auto flex flex-col gap-2">
-                <p className="text-2xl text-center mb-7">{mode ? 'Đăng ký tài khoản Nice' : 'Đăng nhập với tài khoản Nice'}</p>
+        <div className="w-full h-full p-8 flex items-center justify-center mt-[-100px]">
+            <div className="w-[500px] h-fit p-6 flex flex-col gap-2">
+                <p className="text-2xl text-center mb-7">{mode ? 'Đăng ký tài khoản Adios' : 'Đăng nhập với tài khoản Adios'}</p>
                 <Label>
                     {!mode ? 'Tên đăng nhập hoặc email' : 'Tên đăng nhập'}
                     <Input className="mt-2" type="text" ref={usernameRef} />
