@@ -21,6 +21,7 @@ import { ChannelDataType } from "@/type/type";
 import axios from "axios";
 import { ref, getDownloadURL } from "firebase/storage";
 import { storage } from "@/lib/firebase";
+import { Skeleton } from "@/components/ui/skeleton"
 import {
     Tooltip,
     TooltipContent,
@@ -29,24 +30,35 @@ import {
 } from "@/components/ui/tooltip";
 import { useTheme } from "next-themes";
 import { useSsr } from "usehooks-ts";
+// import Notification from "@/components/own/Notification";
 import dynamic from "next/dynamic";
-import { useRouter } from "next/navigation";
-import { Skeleton } from "@/components/ui/skeleton";
+import { redirect, usePathname, useRouter } from "next/navigation";
 
 const Notification = dynamic(() => import("@/components/own/Notification"));
+
+const sideMenuItem = [
+    { id: 0, name: "Tài khoản", href: "/setting/account" },
+    { id: 1, name: "Nâng cao", href: "/setting/advance" },
+    { id: 2, name: "Tải xuống", href: "/setting/download" },
+    { id: 3, name: "Thông báo", href: "/setting/notification" },
+    { id: 4, name: "Phát lại", href: "/setting/playback" },
+    { id: 5, name: "Quyền riêng tư", href: "/setting/privacy" },
+];
 
 export default function Template({ children }: { children: React.ReactNode }) {
     const { data: session } = useSession();
     const { setTheme, theme } = useTheme();
     const { isBrowser } = useSsr();
+    const path = usePathname();
     const router = useRouter();
 
     const searchResultRef = useRef<HTMLDivElement>(null);
     const popoverTriggerRef = useRef<HTMLDivElement>(null);
     const popoverContentRef = useRef<HTMLDivElement>(null);
     const sidebarRef = useRef<HTMLDivElement>(null);
-
     const [accountAvatar, setAccountAvatar] = useState<string | undefined>("");
+
+    const [tab, setTab] = useState<number>();
     const [personalChannelData, setPersonalChannelData] =
         useState<ChannelDataType>();
     const [channelAvatar, setChannelAvatar] = useState<string>("");
@@ -87,10 +99,23 @@ export default function Template({ children }: { children: React.ReactNode }) {
     useOnClickOutside(sidebarRef, () => {
         setOpenSidebar(false);
     });
+
+    useEffect(() => {
+        const find = sideMenuItem.find((item) => {
+            return item.href === path;
+        });
+        if (find) {
+            setTab(find.id);
+        } else {
+            redirect("/setting/account");
+        }
+    }, [path]);
+
     useEffectOnce(() => {
         setOpenSidebar(false);
         setMobileShowSearch(false);
     });
+
     useEffect(() => {
         if (session && session.user) {
             const accountAvatarRef = ref(
@@ -400,6 +425,34 @@ export default function Template({ children }: { children: React.ReactNode }) {
         }
     };
 
+    const AccountAvatarRender = () => {
+        if (accountAvatar == "") {
+            return <Skeleton className="h-full w-full rounded-full" />;
+        } else if (accountAvatar) {
+            return (
+                <Image
+                    src={accountAvatar}
+                    className="rounded-full"
+                    fill
+                    sizes="1/1"
+                    alt=""
+                />
+            );
+        } else {
+            return (
+                <Image
+                    src={
+                        "https://danviet.mediacdn.vn/upload/2-2019/images/2019-04-02/Vi-sao-Kha-Banh-tro-thanh-hien-tuong-dinh-dam-tren-mang-xa-hoi-khabanh-1554192528-width660height597.jpg"
+                    }
+                    className="rounded-full"
+                    fill
+                    sizes="1/1"
+                    alt=""
+                />
+            );
+        }
+    };
+
     const Collapse = ({
         trigger,
         content,
@@ -460,34 +513,6 @@ export default function Template({ children }: { children: React.ReactNode }) {
                 }
             />
         );
-    };
-
-    const AccountAvatarRender = () => {
-        if (accountAvatar == "") {
-            return <Skeleton className="h-full w-full rounded-full" />;
-        } else if (accountAvatar) {
-            return (
-                <Image
-                    src={accountAvatar}
-                    className="rounded-full"
-                    fill
-                    sizes="1/1"
-                    alt=""
-                />
-            );
-        } else {
-            return (
-                <Image
-                    src={
-                        "https://danviet.mediacdn.vn/upload/2-2019/images/2019-04-02/Vi-sao-Kha-Banh-tro-thanh-hien-tuong-dinh-dam-tren-mang-xa-hoi-khabanh-1554192528-width660height597.jpg"
-                    }
-                    className="rounded-full"
-                    fill
-                    sizes="1/1"
-                    alt=""
-                />
-            );
-        }
     };
 
     const DropMenu = () => {
@@ -654,7 +679,33 @@ export default function Template({ children }: { children: React.ReactNode }) {
             </div>
             <div className="flex mt-16 h-[calc(100vh-64px)] overflow-y-clip">
                 {sidebar()}
-                {children}
+                <div className="flex">
+                    <div className="grid grid-flow-row grid-cols-1 gap-2 h-fit pl-3">
+                        {sideMenuItem.map((item, index) => {
+                            return (
+                                <div
+                                    className={`px-5 py-2 w-max rounded-xl hover:bg-slate-300 dark:hover:bg-slate-700 ${
+                                        tab == item.id
+                                            ? "shadow-[0_0_5px_purple_inset]"
+                                            : ""
+                                    }`}
+                                    key={index}
+                                    onClick={() => {
+                                        redirect(item.href);
+                                    }}
+                                >
+                                    <Link
+                                        className="w-full h-full"
+                                        href={`${item.href}`}
+                                    >
+                                        {item.name}
+                                    </Link>
+                                </div>
+                            );
+                        })}
+                    </div>
+                    {children}
+                </div>
             </div>
         </div>
     );

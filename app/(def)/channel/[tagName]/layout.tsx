@@ -71,12 +71,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
     return (
         <div className="flex flex-1 flex-col overflow-y-scroll gap-5">
-            <div className="w-full pt-[15%] relative">
+            <div className="w-full pt-[18%] relative">
                 <Image src={channelBanner} alt="" fill />
             </div>
             <div className="flex gap-4 items-center px-6">
                 <div className="relative w-20 h-20">
-                    <Image src={channelAvatar} alt="" fill />
+                    <Image src={channelAvatar} alt="" fill sizes="1/1" className="rounded-full" />
                 </div>
                 <div className="flex flex-col">
                     <p>{channelData?.name}</p>
@@ -84,9 +84,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     <p>{channelData?.des}</p>
                 </div>
             </div>
-            <div className="w-full h-fit overflow-x-scroll flex relative after:absolute after:w-full after:h-[1px] after:bg-slate-400 after:bottom-0 overflow-hidden min-h-[50px]">
+            <div className="w-full h-fit overflow-x-scroll hidden-scrollbar flex relative after:absolute after:w-full after:h-[1px] after:bg-slate-400 after:bottom-0 overflow-hidden min-h-[50px]">
                 {listMenuItem.map((item, index) => {
-                    return <div className={`px-4 py-2 ${tab == item.id ? 'relative after:absolute after:w-full after:h-[3px] after:bg-cyan-400 after:bottom-0 after:left-0' : ''}`} key={index} onClick={() => { setTab(index); router.push(`/channel/${params.tagName}/${item.href}`) }}>
+                    return <div className={`px-4 py-2 cursor-pointer ${tab == item.id ? 'relative after:absolute after:w-full after:h-[3px] after:bg-cyan-400 after:bottom-0 after:left-0' : ''}`} key={index} onClick={() => { setTab(index); router.push(`/channel/${params.tagName}/${item.href}`) }}>
                         {item.name}
                     </div>
                 })}

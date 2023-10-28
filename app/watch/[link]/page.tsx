@@ -22,7 +22,7 @@ const fetchVideoData = async ({ link }: { link: string }) => {
     const res = await fetch(`${baseURL}/api/video/data?link=${link}`, {
         method: 'GET',
         next: {
-            revalidate: 15
+            revalidate: 5
         }
     })
     const data: BigVideoDataType = await res.json();

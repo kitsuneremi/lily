@@ -1,49 +1,41 @@
 "use client";
+import { useEffect, useState } from "react";
 import { ChannelDataType, VideoDataType } from "@/type/type";
 import { FaPlay } from "react-icons/fa";
 import Image from "next/image";
-import { useEffect, useState } from "react";
 import { FormatDateTime } from "@/lib/functional";
 import { ref, getDownloadURL } from "firebase/storage";
 import { storage } from "@/lib/firebase";
 import axios from "axios";
 import { redirect } from "next/navigation";
-
-export default function ChannelHome({
+import { useEffectOnce } from "usehooks-ts";
+export default function Videos({
     channelData,
 }: {
     channelData: ChannelDataType;
 }) {
-    const [listPo, setListPo] = useState<VideoDataType[]>([]);
+    const [listVideoData, setListVideoData] = useState<VideoDataType[]>([]);
 
-    useEffect(() => {
+    useEffectOnce(() => {
         axios
-            .get("/api/video/viewdesc", {
+            .get("/api/video/channel/all", {
                 params: {
                     channelId: channelData.id,
                 },
             })
             .then((res) => {
-                setListPo(res.data);
+                setListVideoData(res.data);
             });
-    }, []);
+    });
 
     return (
-        <div className="flex flex-col">
-            <div className="flex flex-col gap-3">
-                <div className="flex gap-5">
-                    <p>Video phổ cmn biến</p>
-                    <p className="flex gap-2 items-center">
-                        <FaPlay /> Phát cmn hết
-                    </p>
-                </div>
-                <div className="overflow-x-scroll hidden-scrollbar w-full grid grid-cols-5 grid-flow-col-dense h-max gap-3">
-                    {listPo.map((video, index) => {
-                        return <VideoItem videoData={video} key={index} />;
-                    })}
-                </div>
+        <>
+            <div className="hidden-scrollbar w-full grid grid-cols-5 grid-flow-col-dense h-max gap-3">
+                {listVideoData.map((video, index) => {
+                    return <VideoItem videoData={video} key={index} />;
+                })}
             </div>
-        </div>
+        </>
     );
 }
 

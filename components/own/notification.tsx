@@ -34,7 +34,7 @@ type NotificationType = {
 
 export default function Notification() {
     const { data: session } = useSession();
-    const [data, setData] = useState<NotificationType[]>([]);
+    const [data, setData] = useState<NotificationType[]>();
 
     const popoverTriggerRef = useRef<HTMLDivElement>(null);
     const popoverContentRef = useRef<HTMLDivElement>(null);
@@ -109,13 +109,13 @@ export default function Notification() {
             </TooltipProvider>
             {(showPopover.click || showPopover.menuFocus) && (
                 <div className="absolute w-max top-9 right-0 h-fit shadow-[0_0_10px_purple] min-w-[240px] p-3 bg-slate-200 dark:bg-slate-800">
-                    <div className="py-2 relative mb-2 select-none after:absolute after:w-full after:h-[1px] after:bg-slate-500 after:bottom-0 after:left-0">
+                    <div className="pb-2 relative text-2xl mb-2 select-none after:absolute after:w-full after:h-[1px] after:bg-slate-500 after:bottom-0 after:left-0">
                         Thông báo
                     </div>
-                    {data.length > 0 ? (
+                    {data ? data.length > 0 ? (
                         data.map((item) => {
                             return (
-                                <div className="flex justify-between h-max cursor-pointer hover:bg-slate-300 dark:hover:bg-slate-500 p-2 rounded-md">
+                                <div className="flex gap-3 justify-between h-max cursor-pointer hover:bg-slate-300 dark:hover:bg-slate-500 p-2 rounded-md">
                                     <div className="flex flex-col">
                                         <p className="font-bold">
                                             {item.title}
@@ -134,7 +134,7 @@ export default function Notification() {
                                             </DropdownMenuTrigger>
                                             <DropdownMenuContent>
                                                 <DropdownMenuLabel>
-                                                    Tùy cỉnh thông báo
+                                                    Tùy chỉnh thông báo
                                                 </DropdownMenuLabel>
                                                 <DropdownMenuSeparator />
                                                 <DropdownMenuItem>
@@ -151,7 +151,7 @@ export default function Notification() {
                         })
                     ) : (
                         <>không có thông báo nào</>
-                    )}
+                    ) : <div>loading...</div>}
                 </div>
             )}
         </div>

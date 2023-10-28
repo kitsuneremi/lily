@@ -4,6 +4,7 @@ export async function GET(req: NextRequest) {
     const searchParams = req.nextUrl.searchParams;
     const accountId = searchParams.get('accountId');
     const tagName = searchParams.get('tagName');
+    const channelId = searchParams.get('channelId');
     if (accountId) {
         const channel = await prisma.channels.findUnique({
             where: {
@@ -26,6 +27,24 @@ export async function GET(req: NextRequest) {
         const channel = await prisma.channels.findUnique({
             where: {
                 tagName: tagName
+            }
+        })
+
+        if (channel) {
+
+            const sub = await prisma.subcribes.count({
+                where: {
+                    channelId: channel.id
+                }
+            })
+            return new NextResponse(JSON.stringify({ sub, ...channel }), { status: 200 })
+        } else {
+            return new NextResponse(JSON.stringify({}), { status: 404 })
+        }
+    } else if (channelId) {
+        const channel = await prisma.channels.findUnique({
+            where: {
+                id: Number.parseInt(channelId)
             }
         })
 

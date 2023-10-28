@@ -2,6 +2,8 @@
 import Image from "next/image";
 import Navbar from "@/components/own/navbar";
 import Sidebar from "@/components/own/watchsidebar";
+import VideoItem from "@/components/own/watch/VideoItem";
+import ThisChannelVideoItem from "@/components/own/watch/ThisChannelVideoItem";
 import React, {
     useEffect,
     useRef,
@@ -10,7 +12,13 @@ import React, {
     FormEvent,
 } from "react";
 import axios from "axios";
-import { BigVideoDataType, CommentDataType, SubcribeType } from "@/type/type";
+import {
+    BigVideoDataType,
+    ChannelDataType,
+    CommentDataType,
+    SubcribeType,
+    VideoDataType,
+} from "@/type/type";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -524,16 +532,6 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
         );
     };
 
-    const VideoSuggest = () => {
-        return (
-            <div className="flex">
-                <div className="w-[40%] h-[240px]"></div>
-                <div className="flex flex-col">
-                    
-                </div>
-            </div>
-        );
-    };
     const Subcribe = () => {
         if (session && session.user) {
             //@ts-ignore
@@ -612,10 +610,10 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
             <div className="lg:flex">
                 <div
                     ref={fullRef}
-                    className={`flex group flex-col w-full max-sm:px-2 px-5 ${
+                    className={`flex group flex-col w-full  ${
                         fullscreen
-                            ? "absolute w-screen top-0 left-0 bg-white dark:bg-slate-600 overflow-y-scroll px-0 py-0 hidden-scrollbar"
-                            : `relative lg:w-3/4 lg:px-10 px-2`
+                            ? "absolute w-screen top-0 left-0 bg-white dark:bg-slate-600 overflow-y-scroll p-0 hidden-scrollbar"
+                            : `relative lg:w-3/4 lg:px-10 max-sm:px-2 px-5`
                     }`}
                 >
                     <div
@@ -688,7 +686,21 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-1">
-                                        <div className="text-lg cursor-pointer">
+                                        <div
+                                            className="text-lg cursor-pointer"
+                                            onClick={() => {
+                                                // if (ref.current) {
+                                                //     if (
+                                                //         ref.current.volume > 0
+                                                //     ) {
+                                                //         ref.current.volume = 0;
+                                                //     } else {
+                                                //         ref.current.volume =
+                                                //             volume / 100;
+                                                //     }
+                                                // }
+                                            }}
+                                        >
                                             {VolumeIcon()}
                                         </div>
 
@@ -878,7 +890,11 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
                         </div>
                     </div>
                     {/* des */}
-                    <div className="rounded-xl p-3 my-4 flex flex-col gap-2 bg-slate-200 dark:bg-slate-900">
+                    <div
+                        className={`rounded-xl p-3 my-4 flex flex-col gap-2 bg-slate-200 dark:bg-slate-900 ${
+                            fullscreen ? "px-3" : ""
+                        }`}
+                    >
                         <div className="flex gap-3">
                             <p>{videoData.videoData.view} lượt xem</p>
                             <p>
@@ -888,7 +904,11 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
                         <p className="">{videoData.videoData.des}</p>
                     </div>
                     {/* comment */}
-                    <div className="flex flex-col gap-2">
+                    <div
+                        className={`flex flex-col gap-2 ${
+                            fullscreen ? "px-3" : ""
+                        }`}
+                    >
                         <div className="flex gap-3 px-3">
                             <p className="my-auto h-fit">
                                 {videoData.commentData.length} bình luận
@@ -965,24 +985,122 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
                                 </TabsTrigger>
                                 <TabsTrigger value="video">Video</TabsTrigger>
                             </TabsList>
-                            <TabsContent value="comment">
+                            <TabsContent value="comment" className="mb-6">
                                 {CommentRender()}
                             </TabsContent>
                             <TabsContent value="video">
-                                <div className="h-80">{VideoSuggest()}</div>
+                                <div className="h-80">
+                                    <VideoSuggest
+                                        //@ts-ignore
+                                        accountId={session?.user.id}
+                                        channelData={videoData.channelData}
+                                        videoId={videoData.videoData.id}
+                                    />
+                                </div>
                             </TabsContent>
                         </Tabs>
-                        <div className="flex-col gap-2 my-4 hidden lg:flex">
+                        <div className="flex-col gap-2 my-4 hidden lg:flex mb-6">
                             {CommentRender()}
                         </div>
                     </div>
                 </div>
-                <div className="hidden lg:flex flex-grow">
-                    <div className="h-[70vh] overflow-y-scroll w-full hidden-scrollbar">
-                        {VideoSuggest()}
-                    </div>
+                <div className="hidden lg:flex flex-grow w-full flex-1">
+                    <VideoSuggest
+                        //@ts-ignore
+                        accountId={session?.user.id}
+                        channelData={videoData.channelData}
+                        videoId={videoData.videoData.id}
+                    />
                 </div>
             </div>
         </div>
     );
 }
+
+const VideoSuggest = ({
+    accountId,
+    videoId,
+    channelData,
+}: {
+    videoId: number;
+    accountId: number;
+    channelData: ChannelDataType;
+}) => {
+    const [tab, setTab] = useState<number>(0);
+
+    const listItem = [
+        {
+            id: 0,
+            name: "Tất cả",
+        },
+        {
+            id: 1,
+            name: `Của ${channelData.name}`,
+        },
+    ];
+    const [allVideo, setAllVideo] = useState<VideoDataType[]>();
+    const [thisChannelVideo, setThisChannelVideo] = useState<VideoDataType[]>();
+
+    useEffectOnce(() => {
+        axios
+            .get("/api/video/channel/except", {
+                params: {
+                    videoId: videoId,
+                    channelId: channelData.id,
+                },
+            })
+            .then((res) => {
+                setThisChannelVideo(res.data);
+            });
+
+        axios
+            .get("/api/video/all/except", {
+                params: {
+                    videoId: videoId,
+                },
+            })
+            .then((res) => {
+                setAllVideo(res.data);
+            });
+    });
+
+    return (
+        <div className="flex flex-col w-full">
+            <div className="flex gap-3">
+                {listItem.map((button, index) => {
+                    return (
+                        <div
+                            key={index}
+                            onClick={() => {
+                                setTab(button.id);
+                            }}
+                            className={`px-3 py-2 cursor-pointer rounded-xl bg-slate-300 dark:bg-slate-600 hover:bg-slate-400 dark:hover:bg-slate-700 ${
+                                tab === button.id
+                                    ? "shadow-[0_0_20px_purple_inset]"
+                                    : ""
+                            }`}
+                        >
+                            {button.name}
+                        </div>
+                    );
+                })}
+            </div>
+            <div className="flex flex-col gap-3 pt-2 overflow-y-scroll hidden-scrollbar pr-3">
+                {tab === 0 &&
+                    allVideo?.map((video, index) => {
+                        return <VideoItem key={index} videoData={video} />;
+                    })}
+                {tab === 1 &&
+                    thisChannelVideo?.map((video, index) => {
+                        return (
+                            <ThisChannelVideoItem
+                                key={index}
+                                videoData={video}
+                                channelData={channelData}
+                            />
+                        );
+                    })}
+            </div>
+        </div>
+    );
+};

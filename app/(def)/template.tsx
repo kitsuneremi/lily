@@ -29,21 +29,25 @@ import {
 } from "@/components/ui/tooltip";
 import { useTheme } from "next-themes";
 import { useSsr } from "usehooks-ts";
+import { Skeleton } from "@/components/ui/skeleton";
 // import Notification from "@/components/own/Notification";
 import dynamic from "next/dynamic";
+import { redirect } from "next/dist/server/api-utils";
+import { useRouter } from "next/navigation";
 
-const Notification = dynamic(() => import("@/components/own/Notification"))
+const Notification = dynamic(() => import("@/components/own/Notification"));
 
 export default function Template({ children }: { children: React.ReactNode }) {
     const { data: session } = useSession();
     const { setTheme, theme } = useTheme();
     const { isBrowser } = useSsr();
+    const router = useRouter();
 
     const searchResultRef = useRef<HTMLDivElement>(null);
     const popoverTriggerRef = useRef<HTMLDivElement>(null);
     const popoverContentRef = useRef<HTMLDivElement>(null);
     const sidebarRef = useRef<HTMLDivElement>(null);
-
+    const [accountAvatar, setAccountAvatar] = useState<string | undefined>("");
     const [personalChannelData, setPersonalChannelData] =
         useState<ChannelDataType>();
     const [channelAvatar, setChannelAvatar] = useState<string>("");
@@ -110,6 +114,23 @@ export default function Template({ children }: { children: React.ReactNode }) {
 
     useEffect(() => {
         if (session && session.user) {
+            const accountAvatarRef = ref(
+                storage,
+                //@ts-ignore
+                `/account/avatars/${session.user.id}`
+            );
+            getDownloadURL(accountAvatarRef)
+                .then((url) => {
+                    setAccountAvatar(url);
+                })
+                .catch((e) => {
+                    setAccountAvatar(undefined);
+                });
+        }
+    }, [session]);
+
+    useEffect(() => {
+        if (session && session.user) {
             axios
                 .get("/api/channel/data", {
                     params: {
@@ -126,7 +147,7 @@ export default function Template({ children }: { children: React.ReactNode }) {
                     console.log(e);
                 });
         }
-    }, [""]);
+    }, [session]);
 
     const Item = ({
         name,
@@ -356,7 +377,6 @@ export default function Template({ children }: { children: React.ReactNode }) {
                             </Tooltip>
                         </TooltipProvider>
 
-
                         <Notification />
                         <TooltipProvider>
                             <Tooltip>
@@ -442,6 +462,34 @@ export default function Template({ children }: { children: React.ReactNode }) {
         );
     };
 
+    const AccountAvatarRender = () => {
+        if (accountAvatar == "") {
+            return <Skeleton className="h-full w-full rounded-full" />;
+        } else if (accountAvatar) {
+            return (
+                <Image
+                    src={accountAvatar}
+                    className="rounded-full"
+                    fill
+                    sizes="1/1"
+                    alt=""
+                />
+            );
+        } else {
+            return (
+                <Image
+                    src={
+                        "https://danviet.mediacdn.vn/upload/2-2019/images/2019-04-02/Vi-sao-Kha-Banh-tro-thanh-hien-tuong-dinh-dam-tren-mang-xa-hoi-khabanh-1554192528-width660height597.jpg"
+                    }
+                    className="rounded-full"
+                    fill
+                    sizes="1/1"
+                    alt=""
+                />
+            );
+        }
+    };
+
     const DropMenu = () => {
         return (
             <>
@@ -455,13 +503,7 @@ export default function Template({ children }: { children: React.ReactNode }) {
                         }}
                         ref={popoverTriggerRef}
                     >
-                        <Image
-                            src={"https://github.com/shadcn.png"}
-                            className="rounded-full"
-                            fill
-                            sizes="1/1"
-                            alt=""
-                        />
+                        <AccountAvatarRender />
                     </div>
                     {(showPopover.click || showPopover.menuFocus) && (
                         <div
@@ -516,7 +558,7 @@ export default function Template({ children }: { children: React.ReactNode }) {
                                                 </Link>
                                             </MenuItem>
                                         )}
-                                        {lightModeSetting()}
+
                                         <MenuItem className="text-start">
                                             <div
                                                 onClick={() => {
@@ -530,6 +572,14 @@ export default function Template({ children }: { children: React.ReactNode }) {
                                                 Đăng xuất
                                             </div>
                                         </MenuItem>
+                                        <MenuItem
+                                            onClick={() => {
+                                                router.push("setting/account");
+                                            }}
+                                        >
+                                            Cài đặt
+                                        </MenuItem>
+                                        {lightModeSetting()}
                                     </div>
                                 ) : (
                                     <div className="flex flex-col gap-2 shadow-[0_0_5px_purple] p-3 rounded-lg bg-white dark:bg-[#020817]">
@@ -537,6 +587,13 @@ export default function Template({ children }: { children: React.ReactNode }) {
                                             <Link href={"/register"}>
                                                 Đăng nhập
                                             </Link>
+                                        </MenuItem>
+                                        <MenuItem
+                                            onClick={() => {
+                                                router.push("setting/account");
+                                            }}
+                                        >
+                                            Cài đặt
                                         </MenuItem>
                                         {lightModeSetting()}
                                     </div>
@@ -655,10 +712,7 @@ const MenuItem = ({
     children,
     className,
     ...props
-}: {
-    children: React.ReactNode;
-    className: string | undefined;
-}) => {
+}: React.HTMLProps<HTMLDivElement>) => {
     return (
         <div
             className={cn(
