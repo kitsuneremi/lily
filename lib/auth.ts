@@ -4,6 +4,8 @@ import GoogleProvider from "next-auth/providers/google";
 import { baseURL } from "./functional";
 import { PrismaAdapter } from '@auth/prisma-adapter'
 import prisma from "./prisma";
+import { getDownloadURL, ref } from "firebase/storage";
+import { storage } from "./firebase";
 
 type result = {
     accessToken: string;
@@ -34,7 +36,7 @@ export const authOptions: NextAuthOptions = {
                 username: { label: "Username", type: "text", placeholder: "test" },
                 password: { label: "Password", type: "password" }
             },
-            
+
             async authorize(credentials, req) {
                 // Add logic here to look up the user from the credentials supplied
                 const res = await fetch(`${baseURL}/api/login`, {
@@ -47,7 +49,7 @@ export const authOptions: NextAuthOptions = {
                         password: credentials?.password,
                     })
                 })
-                
+
                 const user = await res.json();
                 if (user) {
                     // Any object returned will be saved in `user` property of the JWT
@@ -73,7 +75,15 @@ export const authOptions: NextAuthOptions = {
             }
         },
         async session({ session, token }) {
-            return {...session, user: token};
+            // console.log(token)
+            const imageRef = ref(storage, `account/avatars/${token.id}`)
+            try{
+                const image = await getDownloadURL(imageRef)
+                return { ...session, user: { image: image, ...token } };
+            }catch(e){
+                return { ...session, user: { image: '', ...token } };
+            }
+
         }
     },
     session: {
