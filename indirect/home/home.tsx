@@ -1,5 +1,5 @@
 import VideoItem from "@/components/own/home/VideoItem";
-import { VideoDataType, ChannelDataType } from "@/type/type";
+import { VideoDataType, ChannelDataType } from "@/types/type";
 
 export default function ({
     listVideo,

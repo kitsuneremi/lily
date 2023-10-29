@@ -18,7 +18,7 @@ import {
     CommentDataType,
     SubcribeType,
     VideoDataType,
-} from "@/type/type";
+} from "@/types/type";
 import {
     DropdownMenu,
     DropdownMenuContent,
