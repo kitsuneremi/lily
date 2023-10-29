@@ -20,10 +20,7 @@ const nextConfig = {
             }
         ]
     },
-    transpilePackages: ['@pqina/pintura', '@pqina/react-pintura'],
-    experimental: {
-        serverActions: true,
-    }
+    transpilePackages: ['@pqina/pintura', '@pqina/react-pintura']
 }
 
 module.exports = nextConfig
