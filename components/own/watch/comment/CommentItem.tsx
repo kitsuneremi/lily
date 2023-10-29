@@ -1,48 +1,90 @@
-'use client'
-import { VideoDataType, CommentDataType } from '@/type/type';
-import { FormatDateTime, baseURL } from '@/lib/functional'
-import { useSession } from 'next-auth/react';
-import prisma from '@/lib/prisma';
-import { useEffect, useState } from 'react';
-import { AiOutlineDown, AiFillLike, AiOutlineLike, AiFillDislike, AiOutlineDislike } from 'react-icons/ai'
-import axios from 'axios';
-import Image from 'next/image';
+"use client";
+import { VideoDataType, CommentDataType } from "@/types/type";
+import { FormatDateTime, baseURL } from "@/lib/functional";
+import { useEffect, useState } from "react";
+import {
+    AiOutlineDown,
+    AiFillLike,
+    AiOutlineLike,
+    AiFillDislike,
+    AiOutlineDislike,
+} from "react-icons/ai";
+import axios from "axios";
+import Image from "next/image";
+import { ref, getDownloadURL } from "firebase/storage";
+import { storage } from "@/lib/firebase";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useEffectOnce } from "usehooks-ts";
 
 type AccountDataType = {
-    id: number,
-    email: string,
-    name: string,
-    username: string,
-    isAdmin: boolean,
-    createdAt: Date,
-    updatedAt: Date
-}
+    id: number;
+    email: string;
+    name: string;
+    username: string;
+    isAdmin: boolean;
+    createdAt: Date;
+    updatedAt: Date;
+};
 
-export default function CommentItem({ cmt }: { cmt: CommentDataType }){
+export default function CommentItem({ cmt }: { cmt: CommentDataType }) {
     const [like, setLike] = useState<boolean>(false);
     const [dislike, setDislike] = useState<boolean>(false);
-    const [imgSrc, setSrc] = useState<string>('')
-    // useEffect(() => {
-    //     const channelAvatarStorageRef = ref(storage, `/channel/avatars/${videoData.channelData.tagName}`)
-    //     getDownloadURL(channelAvatarStorageRef).then(url => setChannelAvatar(url))
-    // },[])
-    const [accountData, setAccountData] = useState<AccountDataType>()
-    useEffect(() => {
-        axios.get('/api/account/data', {
-            params: {
-                id: cmt.accountId
-            }
-        }).then(res => {
-            setAccountData(res.data)
-        })
-    }, [])
-    return (
-        <div className='flex'>
-            <div className='w-[45px] h-full'></div>
-            {/* <Image src={} width={45} height={45}/> */}
+    const [accountImg, setAccountImg] = useState<string | undefined>("");
+    useEffectOnce(() => {
+        const channelAvatarStorageRef = ref(
+            storage,
+            `/account/avatars/${cmt.accountId}`
+        );
+        getDownloadURL(channelAvatarStorageRef)
+            .then((url) => setAccountImg(url))
+            .catch((e) => {
+                setAccountImg(undefined);
+            });
+    });
+    const [accountData, setAccountData] = useState<AccountDataType>();
+    useEffectOnce(() => {
+        axios
+            .get("/api/account/data", {
+                params: {
+                    id: cmt.accountId,
+                },
+            })
+            .then((res) => {
+                setAccountData(res.data);
+            });
+    });
 
-            <div className='flex flex-col gap-1'>
-                <div className='flex gap-3'>
+    const ImageRender = () => {
+        if (accountImg == "") {
+            return <Skeleton className="w-full h-full rounded-full" />;
+        } else if (accountImg) {
+            return (
+                <Image src={accountImg} fill alt="" className="rounded-full" />
+            );
+        } else {
+            return (
+                <Image
+                    src={
+                        "https://danviet.mediacdn.vn/upload/2-2019/images/2019-04-02/Vi-sao-Kha-Banh-tro-thanh-hien-tuong-dinh-dam-tren-mang-xa-hoi-khabanh-1554192528-width660height597.jpg"
+                    }
+                    fill
+                    alt=""
+                    className="rounded-full"
+                />
+            );
+        }
+    };
+
+    return (
+        <div className="flex gap-3">
+            <div className="w-[45px] h-full">
+                <div className="relative w-full h-[45px]">
+                    <ImageRender />
+                </div>
+            </div>
+
+            <div className="flex flex-col gap-1">
+                <div className="flex gap-3">
                     <p>@{accountData?.name}</p>
                     <p>{FormatDateTime(cmt.createdAt)}</p>
                 </div>
@@ -50,13 +92,12 @@ export default function CommentItem({ cmt }: { cmt: CommentDataType }){
                 <div>
                     <p>{cmt.content}</p>
                 </div>
-                <div className='flex gap-1'>
+                <div className="flex gap-1">
                     {like ? <AiFillLike /> : <AiOutlineLike />}
                     {dislike ? <AiFillDislike /> : <AiOutlineDislike />}
-                    <p>Phản hồi</p>
+                    <button>Phản hồi</button>
                 </div>
-
             </div>
         </div>
-    )
+    );
 }
