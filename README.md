@@ -1,4 +1,4 @@
-Dự án sử dụng nextjs 13.5
+Dự án sử dụng nextjs 14
 Chạy trực tiếp tại
 ```bash
     https://erinasaiyukii.com
@@ -12,7 +12,7 @@ Nếu thấy web không vào được/sập thì có thể do 1 vài nguyên nh�
 - mất điện
 - đang thao tác config nginx proxy
 
-### hãy báo cho tôi nếu thấy web sập ;~: [facebook](https://facebook.com/kitsuneremi)
+### hãy báo cho tôi nếu thấy web sập ;~: qua [facebook](https://facebook.com/kitsuneremi)
 
 # đây là project clone youtube cả fe lẫn be chứ không có code mỗi fe xong gắn link video youtube xong gắn vào đâu nhé
 
