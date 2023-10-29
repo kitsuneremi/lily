@@ -112,46 +112,55 @@ export default function Notification() {
                     <div className="pb-2 relative text-2xl mb-2 select-none after:absolute after:w-full after:h-[1px] after:bg-slate-500 after:bottom-0 after:left-0">
                         Thông báo
                     </div>
-                    {data ? data.length > 0 ? (
-                        data.map((item) => {
-                            return (
-                                <div className="flex gap-3 justify-between h-max cursor-pointer hover:bg-slate-300 dark:hover:bg-slate-500 p-2 rounded-md">
-                                    <div className="flex flex-col">
-                                        <p className="font-bold">
-                                            {item.title}
-                                        </p>
-                                        <p className="font-semibold text-sm">
-                                            {item.content}
-                                        </p>
-                                        <p className="text-[10px] dark:text-cyan-400 text-amber-800">
-                                            {item.createdAt.toString()}
-                                        </p>
+                    {data ? (
+                        data.length > 0 ? (
+                            data.map((item, index) => {
+                                return (
+                                    <div
+                                        className="flex gap-3 justify-between h-max cursor-pointer hover:bg-slate-300 dark:hover:bg-slate-500 p-2 rounded-md"
+                                        key={index}
+                                    >
+                                        <div className="flex flex-col">
+                                            <p className="font-bold">
+                                                {item.title}
+                                            </p>
+                                            <p className="font-semibold text-sm">
+                                                {item.content}
+                                            </p>
+                                            <p className="text-[10px] dark:text-cyan-400 text-amber-800">
+                                                {item.createdAt.toString()}
+                                            </p>
+                                        </div>
+                                        <div className="flex items-center">
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger>
+                                                    <SettingOutlined />
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent>
+                                                    <DropdownMenuLabel>
+                                                        Tùy chỉnh thông báo
+                                                    </DropdownMenuLabel>
+                                                    <DropdownMenuSeparator />
+                                                    <DropdownMenuItem>
+                                                        Tắt thông báo từ kênh
+                                                        này
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem>
+                                                        Tắt thông báo kênh này
+                                                        trong 24h
+                                                    </DropdownMenuItem>
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
+                                        </div>
                                     </div>
-                                    <div className="flex items-center">
-                                        <DropdownMenu>
-                                            <DropdownMenuTrigger>
-                                                <SettingOutlined />
-                                            </DropdownMenuTrigger>
-                                            <DropdownMenuContent>
-                                                <DropdownMenuLabel>
-                                                    Tùy chỉnh thông báo
-                                                </DropdownMenuLabel>
-                                                <DropdownMenuSeparator />
-                                                <DropdownMenuItem>
-                                                    Tắt thông báo từ kênh này
-                                                </DropdownMenuItem>
-                                                <DropdownMenuItem>
-                                                    Tắt thông báo kênh này trong 24h
-                                                </DropdownMenuItem>
-                                            </DropdownMenuContent>
-                                        </DropdownMenu>
-                                    </div>
-                                </div>
-                            );
-                        })
+                                );
+                            })
+                        ) : (
+                            <>không có thông báo nào</>
+                        )
                     ) : (
-                        <>không có thông báo nào</>
-                    ) : <div>loading...</div>}
+                        <div>loading...</div>
+                    )}
                 </div>
             )}
         </div>
