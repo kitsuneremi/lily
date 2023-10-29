@@ -1,7 +1,7 @@
 import { Metadata } from "next"
 import { redirect } from 'next/navigation'
 import prisma from '@/lib/prisma'
-import { ChannelDataType } from '@/type/type'
+import { ChannelDataType } from '@/types/type'
 import Videos from "@/components/own/channel/videos"
 
 export const metadata: Metadata = {

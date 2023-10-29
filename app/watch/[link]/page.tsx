@@ -1,6 +1,6 @@
 import { baseURL } from '@/lib/functional';
 import type { Metadata, ResolvingMetadata } from 'next'
-import { type VideoDataType, BigVideoDataType } from '@/type/type';
+import { type VideoDataType, BigVideoDataType } from '@/types/type';
 import Watch from '@/indirect/watch/watch'
 type Props = {
     params: { link: string }

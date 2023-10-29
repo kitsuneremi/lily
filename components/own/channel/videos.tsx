@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { ChannelDataType, VideoDataType } from "@/type/type";
+import { ChannelDataType, VideoDataType } from "@/types/type";
 import { FaPlay } from "react-icons/fa";
 import Image from "next/image";
 import { FormatDateTime } from "@/lib/functional";

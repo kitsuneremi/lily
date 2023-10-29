@@ -9,7 +9,7 @@ import { FcBullish } from 'react-icons/fc'
 import Link from "next/link";
 import { ref, getDownloadURL } from "firebase/storage";
 import { storage } from '@/lib/firebase'
-import { ChannelDataType } from "@/type/type";
+import { ChannelDataType } from "@/types/type";
 import axios from "axios";
 import { BsUpload } from 'react-icons/bs'
 import { authOptions } from "@/lib/auth";

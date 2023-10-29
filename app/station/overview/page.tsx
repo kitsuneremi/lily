@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import { ChannelDataType, VideoDataType } from "@/type/type";
+import { ChannelDataType, VideoDataType } from "@/types/type";
 import { useSession } from "next-auth/react";
 import axios from "axios";
 import { ref, getDownloadURL } from "firebase/storage";

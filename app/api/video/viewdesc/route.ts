@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma";
-import { VideoDataType } from "@/type/type";
+import { VideoDataType } from "@/types/type";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {

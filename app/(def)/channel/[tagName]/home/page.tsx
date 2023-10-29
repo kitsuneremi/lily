@@ -1,6 +1,6 @@
 import Home from '@/components/own/channel/home'
 import prisma from '@/lib/prisma'
-import { ChannelDataType } from '@/type/type'
+import { ChannelDataType } from '@/types/type'
 import { redirect } from 'next/navigation'
 import { Metadata } from "next"
 

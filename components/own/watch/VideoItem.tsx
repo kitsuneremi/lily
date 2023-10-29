@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { FormatDateTime, ReduceString } from "@/lib/functional";
 import { useEffect, useState } from "react";
-import { VideoDataType, ChannelDataType } from "@/type/type";
+import { VideoDataType, ChannelDataType } from "@/types/type";
 
 import {
     Tooltip,

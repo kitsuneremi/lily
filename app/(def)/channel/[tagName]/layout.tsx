@@ -1,5 +1,5 @@
 'use client'
-import { ChannelDataType } from "@/type/type";
+import { ChannelDataType } from "@/types/type";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { redirect, useParams, usePathname, useRouter } from "next/navigation";

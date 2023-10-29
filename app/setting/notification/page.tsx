@@ -1,4 +1,4 @@
-import { ChannelDataType, SessionDataType } from "@/type/type"
+import { ChannelDataType, SessionDataType } from "@/types/type"
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 export default async function Page() {
@@ -32,7 +32,7 @@ export default async function Page() {
                 <div>
                     <div>
                         <p className="font-semibold text-lg">Thông báo qua email</p>
-                        <p>Các email của bạn được gửi đến {session ? session.user.email : 'email đã đăng ký tài khoản của bạn'}. Để hủy đăng ký nhận một email, hãy nhấp vào đường liên kết "Hủy đăng ký" ở cuối email đó. Tìm hiểu thêm về email từ fakeTube.</p>
+                        {/* <p>Các email của bạn được gửi đến {session ? `${session.user.email}` : "email đã đăng ký tài khoản của bạn"}. Để hủy đăng ký nhận một email, hãy nhấp vào đường liên kết "Hủy đăng ký" ở cuối email đó. Tìm hiểu thêm về email từ fakeTube.</p> */}
                     </div>
                 </div>
             </div>

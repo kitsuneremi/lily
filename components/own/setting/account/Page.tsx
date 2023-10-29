@@ -10,7 +10,7 @@ import { useToast } from "@/components/ui/use-toast";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { baseURL } from "@/lib/functional";
-import { ChannelDataType, SessionDataType } from "@/type/type";
+import { ChannelDataType, SessionDataType } from "@/types/type";
 
 import "@pqina/pintura/pintura.css";
 import {

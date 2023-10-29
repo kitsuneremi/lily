@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma";
-import { VideoDataType, BigVideoDataType, ChannelDataType, CommentDataType } from "@/type/type";
+import { VideoDataType, BigVideoDataType, ChannelDataType, CommentDataType } from "@/types/type";
 import { type NextRequest } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -13,7 +13,13 @@ export async function GET(req: NextRequest) {
       },
     });
 
-    const videoData: VideoDataType = { like, ...video };
+    const commentCount = await prisma.comment.count({
+      where: {
+        videoId: video.id
+      }
+    })
+
+    const videoData: VideoDataType = { like, comment: commentCount, ...video };
 
     const channel = await prisma.channels.findUnique({
       where: {
