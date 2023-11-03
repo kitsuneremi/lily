@@ -1,26 +1,11 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
 }
 
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
-}
-
-model Accounts {
-  id            Int             @id @default(autoincrement())
-  email         String          @unique
-  name          String
-  password      String
-  username      String
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
-  channel       Channels?
-  comment       Comment[]
-  Likes         Likes[]
-  Member        Member[]
-  Notifications Notifications[]
-  Subcribes     Subcribes[]
 }
 
 model Channels {
@@ -31,6 +16,8 @@ model Channels {
   accountId     Int             @unique
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
+  streamKey     String          @unique
+  live          Boolean?        @default(false)
   account       Accounts        @relation(fields: [accountId], references: [id])
   ListVideo     ListVideo[]
   Notifications Notifications[]
@@ -126,6 +113,9 @@ model Likes {
   updatedAt DateTime @updatedAt
   account   Accounts @relation(fields: [accountId], references: [id])
   video     Videos   @relation(fields: [videoId], references: [id])
+
+  @@index([accountId], map: "Likes_accountId_fkey")
+  @@index([videoId], map: "Likes_videoId_fkey")
 }
 
 model Notifications {
@@ -138,6 +128,9 @@ model Notifications {
   content   String
   account   Accounts @relation(fields: [accountId], references: [id])
   channel   Channels @relation(fields: [channelId], references: [id])
+
+  @@index([accountId], map: "Notifications_accountId_fkey")
+  @@index([channelId], map: "Notifications_channelId_fkey")
 }
 
 model Subcribes {
@@ -193,4 +186,21 @@ model Message {
 
   @@index([roomId, memberId], map: "Messages_roomId_memberId_unique")
   @@index([memberId], map: "Messages_memberId_fkey")
+}
+
+model Accounts {
+  id            Int             @id @default(autoincrement())
+  email         String          @unique
+  name          String
+  password      String
+  username      String
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  streamKey     String          @unique
+  channel       Channels?
+  comment       Comment[]
+  Likes         Likes[]
+  Member        Member[]
+  Notifications Notifications[]
+  Subcribes     Subcribes[]
 }

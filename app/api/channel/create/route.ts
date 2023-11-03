@@ -1,6 +1,6 @@
 import prisma from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
-
+import { v4 as uuid } from "uuid";
 type RequestBody = {
     accountId: number,
     name: string,
@@ -22,7 +22,8 @@ export async function POST(req: NextRequest) {
                     accountId: body.accountId,
                     name: body.name,
                     tagName: body.tagName,
-                    des: body.des
+                    des: body.des,
+                    streamKey: uuid(),
                 }
             })
             return new NextResponse(JSON.stringify(newChannel), { status: 201 })

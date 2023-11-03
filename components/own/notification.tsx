@@ -108,7 +108,7 @@ export default function Notification() {
                 </Tooltip>
             </TooltipProvider>
             {(showPopover.click || showPopover.menuFocus) && (
-                <div className="absolute w-max top-9 right-0 h-fit shadow-[0_0_10px_purple] min-w-[240px] p-3 bg-slate-200 dark:bg-slate-800">
+                <div className="absolute w-max top-9 right-0 h-fit max-h-[70vh] overflow-y-auto lg:max-h-80 shadow-[0_0_10px_purple] min-w-[240px] p-3 bg-slate-200 dark:bg-slate-800">
                     <div className="pb-2 relative text-2xl mb-2 select-none after:absolute after:w-full after:h-[1px] after:bg-slate-500 after:bottom-0 after:left-0">
                         Thông báo
                     </div>
@@ -166,3 +166,9 @@ export default function Notification() {
         </div>
     );
 }
+
+
+{/* 
+
+<span className="flex h-2 w-2 translate-y-1 rounded-full bg-sky-500" />
+*/}

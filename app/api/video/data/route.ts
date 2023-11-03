@@ -1,9 +1,14 @@
+import { storage } from "@/lib/firebase";
 import prisma from "@/lib/prisma";
-import { type NextRequest } from "next/server";
+import { BigVideoDataType } from "@/types/type";
+import { ref, getDownloadURL } from "firebase/storage";
+import { NextResponse, type NextRequest } from "next/server";
 
 export async function GET(req: NextRequest) {
     const searchParams = req.nextUrl.searchParams;
     const link = searchParams.get('link');
+
+    console.log(link)
 
     if (link) {
         const videoData = await prisma.videos.findFirst({
@@ -40,10 +45,17 @@ export async function GET(req: NextRequest) {
                 }
             })
 
-            return new Response(JSON.stringify({ videoData: { ...videoData, like: likeCount }, channelData: { ...channelData, sub: subCount }, commentData }), { status: 200 })
+            const channelAvatarRef = ref(storage, `/channel/avatars/${channelData?.tagName}`)
+            const channelAvatarUrl = await getDownloadURL(channelAvatarRef)
+
+            const temp:BigVideoDataType = { videoData: { ...videoData, like: likeCount }, channelData: { ...channelData, sub: subCount, avatarImage: channelAvatarUrl}, commentData }
+
+            return new NextResponse(JSON.stringify(temp), { status: 200 })
+        } else {
+            return new NextResponse(JSON.stringify({}))
         }
     } else {
-        return new Response(JSON.stringify({ message: 'invalid video link' }), { status: 404 })
+        return new NextResponse(JSON.stringify({ message: 'invalid video link' }), { status: 404 })
     }
 
 }

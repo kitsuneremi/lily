@@ -1,4 +1,6 @@
 import prisma from "@/lib/prisma";
+import connect from '@/lib/mongodb'
+import Likes from "@/model/likes";
 
 interface RequestBody {
     accountId: number;
@@ -12,7 +14,11 @@ export async function POST(request: Request) {
     if(!data){
         return new Response(null, { status: 400 })
     }
-
+    // const findm = await Likes.findOne({
+    //     $where: () => {
+    //         return 
+    //     }
+    // })
     const find = await prisma.likes.findFirst({
         where: {
             accountId: data.accountId,

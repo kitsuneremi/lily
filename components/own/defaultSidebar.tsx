@@ -1,7 +1,8 @@
 "use client";
-import { useEffectOnce } from "usehooks-ts";
+import { useEffectOnce, useOnClickOutside } from "usehooks-ts";
 import React, { useRef, useEffect, useState } from "react";
-import { AiOutlineHome } from "react-icons/ai";
+import { AiOutlineHome, AiOutlineRight, AiFillSetting } from "react-icons/ai";
+import { MdFeedback } from 'react-icons/md'
 import Link from "next/link";
 import { useSsr, useMediaQuery } from "usehooks-ts";
 import { useRouter } from "next/navigation";
@@ -12,16 +13,6 @@ import Image from "next/image";
 import { useSession } from "next-auth/react";
 import axios from "axios";
 import { ReduceString } from '@/lib/functional'
-type MenuItem = {
-    name: string;
-    href: string;
-    icon: React.ReactElement;
-    child?: {
-        image: string;
-        name: string;
-        tagName: string;
-    }[];
-};
 
 type subcribe = {
     name: string,
@@ -29,44 +20,13 @@ type subcribe = {
     image: string
 }
 
-
-
 export default function Sidebar() {
     const { isBrowser } = useSsr();
-    const router = useRouter();
 
     const { data: session, status } = useSession();
 
     const [subcribeList, setSubscribeList] = useState<subcribe[]>();
-
-    const listMenu: MenuItem[] = [
-        {
-            name: "trang chủ",
-            href: "/",
-            icon: <AiOutlineHome />,
-        },
-        {
-            name: "thư viện",
-            href: "/libary",
-            icon: <AiOutlineHome />,
-        },
-        {
-            name: "đã thích",
-            href: "/like",
-            icon: <AiOutlineHome />,
-        },
-        {
-            name: "đã xem",
-            href: "/abc",
-            icon: <AiOutlineHome />,
-        },
-        {
-            name: "kênh đăng ký",
-            href: "",
-            icon: <AiOutlineHome />,
-            child: subcribeList,
-        },
-    ];
+    const [showFullSubcribe, setShowFullSubcribe] = useState<boolean>(false);
 
     const sidebarRef = useRef<HTMLDivElement>(null);
 
@@ -74,6 +34,10 @@ export default function Sidebar() {
         (state) => state.sidebarReducer.value.sidebar
     );
     const dispatch = useDispatch();
+
+    useOnClickOutside(sidebarRef, () => {
+        dispatch(close());
+    })
 
     useEffectOnce(() => {
         dispatch(close());
@@ -92,166 +56,253 @@ export default function Sidebar() {
     }, [session])
 
     const deviceType = {
-        isPc: useMediaQuery("(min-width: 1200px"),
-        isTablet: useMediaQuery("(min-width:700px) and (max-width: 1199px)"),
-        isMobile: useMediaQuery("(max-width: 699px)"),
+        isFlex: useMediaQuery("(min-width: 1200px"),
+        isAbsolute: useMediaQuery("(max-width: 1199px)"),
     };
 
-    const Item = ({
-        name,
-        href,
-        icon,
-    }: {
-        name: string;
-        href: string;
-        icon: React.ReactElement;
-    }) => {
+
+    const SubcribedChannel = ({ item }: { item: subcribe }) => {
         return (
-            <Link href={href} className="w-full">
+            <Link href={`/channel/${item.tagName}`}>
                 <div
-                    className={`flex justify-start items-center ${openSidebar ? 'gap-2' : ''} w-full rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 py-3 px-5`}
+                    className="flex items-center gap-2 cursor-pointer hover:bg-slate-300 dark:hover:bg-slate-600 px-2 py-1 rounded-lg"
                 >
-                    <div className="flex flex-col justify-center">{icon}</div>
+                    <div className="flex flex-col justify-center">
+                        <div className="flex items-center w-4 h-4 relative">
+                            <Image
+                                fill
+                                sizes={"1/1"}
+                                src={item.image}
+                                alt={item.name}
+                                className="rounded-full"
+                            />
+                        </div>
+                    </div>
                     <div
                         className={`flex justify-center items-center ${openSidebar ? "" : "hidden"
                             }`}
                     >
-                        <p className="">{name}</p>
+                        <p className="">{ReduceString({ maxLength: 16, string: item.name })}</p>
                     </div>
                 </div>
             </Link>
         );
     };
 
-    const BigItem = ({
-        name,
-        icon,
-        child,
-    }: {
-        name: string;
-        icon: React.ReactElement;
-        child: {
-            name: string;
-            tagName: string;
-            image: string;
-        }[];
-    }) => {
+
+    const FullRender = () => {
         return (
-            <div className={`flex flex-col justify-start ${openSidebar ? 'gap-2' : ''} w-full`}>
-                <div className="flex hover:bg-slate-200 dark:hover:bg-slate-700 gap-2 py-3 px-5 rounded-lg cursor-default">
-                    <div className="flex flex-col justify-center">{icon}</div>
+            <>
+                <Link href={'/'} className="w-full">
                     <div
-                        className={`flex justify-center items-center ${openSidebar ? "" : "hidden"
-                            }`}
+                        className={`flex justify-start items-center ${openSidebar ? 'gap-2' : ''} w-full rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 py-2 px-2`}
                     >
-                        <p className="">{name}</p>
-                    </div>
-                </div>
-                {openSidebar && <div className="pl-7 flex flex-col gap-2">
-                    {child.map((item, index) => {
-                        return (
-                            <div
-                                className="flex items-center gap-2 cursor-pointer hover:bg-slate-300 dark:hover:bg-slate-600 px-2 py-1 rounded-lg"
-                                onClick={() => { router.push(`/channel/${item.tagName}`) }}
-                                key={index}
-                            >
-                                <div className="flex flex-col justify-center">
-                                    <div className="flex items-center w-4 h-4 relative">
-                                        <Image
-                                            fill
-                                            sizes={"1/1"}
-                                            src={item.image}
-                                            alt={item.name}
-                                            className="rounded-full"
-                                        />
-                                    </div>
-                                </div>
-                                <div
-                                    className={`flex justify-center items-center ${openSidebar ? "" : "hidden"
-                                        }`}
-                                >
-                                    <p className="">{ReduceString({ maxLength: 16, string: item.name })}</p>
-                                </div>
-                            </div>
-                        );
-                    })}
-                </div>}
-            </div>
-        );
-    };
-
-    const res = () => {
-        if (deviceType.isPc && openSidebar !== undefined) {
-            return (
-                <div className={`flex ${openSidebar ? 'min-w-[200px]' : ''} flex-col gap-2 w-max overflow-y-scroll items-start hidden-scrollbar px-3`}>
-                    {listMenu.map((item, index) => {
-                        return item.child ? (
-                            <BigItem
-                                child={item.child}
-                                icon={item.icon}
-                                name={item.name}
-                                key={index}
-                            />
-                        ) : (
-                            <Item
-                                icon={item.icon}
-                                name={item.name}
-                                href={item.href}
-                                key={index}
-                            />
-                        );
-                    })}
-                </div>
-            );
-        } else if (deviceType.isTablet && openSidebar !== undefined) {
-            return (
-                <div
-                    className="flex flex-col gap-2 w-max px-3 items-start"
-                    ref={sidebarRef}
-                >
-                    {listMenu.map((item, index) => {
-                        return item.child ? (
-                            <BigItem
-                                child={item.child}
-                                icon={item.icon}
-                                name={item.name}
-                                key={index}
-                            />
-                        ) : (
-                            <Item
-                                icon={item.icon}
-                                name={item.name}
-                                href={item.href}
-                                key={index}
-                            />
-                        );
-                    })}
-                </div>
-            );
-        } else if (
-            deviceType.isMobile &&
-            openSidebar == true &&
-            openSidebar !== undefined
-        ) {
-            return (
-                <div
-                    className="fixed w-[220px] left-0 z-10 h-[calc(100vh-64px)] py-3 flex flex-col gap-2 bg-white dark:bg-slate-950"
-                    ref={sidebarRef}
-                >
-                    <Link href={"/"}>
-                        <div className="flex justify-around w-full rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 py-3 px-2 items-center">
-                            <div className="flex flex-col justify-center">
-                                <AiOutlineHome />
-                            </div>
-                            <p className="min-w-[100px]">Home</p>
+                        <div className="flex flex-col justify-center"><AiOutlineHome /></div>
+                        <div
+                            className={`flex justify-center items-center ${openSidebar ? "" : "hidden"
+                                }`}
+                        >
+                            <p className="">Trang chủ</p>
                         </div>
-                    </Link>
-                </div>
-            );
-        } else if (openSidebar == false) {
-            return <></>;
-        }
-    };
+                    </div>
+                </Link>
+                <Link href={'/shorts'} className="w-full">
+                    <div
+                        className={`flex justify-start items-center ${openSidebar ? 'gap-2' : ''} w-full rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 py-2 px-2`}
+                    >
+                        <div className="flex flex-col justify-center"><AiOutlineHome /></div>
+                        <div
+                            className={`flex justify-center items-center ${openSidebar ? "" : "hidden"
+                                }`}
+                        >
+                            <p className="">Short</p>
+                        </div>
+                    </div>
+                </Link>
+                <Link href={'/subcribe'} className="w-full">
+                    <div
+                        className={`flex justify-start items-center ${openSidebar ? 'gap-2' : ''} w-full rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 py-2 px-2`}
+                    >
+                        <div className="flex flex-col justify-center"><AiOutlineHome /></div>
+                        <div
+                            className={`flex justify-center items-center ${openSidebar ? "" : "hidden"
+                                }`}
+                        >
+                            <p className="">Kênh đăng ký</p>
+                        </div>
+                    </div>
+                </Link>
 
-    return <>{isBrowser ? res() : <></>}</>;
+                <div className="w-full h-[2px] relative after:absolute after:bg-slate-300 dark:after:bg-slate-500 after:h-[90%] after:top-[5%] after:left-0 after:w-full" />
+                {/* tùy chọn thuộc về tài khỏan/kênh */}
+                <Link href={'/feed/you'} className="w-full">
+                    <div
+                        className={`flex justify-start items-center ${openSidebar ? 'gap-2' : ''} w-full rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 py-1 px-2`}
+                    >
+                        <div
+                            className={`flex justify-center items-center ${openSidebar ? "" : "hidden"
+                                }`}
+                        >
+                            <p className="">Bạn</p>
+                        </div>
+                        <div className="flex flex-col justify-center"><AiOutlineRight /></div>
+                    </div>
+                </Link>
+                <Link href={`/channel/`} className="w-full">
+                    <div
+                        className={`flex justify-start items-center ${openSidebar ? 'gap-2' : ''} w-full rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 py-2 px-2`}
+                    >
+                        <div className="flex flex-col justify-center"><AiOutlineHome /></div>
+                        <div
+                            className={`flex justify-center items-center ${openSidebar ? "" : "hidden"
+                                }`}
+                        >
+                            <p className="">Kênh của bạn</p>
+                        </div>
+
+                    </div>
+                </Link>
+                <Link href={'/feed/later'} className="w-full">
+                    <div
+                        className={`flex justify-start items-center ${openSidebar ? 'gap-2' : ''} w-full rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 py-2 px-2`}
+                    >
+                        <div className="flex flex-col justify-center"><AiOutlineHome /></div>
+                        <div
+                            className={`flex justify-center items-center ${openSidebar ? "" : "hidden"
+                                }`}
+                        >
+                            <p className="">Video xem sau</p>
+                        </div>
+
+                    </div>
+                </Link>
+
+                {
+                    subcribeList && <>
+                        <div className="w-full h-[2px] relative after:absolute after:bg-slate-300 dark:after:bg-slate-500 after:h-[90%] after:top-[5%] after:left-0 after:w-full" />
+                        <p className="w-full text-lg pl-2">Kênh đăng ký</p>
+                        {/* kênh đăng ký */}
+                        <div className="">
+                            {subcribeList.length > 5 && <div className="w-full" onClick={() => { setShowFullSubcribe(prev => { return !prev }) }}>{showFullSubcribe ? 'Ẩn bớt' : `Hiển thị {subcribeList.length - 5} kênh nữa`}</div>}
+                            {showFullSubcribe ? subcribeList.map((item, index) => {
+                                return <SubcribedChannel item={item} key={index} />
+                            }) : subcribeList.slice(0, 5).map((item, index) => {
+                                return <SubcribedChannel item={item} key={index} />
+                            })}
+                        </div>
+                    </>
+                }
+
+                <div className="w-full h-[2px] relative after:absolute after:bg-slate-300 dark:after:bg-slate-500 after:h-[90%] after:top-[5%] after:left-0 after:w-full" />
+
+                <Link href={'/setting/account'} className="w-full">
+                    <div
+                        className={`flex justify-start items-center ${openSidebar ? 'gap-2' : ''} w-full rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 py-2 px-2`}
+                    >
+                        <div className="flex flex-col justify-center"><AiFillSetting /></div>
+                        <div
+                            className={`flex justify-center items-center ${openSidebar ? "" : "hidden"
+                                }`}
+                        >
+                            <p className="">Cài đặt</p>
+                        </div>
+                    </div>
+                </Link>
+                <Link href={'/feedback'} className="w-full">
+                    <div
+                        className={`flex justify-start items-center ${openSidebar ? 'gap-2' : ''} w-full rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 py-2 px-2`}
+                    >
+                        <div className="flex flex-col justify-center"><MdFeedback /></div>
+                        <div
+                            className={`flex justify-center items-center ${openSidebar ? "" : "hidden"
+                                }`}
+                        >
+                            <p className="">Góp ý</p>
+                        </div>
+                    </div>
+                </Link>
+            </>
+        )
+    }
+
+    const MiniRender = () => {
+        return (
+            <>
+                <Link href={'/'}>
+                    <div className="flex flex-col items-center hover:bg-slate-200 dark:hover:bg-slate-700 p-1 ml-2 rounded-lg">
+                        <div className="text-2xl">
+                            <AiOutlineHome />
+                        </div>
+                        <p className="text-xs">Trang chủ</p>
+                    </div>
+                </Link>
+                <Link href={'/shorts'}>
+                    <div className="flex flex-col items-center hover:bg-slate-200 dark:hover:bg-slate-700  p-1 ml-2 rounded-lg">
+                        <div className="text-2xl">
+                            <AiOutlineHome />
+                        </div>
+                        <p className="text-xs">Shorts</p>
+                    </div>
+                </Link>
+                <Link href={'/subcribe'}>
+                    <div className="flex flex-col items-center hover:bg-slate-200 dark:hover:bg-slate-700  p-1 ml-2 rounded-lg">
+                        <div className="text-2xl">
+                            <AiOutlineHome />
+                        </div>
+                        <p className="text-xs text-center">Kênh đăng ký</p>
+                    </div>
+                </Link>
+                <Link href={'/feed/you'}>
+                    <div className="flex flex-col items-center hover:bg-slate-200 dark:hover:bg-slate-700  p-1 ml-2 rounded-lg">
+                        <div className="text-2xl">
+                            <AiOutlineHome />
+                        </div>
+                        <p className="text-xs">Bạn</p>
+                    </div>
+                </Link>
+                <Link href={'/setting/account'}>
+                    <div className="flex flex-col items-center hover:bg-slate-200 dark:hover:bg-slate-700  p-1 ml-2 rounded-lg">
+                        <div className="text-2xl">
+                            <AiFillSetting />
+                        </div>
+                        <p className="text-xs">Cài đặt</p>
+                    </div>
+                </Link>
+                <Link href={'/feedback'}>
+                    <div className="flex flex-col items-center hover:bg-slate-200 dark:hover:bg-slate-700  p-1 ml-2 rounded-lg">
+                        <div className="text-2xl">
+                            <MdFeedback />
+                        </div>
+                        <p className="text-xs">Phản hồi</p>
+                    </div>
+                </Link>
+            </>
+        )
+    }
+
+
+    if (isBrowser) {
+        if (deviceType.isFlex) {
+            if (openSidebar) {
+                return <div className={`flex ${openSidebar ? 'min-w-[200px]' : ''} flex-col gap-1 w-max overflow-y-scroll items-start hidden-scrollbar px-3`}>
+                    <FullRender />
+                </div>
+            } else {
+                return <div className="w-max flex flex-col gap-3">
+                    <MiniRender />
+                </div>
+            }
+        } else {
+            return (
+                <>
+                    <div className="w-max flex flex-col gap-3">
+                        <MiniRender />
+                    </div>
+                    <div ref={sidebarRef} className={`${openSidebar ? 'overflow-y-scroll min-w-[220px] h-[calc(100vh-64px)] flex fixed top-16 flex-col gap-1 w-max items-start hidden-scrollbar px-3 bg-slate-300 dark:bg-slate-800 z-50' : 'hidden'}`}>
+                        <FullRender />
+                    </div>
+                </>
+            )
+        }
+    }
 }

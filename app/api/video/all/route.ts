@@ -1,6 +1,8 @@
 import prisma from "@/lib/prisma";
 import { VideoDataType, BigVideoDataType, ChannelDataType, CommentDataType } from "@/types/type";
+import { getDownloadURL, ref } from "firebase/storage";
 import { type NextRequest } from "next/server";
+import { storage } from "@/lib/firebase";
 
 export async function GET(req: NextRequest) {
   const list: BigVideoDataType[] = [];
@@ -19,7 +21,7 @@ export async function GET(req: NextRequest) {
       }
     })
 
-    const videoData: VideoDataType = { like, comment: commentCount, ...video };
+
 
     const channel = await prisma.channels.findUnique({
       where: {
@@ -33,9 +35,15 @@ export async function GET(req: NextRequest) {
       },
     });
 
+
     if (channel && comment) {
-      const channelData: ChannelDataType = { sub: 0, ...channel };
+      const avatarRef = ref(storage, `/channel/avatars/${channel.tagName}`)
+      const videoThumbnailRef = ref(storage, `/video/thumbnails/${video.link}`)
+      const [videoThumbnail, avatarImage] = await Promise.all([getDownloadURL(videoThumbnailRef), getDownloadURL(avatarRef)])
+      const channelData: ChannelDataType = { sub: 0, avatarImage, bannerImage: '', ...channel };
       const commentData: CommentDataType[] = comment;
+
+      const videoData: VideoDataType = { like, thumbnail: videoThumbnail, comment: commentCount, ...video };
       const t: BigVideoDataType = {
         videoData,
         channelData,

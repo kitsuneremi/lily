@@ -1,10 +1,10 @@
 import './globals.css'
 import type { Metadata } from 'next'
-import { Acme } from 'next/font/google'
+import { Acme, Assistant } from 'next/font/google'
 import Provider from "@/components/own/Provider";
 import { Toaster } from "@/components/ui/toaster"
 
-const inter = Acme({subsets: ['latin'], weight: '400'})
+const inter = Assistant({subsets: ['latin'], weight: '400'})
 
 export const metadata: Metadata = {
   title: 'dèault metadata',

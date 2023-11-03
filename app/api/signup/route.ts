@@ -1,7 +1,7 @@
 import { signJWTToken } from "@/lib/jwt";
 import prisma from "@/lib/prisma";
 import * as bcrypt from "bcrypt";
-
+import { v4 as uuid } from "uuid";
 type RequestBody = {
     username: string,
     email: string,
@@ -30,7 +30,8 @@ export async function POST(request: Request) {
                     email: body.email,
                     // password: await bcrypt.hash(body.password, 10),
                     password: body.password,
-                    name: body.username
+                    name: body.username,
+                    streamKey: uuid(),
                 }
             })
             if (user) {

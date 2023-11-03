@@ -1,20 +1,51 @@
 'use client'
-import { useEffect } from "react"
-import { useSession } from "next-auth/react"
-import Image from "next/image"
-import Navbar from "@/components/own/navbar"
-import Sidebar from "@/components/own/absoluteSidebar"
+import React from 'react';
 
-export default function TestPage() {
+// This imports the functional component from the previous sample.
+import VideoJS from '@/components/own/test/VIdeojs'
+import videojs from 'video.js';
 
-    const {data: session} = useSession()
 
-    useEffect(() => {
-        console.log(session)
-    }, [session])
+type VideoJsPlayerOptions = {
+    autoplay?: boolean
+    techOrder?: any[];
+    html5?: {};
+    enableSourceset?: boolean;
+    inactivityTimeout?: number;
+    playbackRates?: any[];
+    liveui?: boolean;
+    children?: string[];
+    language?: any;
+    languages?: {};
+    notSupportedMessage?: string;
+    normalizeAutoplay?: boolean;
+    fullscreen?: {
+        options: {
+            navigationUI: string;
+        };
+    };
+    breakpoints?: {};
+    responsive?: boolean;
+    audioOnlyMode?: boolean;
+    audioPosterMode?: boolean;
+    controls?: boolean;
+    fluid?: boolean;
+    sources?: [{
+        src: string,
+        type: string
+    }]
+};
+
+const App = () => {
+    const playerRef = React.useRef(null);
 
     return (
-        <p>ccc</p>
-    )
-
+        <>
+            <div>Rest of app here</div>
+            <VideoJS name='hi3rd'/>
+            <div>Rest of app here</div>
+        </>
+    );
 }
+
+export default App

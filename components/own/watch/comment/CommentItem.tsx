@@ -29,18 +29,6 @@ type AccountDataType = {
 export default function CommentItem({ cmt }: { cmt: CommentDataType }) {
     const [like, setLike] = useState<boolean>(false);
     const [dislike, setDislike] = useState<boolean>(false);
-    const [accountImg, setAccountImg] = useState<string | undefined>("");
-    useEffectOnce(() => {
-        const channelAvatarStorageRef = ref(
-            storage,
-            `/account/avatars/${cmt.accountId}`
-        );
-        getDownloadURL(channelAvatarStorageRef)
-            .then((url) => setAccountImg(url))
-            .catch((e) => {
-                setAccountImg(undefined);
-            });
-    });
     const [accountData, setAccountData] = useState<AccountDataType>();
     useEffectOnce(() => {
         axios
@@ -55,11 +43,9 @@ export default function CommentItem({ cmt }: { cmt: CommentDataType }) {
     });
 
     const ImageRender = () => {
-        if (accountImg == "") {
-            return <Skeleton className="w-full h-full rounded-full" />;
-        } else if (accountImg) {
+        if (cmt.accountImage) {
             return (
-                <Image src={accountImg} fill alt="" className="rounded-full" />
+                <Image src={cmt.accountImage} fill alt="" className="rounded-full" />
             );
         } else {
             return (
@@ -69,7 +55,7 @@ export default function CommentItem({ cmt }: { cmt: CommentDataType }) {
                     }
                     fill
                     alt=""
-                    className="rounded-full"
+                    className="rounded-full animate-spin"
                 />
             );
         }

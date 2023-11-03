@@ -31,24 +31,6 @@ export default function VideoItem({
     videoData: VideoDataType;
     channelData: ChannelDataType;
 }) {
-    const [img, setImg] = useState<string>();
-    const [channelAvatar, setChannelAvatar] = useState<string>();
-    const videoImageStorageRef = ref(
-        storage,
-        `/video/thumbnails/${videoData.link}`
-    );
-    const channelAvatarStorageRef = ref(
-        storage,
-        `/channel/avatars/${channelData.tagName}`
-    );
-    useEffect(() => {
-        getDownloadURL(videoImageStorageRef).then((url) => setImg(url));
-        getDownloadURL(channelAvatarStorageRef).then((url) =>
-            setChannelAvatar(url)
-        );
-    }, ['']);
-
-    // const {img, channelAvatar} = Promise.all([fetchImg])
 
     return (
         <Link
@@ -57,12 +39,12 @@ export default function VideoItem({
         >
             <div className="grid items-center h-fit">
                 <div className="relative w-full h-fit min-h-[120px] pt-[56.25%] rounded-md bg-transparent">
-                    {img ? (
+                    {videoData ? (
                         <Image
                             alt=""
                             className="rounded-md bg-transparent"
                             fill
-                            src={img}
+                            src={videoData.thumbnail}
                             priority={true}
                         />
                     ) : (
@@ -77,14 +59,14 @@ export default function VideoItem({
                                     <Link
                                         href={`/channel/${channelData.tagName}`}
                                     >
-                                        {channelAvatar ? (
+                                        {channelData ? (
                                             <Image
                                                 className="rounded-full bg-transparent"
                                                 alt="img"
                                                 width={30}
                                                 height={30}
                                                 loading="lazy"
-                                                src={channelAvatar}
+                                                src={channelData.avatarImage}
                                             />
                                         ) : (
                                             <></>

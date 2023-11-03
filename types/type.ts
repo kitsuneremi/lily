@@ -14,6 +14,7 @@ export type CommentDataType = {
     referenceId: number | null,
     createdAt: Date,
     updatedAt: Date,
+    accountImage?: string | null,
 }
 
 
@@ -25,7 +26,10 @@ export type ChannelDataType = {
     accountId: number,
     createdAt: Date,
     updatedAt: Date,
-    sub: number
+    sub?: number,
+    avatarImage?: string,
+    bannerImage?: string | null,
+    streamKey: string
 }
 
 
@@ -33,14 +37,15 @@ export type VideoDataType = {
     id: number,
     title: string,
     des: string,
-    view: number,
+    view?: number,
     status: number,
     link: string,
     channelId: number,
     createdAt: Date,
     updatedAt: Date,
-    like: number,
-    comment: number
+    like?: number,
+    comment?: number,
+    thumbnail?: string
 }
 
 export type SessionDataType = {
@@ -65,3 +70,30 @@ export type SubcribeType = {
     createdAt: Date,
     updatedAt: Date
 }
+
+export type VideoWithoutComment = {
+    "videoData": {
+        "thumbnail": string,
+        "id": number,
+        "title": string,
+        "des": string,
+        "view": number,
+        "status": number,
+        "link": string,
+        "channelId": number,
+        "createdAt": Date,
+        "updatedAt": Date
+    },
+    "channelData": {
+        "avatarImage": string,
+        "id": number,
+        "name": string,
+        "tagName": string,
+        "des": string,
+        "accountId": 1,
+        "createdAt": Date,
+        "updatedAt": Date
+    }
+}
+
+

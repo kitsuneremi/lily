@@ -1,7 +1,5 @@
 "use client";
 import Image from "next/image";
-import Navbar from "@/components/own/navbar";
-import Sidebar from "@/components/own/watchsidebar";
 import VideoItem from "@/components/own/watch/VideoItem";
 import ThisChannelVideoItem from "@/components/own/watch/ThisChannelVideoItem";
 import React, {
@@ -18,6 +16,7 @@ import {
     CommentDataType,
     SubcribeType,
     VideoDataType,
+    VideoWithoutComment,
 } from "@/types/type";
 import {
     DropdownMenu,
@@ -77,6 +76,7 @@ import { useLocalStorage } from "usehooks-ts";
 import { useEffectOnce } from "usehooks-ts";
 import { redirect } from "next/navigation";
 import { useToast } from "@/components/ui/use-toast";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type quality = {
     available: number[];
@@ -90,10 +90,13 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
     const src = `${fileURL}/api/video/${videoData.videoData.link}`;
 
     const commentInputRef = useRef<HTMLInputElement>(null);
+    const ref = useRef<HTMLVideoElement>(null);
+    const fullRef = useRef<HTMLDivElement>(null);
+    const anyRef = useRef<HTMLDivElement>(null);
+
     const { toast } = useToast();
 
     const [volume, setVolume] = useLocalStorage("volume", 100);
-    const [channelAvatar, setChannelAvatar] = useState<string>();
 
     const [currentTime, setCurrentTime] = useState<number>(0);
     const [loadedProgress, setLoadedProgress] = useState<number>(0);
@@ -103,21 +106,19 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
         available: [],
     });
 
-    const [commentData, setCommentData] = useState<CommentDataType[]>([]);
+    const [commentData, setCommentData] = useState<CommentDataType[]>();
     const [fullscreen, setFullscreen] = useState<boolean>(false);
     const [loadedContent, setLoadedContent] = useState<boolean>(false);
     const [currentAccountAvatar, setCurrentAccountAvatar] = useState<string>();
 
-    const { data: session } = useSession();
+    const { data: session, status } = useSession();
     const [like, setLike] = useState<boolean>(false);
     const [dislike, setDislike] = useState<boolean>(false);
     const [hide, setHide] = useState<boolean>(false);
 
     const [subcribe, setSubcribe] = useState<SubcribeType>();
 
-    const ref = useRef<HTMLVideoElement>(null);
-    const fullRef = useRef<HTMLDivElement>(null);
-    const anyRef = useRef<HTMLDivElement>(null);
+
 
     const loadVideo = async () => {
         const video = document.getElementById("video") as HTMLVideoElement;
@@ -239,7 +240,7 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
         }
     }, [volume]);
 
-    useEffect(() => {
+    useEffectOnce(() => {
         window.addEventListener("keydown", (e: KeyboardEvent) => {
             if (e.code === "Space") {
                 e.preventDefault();
@@ -251,35 +252,39 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
             }
         });
 
-        return window.removeEventListener("keydown", (e: any) => {
+        return window.removeEventListener("keydown", (e: KeyboardEvent) => {
             if (e.code === "Space") {
                 e.preventDefault();
                 handlePlayPause();
             }
+            if (e.code === "Escape") {
+                e.preventDefault();
+                setFullscreen(false);
+            }
         });
-    }, [""]);
+    });
 
-    useEffect(() => {
-        const channelAvatarStorageRef = fireRef(
-            storage,
-            `/channel/avatars/${videoData.channelData.tagName}`
-        );
-        getDownloadURL(channelAvatarStorageRef).then((url) =>
-            setChannelAvatar(url)
-        );
-        if (session) {
-            try {
-                const currentAccountStorageRef = fireRef(
-                    storage,
-                    //@ts-ignore
-                    `/accounts/${session?.user.id}`
-                );
-                getDownloadURL(currentAccountStorageRef).then((url) =>
-                    setCurrentAccountAvatar(url)
-                );
-            } catch (error) {}
-        }
-    }, [""]);
+    // useEffect(() => {
+    //     const channelAvatarStorageRef = fireRef(
+    //         storage,
+    //         `/channel/avatars/${videoData.channelData.tagName}`
+    //     );
+    //     getDownloadURL(channelAvatarStorageRef).then((url) =>
+    //         setChannelAvatar(url)
+    //     );
+    //     if (session) {
+    //         try {
+    //             const currentAccountStorageRef = fireRef(
+    //                 storage,
+    //                 //@ts-ignore
+    //                 `/accounts/${session?.user.id}`
+    //             );
+    //             getDownloadURL(currentAccountStorageRef).then((url) =>
+    //                 setCurrentAccountAvatar(url)
+    //             );
+    //         } catch (error) {}
+    //     }
+    // }, [""]);
 
     useEffect(() => {
         if (fullRef.current && document) {
@@ -517,19 +522,33 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
     };
 
     const CommentRender = () => {
-        return (
-            <>
-                {commentData.length > 0 ? (
-                    commentData.map((cmt, index) => {
-                        return <CommentItem key={index} cmt={cmt} />;
-                    })
-                ) : (
-                    <div className="flex justify-center py-3">
-                        <p>video này chưa có bình luận nào</p>
+        if (commentData == undefined) {
+            return (
+                <div className="flex justify-center py-3 gap-3">
+                    <Skeleton className="w-[45px] h-[45px] rounded-full" />
+                    <div className="flex flex-1 flex-col gap-2">
+                        <Skeleton className="w-16 h-full rounded-lg" />
+                        <Skeleton className="w-full h-full rounded-lg" />
+                        <Skeleton className="w-10 h-full rounded-lg" />
                     </div>
-                )}
-            </>
-        );
+                </div>
+            )
+        } else if (commentData.length == 0) {
+            return (
+                <div className="flex justify-center py-3">
+                    <p>video này chưa có bình luận nào</p>
+                </div>
+            )
+        } else {
+            return (
+                commentData.map((cmt, index) => {
+                    return <CommentItem key={index} cmt={cmt} />;
+                })
+            )
+
+
+        }
+
     };
 
     const Subcribe = () => {
@@ -601,26 +620,53 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
         }
     };
 
+    const HandleCurrentAccountAvatarRender = () => {
+        if (status === "loading") {
+            return (
+                <Skeleton className="w-full h-full rounded-full" />
+            )
+        } else if (status == "authenticated") {
+            return (
+                <Image
+                    alt=""
+                    className="my-auto bg-transparent rounded-full"
+                    src={session.user.image}
+                    sizes="1/1"
+                    fill
+                />
+            )
+        } else {
+            return (
+                <Image
+                    alt=""
+                    className="my-auto rounded-full bg-transparent animate-spin"
+                    src={
+                        "https://danviet.mediacdn.vn/upload/2-2019/images/2019-04-02/Vi-sao-Kha-Banh-tro-thanh-hien-tuong-dinh-dam-tren-mang-xa-hoi-khabanh-1554192528-width660height597.jpg"
+                    }
+                    fill
+                    sizes="1/1"
+                />
+            )
+        }
+    }
+
     return (
         <div
-            className={`relative ${
-                fullscreen ? "mt-0" : "mt-3"
-            } gap-10 h-full w-full overflow-y-scroll`}
+            className={`relative ${fullscreen ? "mt-0" : "mt-3"
+                } gap-10 h-full w-full overflow-y-scroll`}
         >
             <div className="lg:flex">
                 <div
                     ref={fullRef}
-                    className={`flex group flex-col w-full  ${
-                        fullscreen
-                            ? "absolute w-screen top-0 left-0 bg-white dark:bg-slate-600 overflow-y-scroll p-0 hidden-scrollbar"
-                            : `relative lg:w-3/4 lg:px-10 max-sm:px-2 px-5`
-                    }`}
+                    className={`flex group flex-col w-full  ${fullscreen
+                        ? "absolute w-screen top-0 left-0 bg-white dark:bg-slate-600 overflow-y-scroll p-0 hidden-scrollbar"
+                        : `relative lg:w-3/4 lg:px-10 max-sm:px-2 px-5`
+                        }`}
                 >
                     <div
                         ref={anyRef}
-                        className={`flex justify-center relative ${
-                            loadedContent ? "" : "pt-[56.25%] max-h-[80vh]"
-                        } ${fullscreen ? "w-full h-screen" : ""} rounded-xl`}
+                        className={`flex justify-center relative ${loadedContent ? "" : "pt-[56.25%] max-h-[80vh]"
+                            } ${fullscreen ? "w-full h-screen" : ""} rounded-xl`}
                     >
                         <video
                             ref={ref}
@@ -629,18 +675,15 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
                             onTimeUpdate={onTimeUpdate}
                             onProgress={onProgress}
                             onClick={handlePlayPause}
-                            className={`${
-                                fullscreen ? "h-screen" : "max-h-[80vh]"
-                            } w-full`}
+                            className={`${fullscreen ? "h-screen" : "max-h-[80vh]"
+                                } w-full`}
                         />
                         <div
-                            className={`flex flex-col gap-2 z-20 absolute bottom-0 w-full ${
-                                hide
-                                    ? "opacity-0"
-                                    : "opacity-100 translate-y-0 transition-opacity duration-300 ease-in-out"
-                            } h-fit px-2 transform translate-y-[1px] ${
-                                fullscreen ? "px-3" : ""
-                            }`}
+                            className={`flex flex-col gap-2 z-20 absolute bottom-0 w-full ${hide
+                                ? "opacity-0"
+                                : "opacity-100 translate-y-0 transition-opacity duration-300 ease-in-out"
+                                } h-fit px-2 transform translate-y-[1px] ${fullscreen ? "px-3" : ""
+                                }`}
                         >
                             {/* timeline */}
                             <div className="flex items-center relative">
@@ -655,12 +698,11 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
                                     ></div>
                                     <div
                                         style={{
-                                            width: `${
-                                                (currentTime /
-                                                    //@ts-ignore
-                                                    ref.current?.duration) *
+                                            width: `${(currentTime /
+                                                //@ts-ignore
+                                                ref.current?.duration) *
                                                 100
-                                            }%`,
+                                                }%`,
                                         }}
                                         className="h-full bg-red-500 absolute top-0 rounded-lg"
                                     ></div>
@@ -725,10 +767,10 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
                                                     isNaN(ref.current?.duration)
                                                         ? 0
                                                         : Number.parseInt(
-                                                              ref.current?.duration.toFixed(
-                                                                  0
-                                                              )
-                                                          )
+                                                            ref.current?.duration.toFixed(
+                                                                0
+                                                            )
+                                                        )
                                                 )}
                                             </p>
                                         )}
@@ -760,17 +802,15 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
                             </div>
                         </div>
                         <div
-                            className={`${
-                                hide ? "" : "bg-controls"
-                            } absolute bottom-0 w-full h-[20%] z-10`}
+                            className={`${hide ? "" : "bg-controls"
+                                } absolute bottom-0 w-full h-[20%] z-10`}
                         />
                     </div>
 
                     {/* video property */}
                     <div
-                        className={`max-sm:px-2 mt-2 ${
-                            fullscreen ? "px-3" : ""
-                        }`}
+                        className={`max-sm:px-2 mt-2 ${fullscreen ? "px-3" : ""
+                            }`}
                     >
                         <p className="text-3xl font-bold my-3">
                             {videoData.videoData.title}
@@ -786,10 +826,10 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
                                                         href={`/channel/${videoData.channelData.tagName}`}
                                                     >
                                                         <div className="relative lg:w-[55px] lg:h-[55px] max-sm:w-[45px] max-sm:h-[45px] w-[40px] h-[40px]">
-                                                            {channelAvatar && (
+                                                            {videoData.channelData.avatarImage && (
                                                                 <Image
                                                                     src={
-                                                                        channelAvatar
+                                                                        videoData.channelData.avatarImage
                                                                     }
                                                                     alt=""
                                                                     className="rounded-full bg-transparent"
@@ -891,9 +931,8 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
                     </div>
                     {/* des */}
                     <div
-                        className={`rounded-xl p-3 my-4 flex flex-col gap-2 bg-slate-200 dark:bg-slate-900 ${
-                            fullscreen ? "px-3" : ""
-                        }`}
+                        className={`rounded-xl p-3 my-4 flex flex-col gap-2 bg-slate-200 dark:bg-slate-900 ${fullscreen ? "px-3" : ""
+                            }`}
                     >
                         <div className="flex gap-3">
                             <p>{videoData.videoData.view} lượt xem</p>
@@ -905,9 +944,8 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
                     </div>
                     {/* comment */}
                     <div
-                        className={`flex flex-col gap-2 ${
-                            fullscreen ? "px-3" : ""
-                        }`}
+                        className={`flex flex-col gap-2 ${fullscreen ? "px-3" : ""
+                            }`}
                     >
                         <div className="flex gap-3 px-3">
                             <p className="my-auto h-fit">
@@ -935,25 +973,7 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
 
                         <div className="flex gap-3">
                             <div className="h-9 w-9 relative">
-                                {currentAccountAvatar ? (
-                                    <Image
-                                        alt=""
-                                        className="my-auto bg-transparent rounded-full"
-                                        src={currentAccountAvatar}
-                                        sizes="1/1"
-                                        fill
-                                    />
-                                ) : (
-                                    <Image
-                                        alt=""
-                                        className="my-auto rounded-full bg-transparent animate-spin"
-                                        src={
-                                            "https://danviet.mediacdn.vn/upload/2-2019/images/2019-04-02/Vi-sao-Kha-Banh-tro-thanh-hien-tuong-dinh-dam-tren-mang-xa-hoi-khabanh-1554192528-width660height597.jpg"
-                                        }
-                                        fill
-                                        sizes="1/1"
-                                    />
-                                )}
+                                <HandleCurrentAccountAvatarRender />
                             </div>
                             <form
                                 onSubmit={(e) => {
@@ -986,7 +1006,7 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
                                 <TabsTrigger value="video">Video</TabsTrigger>
                             </TabsList>
                             <TabsContent value="comment" className="mb-6">
-                                {CommentRender()}
+                                <CommentRender />
                             </TabsContent>
                             <TabsContent value="video">
                                 <div className="h-80">
@@ -1000,7 +1020,7 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
                             </TabsContent>
                         </Tabs>
                         <div className="flex-col gap-2 my-4 hidden lg:flex mb-6">
-                            {CommentRender()}
+                            <CommentRender />
                         </div>
                     </div>
                 </div>
@@ -1018,12 +1038,10 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
 }
 
 const VideoSuggest = ({
-    accountId,
     videoId,
     channelData,
 }: {
     videoId: number;
-    accountId: number;
     channelData: ChannelDataType;
 }) => {
     const [tab, setTab] = useState<number>(0);
@@ -1038,11 +1056,11 @@ const VideoSuggest = ({
             name: `Của ${channelData.name}`,
         },
     ];
-    const [allVideo, setAllVideo] = useState<VideoDataType[]>();
+    const [allVideo, setAllVideo] = useState<VideoWithoutComment[]>();
     const [thisChannelVideo, setThisChannelVideo] = useState<VideoDataType[]>();
 
     useEffectOnce(() => {
-        axios
+        const allVideoFetch = axios
             .get("/api/video/channel/except", {
                 params: {
                     videoId: videoId,
@@ -1053,7 +1071,7 @@ const VideoSuggest = ({
                 setThisChannelVideo(res.data);
             });
 
-        axios
+        const thisChannelVideoFetch = axios
             .get("/api/video/all/except", {
                 params: {
                     videoId: videoId,
@@ -1062,7 +1080,33 @@ const VideoSuggest = ({
             .then((res) => {
                 setAllVideo(res.data);
             });
+
+        Promise.all([allVideoFetch, thisChannelVideoFetch])
     });
+
+
+    const RenderAllVideo = () => {
+        if (allVideo) {
+            return allVideo.map((video, index) => {
+                return <VideoItem key={index} videoData={video.videoData} channelData={video.channelData} />;
+            })
+        } else {
+            return <div className="flex flex-col items-center h-fit w-full p-3">
+                <div className="relative w-full h-fit pt-[56.25%] rounded-md bg-transparent">
+                    <Skeleton className="absolute w-full h-full rounded-md" />
+                </div>
+                <div className="flex w-full gap-3 pt-1">
+                    <Skeleton className="w-[30px] h-[30px] rounded-full" />
+                    <div className="w-[calc(100%-30px)] flex flex-col">
+                        <Skeleton className="w-full h-[20px] rounded-lg" />
+
+                        <Skeleton className="w-12 h-[26px] rounded-lg" />
+                        <Skeleton className="w-12 h-[18px] rounded-lg" />
+                    </div>
+                </div>
+            </div>
+        }
+    }
 
     return (
         <div className="flex flex-col w-full">
@@ -1074,32 +1118,30 @@ const VideoSuggest = ({
                             onClick={() => {
                                 setTab(button.id);
                             }}
-                            className={`px-3 py-2 cursor-pointer rounded-xl bg-slate-300 dark:bg-slate-600 hover:bg-slate-400 dark:hover:bg-slate-700 ${
-                                tab === button.id
-                                    ? "shadow-[0_0_20px_purple_inset]"
-                                    : ""
-                            }`}
+                            className={`px-3 py-2 cursor-pointer rounded-xl bg-slate-300 dark:bg-slate-600 hover:bg-slate-400 dark:hover:bg-slate-700 ${tab === button.id
+                                ? "shadow-[0_0_20px_purple_inset]"
+                                : ""
+                                }`}
                         >
                             {button.name}
                         </div>
                     );
                 })}
             </div>
-            <div className="flex flex-col gap-3 pt-2 overflow-y-scroll hidden-scrollbar pr-3">
-                {tab === 0 &&
-                    allVideo?.map((video, index) => {
-                        return <VideoItem key={index} videoData={video} />;
-                    })}
-                {tab === 1 &&
-                    thisChannelVideo?.map((video, index) => {
+            <div className="">
+                <div className={`${tab == 0 ? '' : 'hidden'} flex flex-col gap-3 pt-2 overflow-y-scroll hidden-scrollbar pr-3`}>
+                    <RenderAllVideo />
+                </div>
+                <div className={`${tab == 1 ? '' : 'hidden'} flex flex-col gap-3 pt-2 overflow-y-scroll hidden-scrollbar pr-3`}>
+                    {thisChannelVideo?.map((video, index) => {
                         return (
                             <ThisChannelVideoItem
                                 key={index}
                                 videoData={video}
-                                channelData={channelData}
                             />
                         );
                     })}
+                </div>
             </div>
         </div>
     );

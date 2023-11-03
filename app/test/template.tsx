@@ -9,7 +9,7 @@ import { useAppSelector } from "@/redux/storage";
 import { close, reverse, open } from "@/redux/features/sidebar-slice";
 import { useOnClickOutside } from "usehooks-ts";
 
-export default function TestTemplate() {
+export default function TestTemplate({ children }: { children: React.ReactNode }) {
     const { data: session } = useSession();
 
     const sidebarRef = useRef<HTMLDivElement>(null);
@@ -34,7 +34,7 @@ export default function TestTemplate() {
             </div>
             <div className="flex mt-16 h-[calc(100vh-64px)] overflow-y-clip">
                 <Sidebar />
-                <div className="flex-1">ccc</div>
+                <div className="flex-1">{children}</div>
             </div>
         </div>
     );
