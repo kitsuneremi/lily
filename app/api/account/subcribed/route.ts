@@ -41,7 +41,7 @@ export async function GET(req: NextRequest) {
             // channels là một danh sách các thông tin kênh tương ứng
             return new NextResponse(JSON.stringify(channels), { status: 200 });
         } else {
-            return new NextResponse(JSON.stringify(null), { status: 400 });
+            return new NextResponse(JSON.stringify(null), { status: 200 });
         }
     } else {
         return new NextResponse(JSON.stringify(null), { status: 400 });
