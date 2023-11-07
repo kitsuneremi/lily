@@ -163,7 +163,7 @@ const Sidebar = () => {
                 </div>
             </div>
         )
-    } else {
+    } else if(deviceType.isAbsolute) { 
         return (
             <div className={`w-fit h-[calc(100vh-64px)] fixed left-0 top-16 bg-slate-300 dark:bg-slate-800 ${sidebar ? '' : 'hidden'} z-50`}>
                 <div className="flex-0 bg-transparent h-full justify-between flex flex-col pb-6" ref={sidebarRef}>
