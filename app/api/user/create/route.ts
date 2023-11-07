@@ -1,6 +1,6 @@
 import prisma from "@/lib/prisma";
 import * as bcrypt from 'bcrypt';
-
+import {v4 as uuid} from "uuid"
 interface RequestBody {
     name: string;
     email: string;
@@ -17,6 +17,8 @@ export async function POST(request: Request) {
             email: body.email,
             username: body.username,
             password: await bcrypt.hash(body.password, 10),
+            streamKey: uuid(),
+
         }
     });
 
