@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { ChannelDataType, VideoDataType } from "@/types/type";
+import { ChannelDataType, MediaDataType } from "@/types/type";
 import { FaPlay } from "react-icons/fa";
 import Image from "next/image";
 import { FormatDateTime } from "@/lib/functional";
@@ -14,7 +14,7 @@ export default function Videos({
 }: {
     channelData: ChannelDataType;
 }) {
-    const [listVideoData, setListVideoData] = useState<VideoDataType[]>([]);
+    const [listVideoData, setListVideoData] = useState<MediaDataType[]>([]);
 
     useEffectOnce(() => {
         axios
@@ -39,7 +39,7 @@ export default function Videos({
     );
 }
 
-const VideoItem = ({ videoData }: { videoData: VideoDataType }) => {
+const VideoItem = ({ videoData }: { videoData: MediaDataType }) => {
     const [img, setImg] = useState<string>("");
     const videoImageStorageRef = ref(
         storage,
@@ -59,7 +59,7 @@ const VideoItem = ({ videoData }: { videoData: VideoDataType }) => {
             <p>{videoData.title}</p>
             <div className="flex justify-between">
                 <p>{videoData.view} lượt xem</p>
-                <p>{FormatDateTime(videoData.createdAt)}</p>
+                <p>{FormatDateTime(videoData.createdTime)}</p>
             </div>
         </div>
     );

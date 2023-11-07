@@ -1,5 +1,5 @@
 "use client";
-import { ChannelDataType, VideoDataType } from "@/types/type";
+import { ChannelDataType, MediaDataType } from "@/types/type";
 import { FaPlay } from "react-icons/fa";
 import Image from "next/image";
 import { useEffect, useState } from "react";
@@ -14,7 +14,7 @@ export default function ChannelHome({
 }: {
     channelData: ChannelDataType;
 }) {
-    const [listPo, setListPo] = useState<VideoDataType[]>([]);
+    const [listPo, setListPo] = useState<MediaDataType[]>([]);
 
     useEffect(() => {
         axios
@@ -47,7 +47,7 @@ export default function ChannelHome({
     );
 }
 
-const VideoItem = ({ videoData }: { videoData: VideoDataType }) => {
+const VideoItem = ({ videoData }: { videoData: MediaDataType }) => {
     const [img, setImg] = useState<string>("");
     const videoImageStorageRef = ref(
         storage,
@@ -67,7 +67,7 @@ const VideoItem = ({ videoData }: { videoData: VideoDataType }) => {
             <p>{videoData.title}</p>
             <div className="flex justify-between">
                 <p>{videoData.view} lượt xem</p>
-                <p>{FormatDateTime(videoData.createdAt)}</p>
+                <p>{FormatDateTime(videoData.createdTime)}</p>
             </div>
         </div>
     );
