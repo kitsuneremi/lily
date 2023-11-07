@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma";
-import { VideoDataType } from "@/types/type";
+import { MediaDataType } from "@/types/type";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -7,7 +7,7 @@ export async function GET(req: NextRequest) {
     const channelId = searchParams.get('channelId');
 
     if (channelId) {
-        const video = await prisma.videos.findMany({
+        const video = await prisma.media.findMany({
             where: {
                 channelId: Number.parseInt(channelId)
             },
@@ -18,7 +18,7 @@ export async function GET(req: NextRequest) {
         })
 
         if (video) {
-            return new NextResponse(JSON.stringify(video as VideoDataType[]))
+            return new NextResponse(JSON.stringify(video as MediaDataType[]))
         } else {
             return new NextResponse(null, { status: 204 })
         }

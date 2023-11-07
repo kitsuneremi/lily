@@ -11,7 +11,10 @@ export async function POST(request: Request) {
         {
             where: {
                 accountId: data.accountId,
-                videoId: data.targetId
+                AND: {
+                    mediaId: data.targetId
+                }
+
             }
         }
     )
@@ -20,6 +23,6 @@ export async function POST(request: Request) {
             type: 0
         }
     })
-    const likewithcount = {...like, count: count}
+    const likewithcount = { ...like, count: count }
     return new Response(JSON.stringify(likewithcount))
 }

@@ -8,13 +8,13 @@ interface RequestBody {
 
 export async function POST(request: Request) {
     const body: RequestBody = await request.json();
-    const video = await prisma.videos.findFirst({
+    const video = await prisma.media.findFirst({
         where: {
             id: body.id,
         }
     })
     if (video != null) {
-        const newvideo = await prisma.videos.update({
+        const newvideo = await prisma.media.update({
             where: {
                 id: body.id
             },

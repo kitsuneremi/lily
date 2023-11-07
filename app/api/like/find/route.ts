@@ -12,7 +12,7 @@ export async function GET(request: Request) {
         const like = await prisma.likes.findFirst({
             where: {
                 accountId: params.accountId,
-                videoId: params.targetId
+                mediaId: params.targetId
             }
         })
         const x = await prisma.likes.count({

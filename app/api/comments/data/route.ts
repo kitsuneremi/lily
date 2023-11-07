@@ -10,7 +10,7 @@ export async function GET(req: NextRequest, res: NextResponse) {
     if (videoId) {
         const comments = await prisma.comment.findMany({
             where: {
-                videoId: Number.parseInt(videoId)
+                mediaId: Number.parseInt(videoId)
             },
             orderBy: {
                 createdAt: "desc"

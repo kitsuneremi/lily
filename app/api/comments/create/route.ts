@@ -15,7 +15,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
             data: {
                 content: content,
                 accountId: accountId,
-                videoId: videoId,
+                mediaId: videoId,
                 referenceId: null,
                 status: 0
             }
@@ -23,7 +23,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
 
         const listComment = await prisma.comment.findMany({
             where: {
-                videoId: videoId
+                mediaId: videoId
             },
             orderBy: {
                 createdAt: "desc"

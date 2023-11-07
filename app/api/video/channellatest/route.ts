@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma";
-import { VideoDataType } from "@/types/type";
+import { MediaDataType } from "@/types/type";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -8,12 +8,12 @@ export async function GET(req: NextRequest) {
     const channelId = searchParams.get('channelId');
 
     if (channelId) {
-        const lastestVideo = await prisma.videos.findFirst({
+        const lastestVideo = await prisma.media.findFirst({
             where: {
                 channelId: Number.parseInt(channelId)
             },
             orderBy: {
-                createdAt: 'desc'
+                createdTime: 'desc'
             }
         })
 
@@ -22,16 +22,16 @@ export async function GET(req: NextRequest) {
         if (lastestVideo) {
             const like = await prisma.likes.count({
                 where: {
-                    videoId: lastestVideo.id
+                    mediaId: lastestVideo.id
                 }
             })
 
             const comment = await prisma.comment.count({
                 where: {
-                    videoId: lastestVideo.id
+                    mediaId: lastestVideo.id
                 }
             })
-            const videoData: VideoDataType = { like: like, comment: comment, ...lastestVideo }
+            const videoData: MediaDataType = { like: like, comment: comment, ...lastestVideo }
 
             return new NextResponse(JSON.stringify(videoData))
         } else {

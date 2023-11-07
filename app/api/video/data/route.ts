@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
     console.log(link)
 
     if (link) {
-        const videoData = await prisma.videos.findFirst({
+        const videoData = await prisma.media.findFirst({
             where: {
                 link: link
             }
@@ -19,13 +19,13 @@ export async function GET(req: NextRequest) {
         if (videoData) {
             const likeCount = await prisma.likes.count({
                 where: {
-                    videoId: videoData.id,
+                    mediaId: videoData.id,
                     type: 0
                 }
             })
             const commentFetch = prisma.comment.findMany({
                 where: {
-                    videoId: videoData.id
+                    mediaId: videoData.id
                 },
                 orderBy: {
                     createdAt: "desc"
@@ -47,10 +47,12 @@ export async function GET(req: NextRequest) {
 
             const channelAvatarRef = ref(storage, `/channel/avatars/${channelData?.tagName}`)
             const channelAvatarUrl = await getDownloadURL(channelAvatarRef)
+            if (channelData) {
+                const temp: BigVideoDataType = { videoData: { ...videoData, like: likeCount }, channelData: { ...channelData, sub: subCount, avatarImage: channelAvatarUrl }, commentData }
 
-            const temp:BigVideoDataType = { videoData: { ...videoData, like: likeCount }, channelData: { ...channelData, sub: subCount, avatarImage: channelAvatarUrl}, commentData }
+                return new NextResponse(JSON.stringify(temp), { status: 200 })
+            }
 
-            return new NextResponse(JSON.stringify(temp), { status: 200 })
         } else {
             return new NextResponse(JSON.stringify({}))
         }

@@ -6,9 +6,12 @@ export async function GET(req: NextRequest, res: NextResponse) {
     const videoId = searchParam.get('videoId');
     const channelId = searchParam.get('channelId');
     if (videoId && Number.parseInt(videoId) && channelId && Number.parseInt(channelId)) {
-        const allVideos = await prisma.videos.findMany({
+        const allVideos = await prisma.media.findMany({
             where: {
                 channelId: Number.parseInt(channelId),
+                AND: {
+                    mediaType: 0
+                }
             }
         })
 

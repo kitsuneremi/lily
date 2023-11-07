@@ -22,7 +22,7 @@ export async function POST(request: Request) {
     const find = await prisma.likes.findFirst({
         where: {
             accountId: data.accountId,
-            videoId: data.targetId
+            mediaId: data.targetId
         }
     });
 
@@ -38,7 +38,7 @@ export async function POST(request: Request) {
         const like = await prisma.likes.create({
             data: {
                 accountId: data.accountId,
-                videoId: data.targetId,
+                mediaId: data.targetId,
                 type: data.type
             }
         })
