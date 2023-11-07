@@ -1,5 +1,5 @@
 export type BigVideoDataType = {
-    videoData: VideoDataType,
+    videoData: MediaDataType,
     channelData: ChannelDataType,
     commentData: CommentDataType[]
 }
@@ -7,7 +7,7 @@ export type BigVideoDataType = {
 
 export type CommentDataType = {
     id: number,
-    videoId: number,
+    mediaId: number,
     accountId: number,
     content: string,
     status: number,
@@ -30,18 +30,20 @@ export type ChannelDataType = {
     avatarImage?: string,
     bannerImage?: string | null,
     streamKey: string
+    live: Boolean
 }
 
-
-export type VideoDataType = {
+export type MediaDataType = {
     id: number,
     title: string,
     des: string,
     view?: number,
     status: number,
     link: string,
+    isLive: boolean | null,
+    mediaType: number,
     channelId: number,
-    createdAt: Date,
+    createdTime: Date,
     updatedAt: Date,
     like?: number,
     comment?: number,
@@ -72,28 +74,40 @@ export type SubcribeType = {
 }
 
 export type VideoWithoutComment = {
-    "videoData": {
-        "thumbnail": string,
-        "id": number,
-        "title": string,
-        "des": string,
-        "view": number,
-        "status": number,
-        "link": string,
-        "channelId": number,
-        "createdAt": Date,
-        "updatedAt": Date
+    videoData: {
+        thumbnail: string,
+        id: number,
+        title: string,
+        des: string,
+        view: number,
+        status: number,
+        link: string,
+        channelId: number,
+        createdAt: Date,
+        updatedAt: Date
     },
-    "channelData": {
-        "avatarImage": string,
-        "id": number,
-        "name": string,
-        "tagName": string,
-        "des": string,
-        "accountId": 1,
-        "createdAt": Date,
-        "updatedAt": Date
+    channelData: {
+        avatarImage: string,
+        id: number,
+        name: string,
+        tagName: string,
+        des: string,
+        accountId: 1,
+        createdAt: Date,
+        updatedAt: Date,
+        streamKey: string
     }
 }
 
 
+export type LiveData = {
+    id: number;
+    title: string | null;
+    des: string | null;
+    status: number;
+    channelId: number | null;
+    view: number;
+    startTime: Date;
+    endTime: Date;
+    isLive: boolean;
+}
