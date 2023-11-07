@@ -15,7 +15,7 @@ import {
     ChannelDataType,
     CommentDataType,
     SubcribeType,
-    VideoDataType,
+    MediaDataType,
     VideoWithoutComment,
 } from "@/types/type";
 import {
@@ -87,7 +87,7 @@ const formatter = (value: number) => `${value}%`;
 let timer: any;
 
 export default function Page({ videoData }: { videoData: BigVideoDataType }) {
-    const src = `${fileURL}/api/video/${videoData.videoData.link}`;
+    const src = videoData.videoData.mediaType == 0 ? `${fileURL}/api/video/${videoData.videoData.link}` : `${fileURL}/api/merge/${videoData.videoData.link}/live`;
 
     const commentInputRef = useRef<HTMLInputElement>(null);
     const ref = useRef<HTMLVideoElement>(null);
@@ -109,7 +109,6 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
     const [commentData, setCommentData] = useState<CommentDataType[]>();
     const [fullscreen, setFullscreen] = useState<boolean>(false);
     const [loadedContent, setLoadedContent] = useState<boolean>(false);
-    const [currentAccountAvatar, setCurrentAccountAvatar] = useState<string>();
 
     const { data: session, status } = useSession();
     const [like, setLike] = useState<boolean>(false);
@@ -937,7 +936,7 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
                         <div className="flex gap-3">
                             <p>{videoData.videoData.view} lượt xem</p>
                             <p>
-                                {FormatDateTime(videoData.videoData.createdAt)}
+                                {videoData.videoData.mediaType == 0 ? FormatDateTime(videoData.videoData.createdTime) : `Đã phát trực tiếp ${FormatDateTime(videoData.videoData.createdTime)}`}
                             </p>
                         </div>
                         <p className="">{videoData.videoData.des}</p>
@@ -1057,7 +1056,7 @@ const VideoSuggest = ({
         },
     ];
     const [allVideo, setAllVideo] = useState<VideoWithoutComment[]>();
-    const [thisChannelVideo, setThisChannelVideo] = useState<VideoDataType[]>();
+    const [thisChannelVideo, setThisChannelVideo] = useState<MediaDataType[]>();
 
     useEffectOnce(() => {
         const allVideoFetch = axios
