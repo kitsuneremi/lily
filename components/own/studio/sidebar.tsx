@@ -14,7 +14,7 @@ import { ChannelDataType } from "@/types/type";
 import axios from "axios";
 import { BsUpload } from 'react-icons/bs'
 import { authOptions } from "@/lib/auth";
-import { useMediaQuery, useOnClickOutside } from "usehooks-ts";
+import { useEffectOnce, useMediaQuery, useOnClickOutside } from "usehooks-ts";
 
 import {
     Accordion,
@@ -61,6 +61,14 @@ const Sidebar = () => {
             })
         }
     }, [session])
+
+    useEffectOnce(() => {
+        if (deviceType.isFlex) {
+            dispatch(open());
+        } else if (deviceType.isAbsolute) {
+            dispatch(close());
+        }
+    })
 
     useEffect(() => {
         if (url.includes('/overview')) {

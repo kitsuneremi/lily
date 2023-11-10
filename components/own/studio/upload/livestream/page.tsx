@@ -17,8 +17,9 @@ import { useCopyToClipboard, useEffectOnce } from "usehooks-ts";
 import Link from 'next/link'
 import { getSession } from 'next-auth/react';
 import { useMediaQuery, useOnClickOutside } from "usehooks-ts";
-
-export default function Page({ session }: { session: Session }) {
+import Image from 'next/image'
+import { Skeleton } from '@/components/ui/skeleton';
+export default function Page({ session, channelData }: { session: Session, channelData: ChannelDataType }) {
 
     const [value, copy] = useCopyToClipboard();
     const [title, setTitle] = useState<string>('');
@@ -27,7 +28,9 @@ export default function Page({ session }: { session: Session }) {
 
     const [tab, setTab] = useState<number>(0);
     const [streamData, setStreamData] = useState<MediaDataType | null>();
-    const [channelData, setChannelData] = useState<ChannelDataType>();
+    const [isLive, setIsLive] = useState<boolean>(channelData.live ? true : false);
+
+    const [commentValue, setCommentValue] = useState<string>('');
 
     const deviceType = {
         isFlex: useMediaQuery("(min-width: 1200px"),
@@ -53,11 +56,11 @@ export default function Page({ session }: { session: Session }) {
 
     useEffectOnce(() => {
         setInterval(() => {
-            axios.get('/api/channel/data', {
+            axios.get('/api/channel/islive', {
                 params: {
-                    accountId: session?.user.id
+                    accountId: session.user.id
                 }
-            }).then(res => setChannelData(res.data))
+            }).then(res => setIsLive(res.data))
         }, 5000)
     })
 
@@ -180,7 +183,7 @@ export default function Page({ session }: { session: Session }) {
 
     const handleStreamButton = () => {
         if (channelData) {
-            if (channelData.live && streamData) {
+            if (isLive && streamData) {
                 if (streamData.isLive) {
                     return <div className='flex gap-2'>
                         <button className='px-3 py-2 bg-cyan-600' onClick={() => { handleUpdateStreamData() }}>Cập nhật</button>
@@ -189,10 +192,10 @@ export default function Page({ session }: { session: Session }) {
                 } else {
                     return <Link href={`/watch/${streamData?.link}`}>xem lại</Link>
                 }
-            } else if (channelData.live && streamData === null) {
-                return <button className={`px-3 py-2 bg-cyan-400`} onClick={() => { handlePostStream() }}>Phát trực tiếp</button>
-            } else if (!channelData.live) {
-                return <button className={`px-3 py-2 bg-slate-500`} onClick={() => { handlePostStream() }}>Phát trực tiếp</button>
+            } else if (isLive && streamData === null) {
+                return <button className={`px-3 py-2 bg-cyan-400 flex-shrink-0`} onClick={() => { handlePostStream() }}>Phát trực tiếp</button>
+            } else if (!isLive) {
+                return <button className={`px-3 py-2 bg-slate-500 flex-shrink-0`} onClick={() => { handlePostStream() }}>Phát trực tiếp</button>
             }
         }
     }
@@ -219,7 +222,7 @@ export default function Page({ session }: { session: Session }) {
                             </div>
                         </div>
                         <div className='flex justify-between items-center'>
-                            {channelData ? (channelData.live ? <p>
+                            {channelData ? (isLive ? <p>
                                 tính năng tắt phát trực tiếp tạm thời chưa có, tắt ở obs đi
                             </p> : <p>Để phát trực tiếp, hãy gửi video của bạn đến FakeTube bằng phần mềm phát trực tiếp như obs, streamlab,...</p>) : <></>}
                             {handleStreamButton()}
@@ -237,8 +240,27 @@ export default function Page({ session }: { session: Session }) {
                     </div>
                 </div>
                 {/* realtime chat */}
-                <div className='w-1/4'>
-                    real time chat
+                <div className='w-1/4 p-5'>
+                    <div className='rounded-lg w-full h-full shadow-[0_0_1px_4px_purple] flex flex-col justify-between'>
+                        <div className='bg-slate-700 px-3 py-1 rounded-t-lg text-sm'>Trò chuyện trực tiếp</div>
+                        <div className='h-full w-full flex-1'></div>
+                        <div className='flex flex-col bg-slate-800 p-2 gap-2 rounded-b-lg'>
+                            <div className='flex gap-2'>
+                                <div className='h-full flex items-center'>
+                                    <div className='w-7 h-7 relative'>
+                                        {channelData && channelData.avatarImage ? <Image src={channelData.avatarImage} alt='' fill className='rounded-full' /> : <Skeleton className='rounded-full w-7 h-7' />}
+                                    </div>
+                                </div>
+                                <div className='flex flex-col w-full gap-2'>
+                                    {channelData ? <div className='w-fit px-2 rounded-lg text-black font-bold bg-yellow-200'><p className='text-sm'>{channelData.name}</p></div> : <Skeleton className='w-16 h-4 ' />}
+                                    <input value={commentValue} placeholder='bình luận' onChange={e => { setCommentValue(e.target.value) }} className='w-full text-sm border-t-0 border-x-0 bg-transparent border border-b-[1px] border-slate-500 focus:outline-none focus:border-b-slate-700' />
+                                </div>
+                            </div>
+                            <div className='w-full flex justify-end'>
+                                <button className='px-2 py-1 rounded-lg bg-slate-700 hover:bg-slate-600 text-sm'>bình luận</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
             </div>

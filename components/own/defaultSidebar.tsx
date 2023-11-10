@@ -1,6 +1,6 @@
 "use client";
 import { useEffectOnce, useOnClickOutside } from "usehooks-ts";
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState, useMemo } from "react";
 import { AiOutlineHome, AiOutlineRight, AiFillSetting } from "react-icons/ai";
 import { MdFeedback } from 'react-icons/md'
 import Link from "next/link";
@@ -40,7 +40,11 @@ export default function Sidebar() {
     })
 
     useEffectOnce(() => {
-        dispatch(close());
+        if (deviceType.isFlex) {
+            dispatch(open());
+        } else if (deviceType.isAbsolute) {
+            dispatch(close());
+        }
     });
 
     useEffect(() => {
@@ -89,6 +93,24 @@ export default function Sidebar() {
         );
     };
 
+
+    const subcribeRender = useMemo(() => {
+        if (subcribeList) {
+            return <>
+                <div className="w-full h-[2px] relative after:absolute after:bg-slate-300 dark:after:bg-slate-500 after:h-[90%] after:top-[5%] after:left-0 after:w-full" />
+                <p className="w-full text-lg pl-2">Kênh đăng ký</p>
+                {/* kênh đăng ký */}
+                <div className="">
+                    {subcribeList.length > 5 && <div className="w-full" onClick={() => { setShowFullSubcribe(prev => { return !prev }) }}>{showFullSubcribe ? 'Ẩn bớt' : `Hiển thị {subcribeList.length - 5} kênh nữa`}</div>}
+                    {showFullSubcribe ? subcribeList.map((item, index) => {
+                        return <SubcribedChannel item={item} key={index} />
+                    }) : subcribeList.slice(0, 5).map((item, index) => {
+                        return <SubcribedChannel item={item} key={index} />
+                    })}
+                </div>
+            </>
+        }
+    }, [subcribeList])
 
     const FullRender = () => {
         return (
@@ -177,21 +199,7 @@ export default function Sidebar() {
                     </div>
                 </Link>
 
-                {
-                    subcribeList && <>
-                        <div className="w-full h-[2px] relative after:absolute after:bg-slate-300 dark:after:bg-slate-500 after:h-[90%] after:top-[5%] after:left-0 after:w-full" />
-                        <p className="w-full text-lg pl-2">Kênh đăng ký</p>
-                        {/* kênh đăng ký */}
-                        <div className="">
-                            {subcribeList.length > 5 && <div className="w-full" onClick={() => { setShowFullSubcribe(prev => { return !prev }) }}>{showFullSubcribe ? 'Ẩn bớt' : `Hiển thị {subcribeList.length - 5} kênh nữa`}</div>}
-                            {showFullSubcribe ? subcribeList.map((item, index) => {
-                                return <SubcribedChannel item={item} key={index} />
-                            }) : subcribeList.slice(0, 5).map((item, index) => {
-                                return <SubcribedChannel item={item} key={index} />
-                            })}
-                        </div>
-                    </>
-                }
+                {subcribeRender}
 
                 <div className="w-full h-[2px] relative after:absolute after:bg-slate-300 dark:after:bg-slate-500 after:h-[90%] after:top-[5%] after:left-0 after:w-full" />
 
@@ -230,7 +238,7 @@ export default function Sidebar() {
             <>
                 <Link href={'/'}>
                     <div className="flex flex-col items-center hover:bg-slate-200 dark:hover:bg-slate-700 p-1 ml-2 rounded-lg">
-                        <div className="text-2xl">
+                        <div className="text-2xl max-sm:text-base">
                             <AiOutlineHome />
                         </div>
                         <p className="text-xs">Trang chủ</p>
@@ -238,7 +246,7 @@ export default function Sidebar() {
                 </Link>
                 <Link href={'/shorts'}>
                     <div className="flex flex-col items-center hover:bg-slate-200 dark:hover:bg-slate-700  p-1 ml-2 rounded-lg">
-                        <div className="text-2xl">
+                        <div className="text-2xl max-sm:text-base">
                             <AiOutlineHome />
                         </div>
                         <p className="text-xs">Shorts</p>
@@ -246,7 +254,7 @@ export default function Sidebar() {
                 </Link>
                 <Link href={'/subcribe'}>
                     <div className="flex flex-col items-center hover:bg-slate-200 dark:hover:bg-slate-700  p-1 ml-2 rounded-lg">
-                        <div className="text-2xl">
+                        <div className="text-2xl max-sm:text-base">
                             <AiOutlineHome />
                         </div>
                         <p className="text-xs text-center">Kênh đăng ký</p>
@@ -254,7 +262,7 @@ export default function Sidebar() {
                 </Link>
                 <Link href={'/feed/you'}>
                     <div className="flex flex-col items-center hover:bg-slate-200 dark:hover:bg-slate-700  p-1 ml-2 rounded-lg">
-                        <div className="text-2xl">
+                        <div className="text-2xl max-sm:text-base">
                             <AiOutlineHome />
                         </div>
                         <p className="text-xs">Bạn</p>
@@ -262,7 +270,7 @@ export default function Sidebar() {
                 </Link>
                 <Link href={'/setting/account'}>
                     <div className="flex flex-col items-center hover:bg-slate-200 dark:hover:bg-slate-700  p-1 ml-2 rounded-lg">
-                        <div className="text-2xl">
+                        <div className="text-2xl max-sm:text-base">
                             <AiFillSetting />
                         </div>
                         <p className="text-xs">Cài đặt</p>
@@ -270,7 +278,7 @@ export default function Sidebar() {
                 </Link>
                 <Link href={'/feedback'}>
                     <div className="flex flex-col items-center hover:bg-slate-200 dark:hover:bg-slate-700  p-1 ml-2 rounded-lg">
-                        <div className="text-2xl">
+                        <div className="text-2xl max-sm:text-base">
                             <MdFeedback />
                         </div>
                         <p className="text-xs">Phản hồi</p>
@@ -292,7 +300,7 @@ export default function Sidebar() {
                     <MiniRender />
                 </div>
             }
-        } else {
+        } else if (deviceType.isAbsolute) {
             return (
                 <>
                     <div className="w-max flex flex-col gap-3">

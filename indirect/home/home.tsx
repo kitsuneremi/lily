@@ -1,10 +1,10 @@
 import VideoItem from "@/components/own/home/VideoItem";
-import { VideoDataType, ChannelDataType } from "@/types/type";
+import { ChannelDataType, MediaDataType } from "@/types/type";
 
 export default function ({
     listVideo,
 }: {
-    listVideo: { videoData: VideoDataType; channelData: ChannelDataType }[];
+    listVideo: { videoData: MediaDataType; channelData: ChannelDataType }[];
 }) {
     const VideoItemRender = () => {
         return listVideo.map((item, index) => {
@@ -19,20 +19,7 @@ export default function ({
     };
 
     return (
-        <div className="max-h-[calc(100vh-64px)] h-fit flex-1 overflow-y-scroll grid-flow-row  grid max-[640px]:grid-cols-1 max-[640px]:justify-items-center sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 min-[2000px]:grid-cols-6 gap-8 px-2 lg:px-3">
-            {VideoItemRender()}
-            {VideoItemRender()}
-            {VideoItemRender()}
-            {VideoItemRender()}
-            {VideoItemRender()}
-            {VideoItemRender()}
-            {VideoItemRender()}
-            {VideoItemRender()}
-            {VideoItemRender()}
-            {VideoItemRender()}
-            {VideoItemRender()}
-            {VideoItemRender()}
-            {VideoItemRender()}
+        <div className="max-h-[calc(100vh-64px)] h-fit flex-1 overflow-y-scroll grid-flow-row grid max-[640px]:grid-cols-1 max-[640px]:justify-items-center sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 min-[2000px]:grid-cols-6 gap-8 px-2 lg:px-3">
             {VideoItemRender()}
         </div>
     );

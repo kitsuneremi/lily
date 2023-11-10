@@ -1,6 +1,6 @@
 "use client";
 import { useMediaQuery, useOnClickOutside, useEffectOnce } from "usehooks-ts";
-import React, { Ref, useEffect, useState, useRef, Suspense } from "react";
+import React, { Ref, useEffect, useState, useRef, Suspense, useCallback, memo } from "react";
 import { BsYoutube, BsBell, BsChatLeftDots } from "react-icons/bs";
 import {
     AiOutlineMenu,
@@ -35,10 +35,19 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useDispatch } from "react-redux";
 import { useAppSelector } from "@/redux/storage";
 import { close, reverse, open } from "@/redux/features/sidebar-slice";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+
 
 const Notification = dynamic(() => import("@/components/own/Notification"));
 export default function Navbar() {
-    const { data: session } = useSession();
+    const { data: session, status } = useSession();
     const { setTheme, theme } = useTheme();
     const { isBrowser } = useSsr();
     const router = useRouter();
@@ -113,6 +122,26 @@ export default function Navbar() {
         }
     }, [session]);
 
+
+    const MenuRender = memo(() => {
+        return <Link
+            href={"/"}
+            className="text-xl flex items-center gap-2"
+        >
+            <div className="relative w-5 h-5 lg:w-9 lg:h-9">
+                <Image
+                    className="rounded-full animate-spin"
+                    src={
+                        "https://danviet.mediacdn.vn/upload/2-2019/images/2019-04-02/Vi-sao-Kha-Banh-tro-thanh-hien-tuong-dinh-dam-tren-mang-xa-hoi-khabanh-1554192528-width660height597.jpg"
+                    }
+                    fill
+                    sizes="1/1"
+                    alt="khá bảnh"
+                />
+            </div>
+        </Link>
+    })
+
     const navbar = () => {
         if (isBrowser) {
             if (deviceType.isMobile) {
@@ -180,7 +209,7 @@ export default function Navbar() {
                     return (
                         <>
                             <div
-                                className="flex gap-5 text-xl items-center"
+                                className="flex w-40 gap-8 text-xl items-center"
                                 onClick={() => {
                                     dispatch(reverse());
                                 }}
@@ -190,11 +219,16 @@ export default function Navbar() {
                                 ) : (
                                     <AiOutlineLeft />
                                 )}
-                                <Link href={"/"}>
-                                    <button className="flex gap-2 items-center">
-                                        Lily
-                                    </button>
-                                </Link>
+                                <TooltipProvider>
+                                    <Tooltip>
+                                        <TooltipTrigger>
+                                            <MenuRender />
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                            <p>Quay về trang chủ</p>
+                                        </TooltipContent>
+                                    </Tooltip>
+                                </TooltipProvider>
                             </div>
                             <div className="flex gap-3 items-center">
                                 <div
@@ -300,11 +334,23 @@ export default function Navbar() {
                             <TooltipProvider>
                                 <Tooltip>
                                     <TooltipTrigger>
-                                        <Link href={"/station/upload"}>
-                                            <div className="text-2xl cursor-pointer">
-                                                <AiOutlineUpload />
-                                            </div>
-                                        </Link>
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger>
+                                                <div className="text-2xl cursor-pointer">
+                                                    <AiOutlineUpload />
+                                                </div>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent>
+                                                <DropdownMenuLabel>Loại nội dung đăng tải</DropdownMenuLabel>
+                                                <DropdownMenuSeparator />
+                                                <DropdownMenuItem><Link href={"/station/upload/video"} className="w-full">Video</Link></DropdownMenuItem>
+                                                <DropdownMenuItem><Link href={"/station/upload/livestream"} className="w-full">Sự kiện trực tiếp</Link></DropdownMenuItem>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
+
+
+
+
                                     </TooltipTrigger>
                                     <TooltipContent>
                                         <p>Đăng tải nội dung</p>
@@ -399,10 +445,10 @@ export default function Navbar() {
         );
     };
 
-    const AccountAvatarRender = () => {
-        if (session == undefined) {
+    const AccountAvatarRender = useCallback(() => {
+        if (status == "loading") {
             return <Skeleton className="h-full w-full rounded-full" />;
-        } else if (session.user.image != "") {
+        } else if (session && session.user.image != "") {
             return (
                 <Image
                     src={session.user.image}
@@ -418,14 +464,14 @@ export default function Navbar() {
                     src={
                         "https://danviet.mediacdn.vn/upload/2-2019/images/2019-04-02/Vi-sao-Kha-Banh-tro-thanh-hien-tuong-dinh-dam-tren-mang-xa-hoi-khabanh-1554192528-width660height597.jpg"
                     }
-                    className="rounded-full"
+                    className="rounded-full animate-spin"
                     fill
                     sizes="1/1"
                     alt=""
                 />
             );
         }
-    };
+    }, [session]);
 
     const ChannelRender = () => {
         if (!session && personalChannelData == undefined) {
