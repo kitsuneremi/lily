@@ -42,7 +42,6 @@ import {
 import { FormatDateTime, fileURL, videoTimeFormater } from "@/lib/functional";
 import { useSession } from "next-auth/react";
 import CommentItem from "@/components/own/watch/comment/CommentItem";
-import { handleSubmit } from "@/components/own/watch/comment/CommentInput";
 import { ref as fireRef, getDownloadURL } from "firebase/storage";
 import { storage } from "@/lib/firebase";
 import Hls from "hls.js";

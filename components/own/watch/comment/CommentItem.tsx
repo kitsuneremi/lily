@@ -1,5 +1,5 @@
 "use client";
-import { VideoDataType, CommentDataType } from "@/types/type";
+import { CommentDataType } from "@/types/type";
 import { FormatDateTime, baseURL } from "@/lib/functional";
 import { useEffect, useState } from "react";
 import {
@@ -41,6 +41,8 @@ export default function CommentItem({ cmt }: { cmt: CommentDataType }) {
                 setAccountData(res.data);
             });
     });
+
+    useEffect(() => { console.log(cmt) }, [cmt])
 
     const ImageRender = () => {
         if (cmt.accountImage) {

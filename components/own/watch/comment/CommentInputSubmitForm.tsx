@@ -14,7 +14,7 @@ export const handleSubmit = async (formData: FormData) => {
             data: {
                 content: content,
                 accountId: Number.parseInt(accountId),
-                videoId: Number.parseInt(videoId),
+                mediaId: Number.parseInt(videoId),
                 status: 0,
             }
         })

@@ -1,4 +1,6 @@
+import { storage } from "@/lib/firebase";
 import prisma from "@/lib/prisma"
+import { getDownloadURL, ref } from "firebase/storage";
 import { NextRequest, NextResponse } from "next/server";
 export async function GET(req: NextRequest) {
 
@@ -10,10 +12,14 @@ export async function GET(req: NextRequest) {
                 id: Number.parseInt(id)
             }
         })
+
+
         if (account) {
             const { password, ...userWithoutPass } = account
+            const imageRef = ref(storage, `account/avatars/${account.id}`)
+            const image = getDownloadURL(imageRef)
 
-            return new NextResponse(JSON.stringify(userWithoutPass), { status: 201 })
+            return new NextResponse(JSON.stringify({ avatarImage: image, userWithoutPass }), { status: 201 })
         } else {
             return new NextResponse(JSON.stringify({
                 message: 'cannot find user'

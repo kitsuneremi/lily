@@ -2,12 +2,14 @@
 import Image from "next/image";
 import VideoItem from "@/components/own/watch/VideoItem";
 import ThisChannelVideoItem from "@/components/own/watch/ThisChannelVideoItem";
+import VideoSuggest from "@/components/own/watch/VIdeoSuggest";
 import React, {
     useEffect,
     useRef,
     useState,
     useLayoutEffect,
     FormEvent,
+    useCallback,
 } from "react";
 import axios from "axios";
 import {
@@ -39,7 +41,6 @@ import {
 import { FormatDateTime, fileURL, videoTimeFormater } from "@/lib/functional";
 import { useSession } from "next-auth/react";
 import CommentItem from "@/components/own/watch/comment/CommentItem";
-import { handleSubmit } from "@/components/own/watch/comment/CommentInput";
 import { ref as fireRef, getDownloadURL } from "firebase/storage";
 import { storage } from "@/lib/firebase";
 import Hls from "hls.js";
@@ -60,10 +61,8 @@ import { MdSkipNext } from "react-icons/md";
 import { AiFillSetting } from "react-icons/ai";
 import { Slider } from "antd";
 import type { MenuProps } from "antd";
-import { Dropdown, Space } from "antd";
+import { Dropdown } from "antd";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CiPlay1, CiPause1 } from "react-icons/ci";
-import { RxTrackNext } from "react-icons/rx";
 import { NotificationOutlined } from "@ant-design/icons";
 import Link from "next/link";
 import {
@@ -72,8 +71,7 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useLocalStorage } from "usehooks-ts";
-import { useEffectOnce } from "usehooks-ts";
+import { useLocalStorage, useEffectOnce } from "usehooks-ts";
 import { redirect } from "next/navigation";
 import { useToast } from "@/components/ui/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -177,13 +175,11 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
 
     useEffect(() => {
         if (session && session.user) {
-            //@ts-ignore
             if (session.user.id !== videoData.channelData.accountId) {
                 axios
                     .get("/api/subcribe", {
                         params: {
                             targetChannel: videoData.channelData.id,
-                            //@ts-ignore
                             accountId: session.user.id,
                         },
                     })
@@ -199,12 +195,10 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
             axios
                 .get("/api/like/find", {
                     params: {
-                        // @ts-ignore
                         accountId: session.user.id,
                         targetId: videoData.channelData.id,
                     },
                     headers: {
-                        //@ts-ignore
                         Authorization: `Bearer ${session.user.accessToken}`,
                     },
                 })
@@ -438,7 +432,7 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
         },
     ];
 
-    const handleLike = () => {
+    const handleLike = useCallback(() => {
         if (session && session.user) {
             if (like) {
                 setLike(false);
@@ -459,9 +453,9 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
                 });
             }
         }
-    };
+    }, []);
 
-    const handleDislike = () => {
+    const handleDislike = useCallback(() => {
         if (session && session.user) {
             setDislike(!dislike);
             setLike(false);
@@ -480,9 +474,9 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
                 });
             }
         }
-    };
+    }, []);
 
-    const handleSubcribe = () => {
+    const handleSubcribe = useCallback(() => {
         if (session && session.user) {
             axios
                 .post("/api/subcribe/addordelete", {
@@ -496,11 +490,11 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
         } else {
             redirect("/register");
         }
-    };
+    }, []);
 
-    const handleSubmitComment = (e: FormEvent<HTMLFormElement>) => {
+    const handleSubmitComment = useCallback((e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (session && session.user) {
+        if (status == "authenticated") {
             axios
                 .post("/api/comments/create", {
                     videoId: videoData.videoData.id,
@@ -515,12 +509,12 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
         } else {
             toast({
                 title: "chưa thể đăng bình luận",
-                content: "bạn chưa đăng nhập",
+                description: "bạn chưa đăng nhập",
             });
         }
-    };
+    }, [session]);
 
-    const CommentRender = () => {
+    const CommentRender = useCallback(() => {
         if (commentData == undefined) {
             return (
                 <div className="flex justify-center py-3 gap-3">
@@ -547,10 +541,9 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
 
 
         }
+    }, [commentData]);
 
-    };
-
-    const Subcribe = () => {
+    const Subcribe = useCallback(() => {
         if (session && session.user) {
             //@ts-ignore
             if (session.user.id === videoData.channelData.accountId) {
@@ -617,7 +610,7 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
                 }
             }
         }
-    };
+    }, [subcribe]);
 
     const HandleCurrentAccountAvatarRender = () => {
         if (status === "loading") {
@@ -963,7 +956,7 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
                                             Bình luận hàng đầu
                                         </DropdownMenuItem>
                                         <DropdownMenuItem>
-                                            Thời gian{" "}
+                                            Thời gian
                                         </DropdownMenuItem>
                                     </div>
                                 </DropdownMenuContent>
@@ -1025,8 +1018,6 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
                 </div>
                 <div className="hidden lg:flex flex-grow w-full flex-1">
                     <VideoSuggest
-                        //@ts-ignore
-                        accountId={session?.user.id}
                         channelData={videoData.channelData}
                         videoId={videoData.videoData.id}
                     />
@@ -1035,113 +1026,3 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
         </div>
     );
 }
-
-const VideoSuggest = ({
-    videoId,
-    channelData,
-}: {
-    videoId: number;
-    channelData: ChannelDataType;
-}) => {
-    const [tab, setTab] = useState<number>(0);
-
-    const listItem = [
-        {
-            id: 0,
-            name: "Tất cả",
-        },
-        {
-            id: 1,
-            name: `Của ${channelData.name}`,
-        },
-    ];
-    const [allVideo, setAllVideo] = useState<VideoWithoutComment[]>();
-    const [thisChannelVideo, setThisChannelVideo] = useState<MediaDataType[]>();
-
-    useEffectOnce(() => {
-        const allVideoFetch = axios
-            .get("/api/video/channel/except", {
-                params: {
-                    videoId: videoId,
-                    channelId: channelData.id,
-                },
-            })
-            .then((res) => {
-                setThisChannelVideo(res.data);
-            });
-
-        const thisChannelVideoFetch = axios
-            .get("/api/video/all/except", {
-                params: {
-                    videoId: videoId,
-                },
-            })
-            .then((res) => {
-                setAllVideo(res.data);
-            });
-
-        Promise.all([allVideoFetch, thisChannelVideoFetch])
-    });
-
-
-    const RenderAllVideo = () => {
-        if (allVideo) {
-            return allVideo.map((video, index) => {
-                return <VideoItem key={index} videoData={video.videoData} channelData={video.channelData} />;
-            })
-        } else {
-            return <div className="flex flex-col items-center h-fit w-full p-3">
-                <div className="relative w-full h-fit pt-[56.25%] rounded-md bg-transparent">
-                    <Skeleton className="absolute w-full h-full rounded-md" />
-                </div>
-                <div className="flex w-full gap-3 pt-1">
-                    <Skeleton className="w-[30px] h-[30px] rounded-full" />
-                    <div className="w-[calc(100%-30px)] flex flex-col">
-                        <Skeleton className="w-full h-[20px] rounded-lg" />
-
-                        <Skeleton className="w-12 h-[26px] rounded-lg" />
-                        <Skeleton className="w-12 h-[18px] rounded-lg" />
-                    </div>
-                </div>
-            </div>
-        }
-    }
-
-    return (
-        <div className="flex flex-col w-full">
-            <div className="flex gap-3">
-                {listItem.map((button, index) => {
-                    return (
-                        <div
-                            key={index}
-                            onClick={() => {
-                                setTab(button.id);
-                            }}
-                            className={`px-3 py-2 cursor-pointer rounded-xl bg-slate-300 dark:bg-slate-600 hover:bg-slate-400 dark:hover:bg-slate-700 ${tab === button.id
-                                ? "shadow-[0_0_20px_purple_inset]"
-                                : ""
-                                }`}
-                        >
-                            {button.name}
-                        </div>
-                    );
-                })}
-            </div>
-            <div className="">
-                <div className={`${tab == 0 ? '' : 'hidden'} flex flex-col gap-3 pt-2 overflow-y-scroll hidden-scrollbar pr-3`}>
-                    <RenderAllVideo />
-                </div>
-                <div className={`${tab == 1 ? '' : 'hidden'} flex flex-col gap-3 pt-2 overflow-y-scroll hidden-scrollbar pr-3`}>
-                    {thisChannelVideo?.map((video, index) => {
-                        return (
-                            <ThisChannelVideoItem
-                                key={index}
-                                videoData={video}
-                            />
-                        );
-                    })}
-                </div>
-            </div>
-        </div>
-    );
-};

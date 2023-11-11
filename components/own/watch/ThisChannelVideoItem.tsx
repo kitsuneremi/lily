@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { FormatDateTime, ReduceString } from "@/lib/functional";
 import { useEffect, useState } from "react";
-import { VideoDataType, ChannelDataType } from "@/types/type";
+import { MediaDataType, ChannelDataType } from "@/types/type";
 
 import {
     Tooltip,
@@ -17,7 +17,7 @@ import {
 export default function VideoItem({
     videoData,
 }: {
-    videoData: VideoDataType;
+    videoData: MediaDataType;
 }) {
     const [img, setImg] = useState<string>();
     const videoImageStorageRef = ref(
@@ -69,7 +69,7 @@ export default function VideoItem({
                     <div>
                         <p className="text-sm">{videoData.view} lượt xem</p>
                         <p className="text-sm">
-                            {FormatDateTime(videoData.createdAt)}
+                            {FormatDateTime(videoData.createdTime)}
                         </p>
                     </div>
                 </div>

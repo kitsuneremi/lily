@@ -74,18 +74,7 @@ export type SubcribeType = {
 }
 
 export type VideoWithoutComment = {
-    videoData: {
-        thumbnail: string,
-        id: number,
-        title: string,
-        des: string,
-        view: number,
-        status: number,
-        link: string,
-        channelId: number,
-        createdAt: Date,
-        updatedAt: Date
-    },
+    videoData: MediaDataType,
     channelData: {
         avatarImage: string,
         id: number,

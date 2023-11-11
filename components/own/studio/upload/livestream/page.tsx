@@ -39,20 +39,19 @@ export default function Page({ session, channelData }: { session: Session, chann
 
     const { toast } = useToast()
 
-    useEffect(() => {
+    useEffectOnce(() => {
         if (channelData) {
-            // setInterval(() => {
-
-            // }, 5000)
-            axios.get(`/api/live/data`, {
-                params: {
-                    tag: channelData.tagName
-                }
-            }).then(res => {
-                setStreamData(res.data)
-            }).catch(err => { setStreamData(null) })
+            setInterval(() => {
+                axios.get(`/api/live/data`, {
+                    params: {
+                        tag: channelData.tagName
+                    }
+                }).then(res => {
+                    setStreamData(res.data)
+                }).catch(err => { setStreamData(null) })
+            }, 5000)
         }
-    }, [channelData])
+    })
 
     useEffectOnce(() => {
         setInterval(() => {

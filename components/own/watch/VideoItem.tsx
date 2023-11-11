@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { FormatDateTime, ReduceString } from "@/lib/functional";
 import { useEffect, useState } from "react";
-import { VideoDataType, ChannelDataType } from "@/types/type";
+import { MediaDataType, ChannelDataType } from "@/types/type";
 
 import {
     Tooltip,
@@ -13,12 +13,13 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function VideoItem({
     videoData,
     channelData,
 }: {
-    videoData: VideoDataType;
+    videoData: MediaDataType;
     channelData: ChannelDataType;
 }) {
     return (
@@ -48,7 +49,7 @@ export default function VideoItem({
                                     <Link
                                         href={`/channel/${channelData.tagName}`}
                                     >
-                                        {channelData ? (
+                                        {channelData && channelData.avatarImage ? (
                                             <Image
                                                 className="rounded-full bg-transparent"
                                                 alt="img"
@@ -58,7 +59,7 @@ export default function VideoItem({
                                                 src={channelData.avatarImage}
                                             />
                                         ) : (
-                                            <></>
+                                            <Skeleton className="w-[30px] h-[30px] rounded-full" />
                                         )}
                                     </Link>
                                 </TooltipTrigger>
@@ -108,7 +109,7 @@ export default function VideoItem({
                         <div>
                             <p className="text-sm">{videoData.view} lượt xem</p>
                             <p className="text-sm">
-                                {FormatDateTime(videoData.createdAt)}
+                                {FormatDateTime(videoData.createdTime)}
                             </p>
                         </div>
                     </div>
