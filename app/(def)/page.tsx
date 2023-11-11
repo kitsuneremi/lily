@@ -15,7 +15,7 @@ const GetAllVideo = async function () {
       revalidate: 10
     }
   })
-  if (list) {
+  if (list.ok) {
     return await list.json()
   } else {
     return null
