@@ -5,13 +5,13 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from 'next/navigation'
 import { baseURL } from "@/lib/functional";
+import { ChannelDataType } from "@/types/type";
 // const channelDataFetch = async () => {
 //     const channels = await prisma.channels.findFirst({
 //         where: {
 //             accountId: 1
 //         }
 //     })
-
 //     return channels
 // }
 
@@ -21,8 +21,16 @@ export const medata: Metadata = {
 };
 
 const fetchChannelData = async (id: number) => {
-    const data = await fetch(`${baseURL}/api/channel/data?accountId=${id}`);
-    return await data.json();
+    try {
+        const data = await fetch(`${baseURL}/api/channel/data?accountId=${id}`, {
+            method: 'GET',
+        });
+        return await data.json();
+    } catch (error) {
+        console.log(error)
+        return null;
+    }
+
 }
 
 export default async function Layout({
@@ -33,7 +41,7 @@ export default async function Layout({
 
     const session = await getServerSession(authOptions);
     if (session) {
-        const channelData = await fetchChannelData(session?.user.id)
+        const channelData:ChannelDataType = await fetchChannelData(session.user.id)
         if (channelData) {
             return (
                 <div className="w-screen h-screen">
@@ -45,10 +53,10 @@ export default async function Layout({
                 </div>
             );
         } else {
-            return redirect('/regchannel')
+            return redirect('/regchannel');
         }
     } else {
-        return redirect('/register')
+        return redirect('/register');
     }
 
 }
