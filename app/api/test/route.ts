@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import connect from '@/lib/mongodb'
-import Likes from "@/model/likes";
+import Likes from "@/model/liveChats";
 
 export async function GET(req: NextRequest, res: NextResponse) {
     await connect();
