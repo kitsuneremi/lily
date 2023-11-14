@@ -7,15 +7,17 @@ export default function ({
     listVideo: { videoData: MediaDataType; channelData: ChannelDataType }[];
 }) {
     const VideoItemRender = () => {
-        return listVideo.map((item, index) => {
-            return (
-                <VideoItem
-                    videoData={item.videoData}
-                    channelData={item.channelData}
-                    key={index}
-                />
-            );
-        });
+        if (listVideo) {
+            return listVideo.map((item, index) => {
+                return (
+                    <VideoItem
+                        videoData={item.videoData}
+                        channelData={item.channelData}
+                        key={index}
+                    />
+                );
+            })
+        };
     };
 
     return (
