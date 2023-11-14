@@ -1,6 +1,6 @@
 import prisma from "@/lib/prisma";
 import connect from '@/lib/mongodb'
-import Likes from "@/model/likes";
+import Likes from "@/model/liveChats";
 
 interface RequestBody {
     accountId: number;
