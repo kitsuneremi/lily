@@ -31,43 +31,41 @@ export default function VideoItem({
     videoData: MediaDataType;
     channelData: ChannelDataType;
 }) {
-
     const genLink = useCallback(() => {
         if (videoData.mediaType == 1) {
-            return `/stream/${channelData.tagName}`
+            return `/stream/${channelData.tagName}`;
         } else {
-            return `/watch/${videoData.link}`
+            return `/watch/${videoData.link}`;
         }
-    }, [])
+    }, []);
 
     return (
-        <Link
-            href={genLink()}
-            className="max-[640px]:max-w-[78vw] w-full"
-        >
+        <Link href={genLink()} className="max-[640px]:max-w-[78vw] w-full">
             <div className="grid items-center h-fit">
-                {videoData.mediaType == 0 ? <div className="relative w-full h-fit min-h-[120px] pt-[56.25%] rounded-md bg-transparent">
-                    {videoData && videoData.thumbnail ? (
-                        <Image
-                            alt=""
-                            className="rounded-md bg-transparent"
-                            fill
-                            sizes='16/9'
-                            src={videoData.thumbnail}
-                            loading="lazy"
-                        />
-                    ) : (
-                        <></>
-                    )}
-                </div>
-                    : <div className="relative w-full h-fit min-h-[120px] pt-[56.25%] rounded-md bg-opacity-40 bg-slate-100 flex justify-center">
-                        <div className="pl-[60%] h-full absolute top-0">
+                {videoData.mediaType == 0 ? (
+                    <div className="relative w-full aspect-video rounded-md bg-transparent">
+                        {videoData && videoData.thumbnail ? (
+                            <Image
+                                alt=""
+                                className="rounded-md bg-transparent"
+                                fill
+                                sizes="16/9"
+                                src={videoData.thumbnail}
+                                loading="lazy"
+                            />
+                        ) : (
+                            <></>
+                        )}
+                    </div>
+                ) : (
+                    <div className="relative w-full aspect-video rounded-md bg-opacity-40 bg-slate-100 flex justify-center">
+                        <div className="h-full aspect-square relative">
                             {videoData && videoData.thumbnail ? (
                                 <Image
                                     alt=""
                                     className="rounded-md bg-transparent"
                                     fill
-                                    sizes='1/1'
+                                    sizes="1/1"
                                     src={videoData.thumbnail}
                                     loading="lazy"
                                 />
@@ -75,8 +73,20 @@ export default function VideoItem({
                                 <></>
                             )}
                         </div>
-                        {videoData.mediaType == 1 && <div className="bg-red-600 text-white px-1 py-[1px] absolute bottom-1 left-1 text-xs">Trực tiếp</div>}
-                    </div>}
+                        {(videoData.mediaType == 1 ||
+                            videoData.mediaType == 2) && (
+                            <div
+                                className={`${
+                                    videoData.mediaType == 1
+                                        ? "bg-red-600"
+                                        : "bg-slate-600"
+                                } text-white px-1 py-[1px] absolute bottom-1 left-1 text-xs`}
+                            >
+                                Trực tiếp
+                            </div>
+                        )}
+                    </div>
+                )}
                 <div className="flex w-full gap-3 pt-1">
                     <div className="w-[30px]">
                         <TooltipProvider>
@@ -85,7 +95,8 @@ export default function VideoItem({
                                     <Link
                                         href={`/channel/${channelData.tagName}`}
                                     >
-                                        {channelData && channelData.avatarImage ? (
+                                        {channelData &&
+                                        channelData.avatarImage ? (
                                             <Image
                                                 className="rounded-full bg-transparent"
                                                 alt="img"
@@ -143,9 +154,20 @@ export default function VideoItem({
                             </TooltipProvider>
                         </div>
                         <div>
-                            <p className="text-xs"> {videoData.view}{videoData.mediaType == 1 ? ' người đang xem' : ' lượt xem'}</p>
                             <p className="text-xs">
-                                {videoData.mediaType == 1 && 'Đã phát trực tiếp '}{FormatDateTime(videoData.createdTime)}
+                                {" "}
+                                {videoData.view}
+                                {videoData.mediaType == 1
+                                    ? " người đang xem"
+                                    : " lượt xem"}
+                            </p>
+                            <p className="text-xs">
+                                {videoData.mediaType == 0
+                                    ? ""
+                                    : videoData.mediaType == 1
+                                    ? "Đã bắt đầu "
+                                    : "Đã phát trực tiếp "}
+                                {FormatDateTime(videoData.createdTime)}
                             </p>
                         </div>
                     </div>
