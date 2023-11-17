@@ -7,31 +7,23 @@ import React, {
     useEffect,
     useRef,
     useState,
-    useLayoutEffect,
     FormEvent,
     useCallback,
 } from "react";
 import axios from "axios";
 import {
     BigVideoDataType,
-    ChannelDataType,
     CommentDataType,
-    SubcribeType,
-    MediaDataType,
-    VideoWithoutComment,
 } from "@/types/type";
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { BiMenuAltLeft } from "react-icons/bi";
-import { GrNotification } from "react-icons/gr";
+
 import {
-    AiOutlineDown,
     AiFillLike,
     AiOutlineLike,
     AiFillDislike,
@@ -41,8 +33,6 @@ import {
 import { FormatDateTime, fileURL, videoTimeFormater } from "@/lib/functional";
 import { useSession } from "next-auth/react";
 import CommentItem from "@/components/own/watch/comment/CommentItem";
-import { ref as fireRef, getDownloadURL } from "firebase/storage";
-import { storage } from "@/lib/firebase";
 import Hls from "hls.js";
 import {
     ImVolumeHigh,
@@ -63,7 +53,6 @@ import { Slider } from "antd";
 import type { MenuProps } from "antd";
 import { Dropdown } from "antd";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { NotificationOutlined } from "@ant-design/icons";
 import Link from "next/link";
 import {
     Tooltip,
@@ -72,9 +61,9 @@ import {
     TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useLocalStorage, useEffectOnce } from "usehooks-ts";
-import { redirect } from "next/navigation";
 import { useToast } from "@/components/ui/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
+import SubcribeButton from "@/components/own/SubcribeButton";
 
 type quality = {
     available: number[];
@@ -85,7 +74,10 @@ const formatter = (value: number) => `${value}%`;
 let timer: any;
 
 export default function Page({ videoData }: { videoData: BigVideoDataType }) {
-    const src = videoData.videoData.mediaType == 0 ? `${fileURL}/api/video/${videoData.videoData.link}` : `${fileURL}/api/merge/${videoData.videoData.link}/live`;
+    const src =
+        videoData.videoData.mediaType == 0
+            ? `${fileURL}/api/video/${videoData.videoData.link}`
+            : `${fileURL}/api/merge/${videoData.videoData.link}/live`;
 
     const commentInputRef = useRef<HTMLInputElement>(null);
     const ref = useRef<HTMLVideoElement>(null);
@@ -112,10 +104,6 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
     const [like, setLike] = useState<boolean>(false);
     const [dislike, setDislike] = useState<boolean>(false);
     const [hide, setHide] = useState<boolean>(false);
-
-    const [subcribe, setSubcribe] = useState<SubcribeType>();
-
-
 
     const loadVideo = async () => {
         const video = document.getElementById("video") as HTMLVideoElement;
@@ -172,23 +160,6 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
                 setCommentData(res.data);
             });
     });
-
-    useEffect(() => {
-        if (session && session.user) {
-            if (session.user.id !== videoData.channelData.accountId) {
-                axios
-                    .get("/api/subcribe", {
-                        params: {
-                            targetChannel: videoData.channelData.id,
-                            accountId: session.user.id,
-                        },
-                    })
-                    .then((val) => {
-                        setSubcribe(val.data);
-                    });
-            }
-        }
-    }, [session]);
 
     useEffect(() => {
         if (session && session.user) {
@@ -476,43 +447,30 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
         }
     }, []);
 
-    const handleSubcribe = useCallback(() => {
-        if (session && session.user) {
-            axios
-                .post("/api/subcribe/addordelete", {
-                    //@ts-ignore
-                    accountId: session.user.id,
-                    channelId: videoData.channelData.id,
-                })
-                .then((val) => {
-                    setSubcribe(val.data);
+    const handleSubmitComment = useCallback(
+        (e: FormEvent<HTMLFormElement>) => {
+            e.preventDefault();
+            if (status == "authenticated") {
+                axios
+                    .post("/api/comments/create", {
+                        videoId: videoData.videoData.id,
+                        //@ts-ignore
+                        accountId: session.user.id,
+                        content: commentInputRef.current?.value,
+                    })
+                    .then((res) => {
+                        commentInputRef.current!.value = "";
+                        setCommentData(res.data);
+                    });
+            } else {
+                toast({
+                    title: "chưa thể đăng bình luận",
+                    description: "bạn chưa đăng nhập",
                 });
-        } else {
-            redirect("/register");
-        }
-    }, []);
-
-    const handleSubmitComment = useCallback((e: FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        if (status == "authenticated") {
-            axios
-                .post("/api/comments/create", {
-                    videoId: videoData.videoData.id,
-                    //@ts-ignore
-                    accountId: session.user.id,
-                    content: commentInputRef.current?.value,
-                })
-                .then((res) => {
-                    commentInputRef.current!.value = "";
-                    setCommentData(res.data);
-                });
-        } else {
-            toast({
-                title: "chưa thể đăng bình luận",
-                description: "bạn chưa đăng nhập",
-            });
-        }
-    }, [session]);
+            }
+        },
+        [session]
+    );
 
     const CommentRender = useCallback(() => {
         if (commentData == undefined) {
@@ -525,98 +483,23 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
                         <Skeleton className="w-10 h-full rounded-lg" />
                     </div>
                 </div>
-            )
+            );
         } else if (commentData.length == 0) {
             return (
                 <div className="flex justify-center py-3">
                     <p>video này chưa có bình luận nào</p>
                 </div>
-            )
+            );
         } else {
-            return (
-                commentData.map((cmt, index) => {
-                    return <CommentItem key={index} cmt={cmt} />;
-                })
-            )
-
-
+            return commentData.map((cmt, index) => {
+                return <CommentItem key={index} cmt={cmt} />;
+            });
         }
     }, [commentData]);
 
-    const Subcribe = useCallback(() => {
-        if (session && session.user) {
-            //@ts-ignore
-            if (session.user.id === videoData.channelData.accountId) {
-                return (
-                    <div
-                        className="px-4 py-2 cursor-pointer rounded-[24px] border-[1px] hover:bg-slate-300 dark:bg-slate-900 dark:hover:bg-slate-800"
-                        onClick={() => {
-                            redirect("/station");
-                        }}
-                    >
-                        quản lý kênh của bạn
-                    </div>
-                );
-            } else {
-                if (subcribe) {
-                    return (
-                        <DropdownMenu>
-                            <DropdownMenuTrigger className="outline-none max-sm:w-full">
-                                <div className="flex gap-2 px-4 py-2 rounded-[24px] border-[1px] hover:bg-slate-300 dark:bg-slate-900 dark:hover:bg-slate-800">
-                                    <div className="flex flex-col justify-center animate-bounce dark:text-white">
-                                        <NotificationOutlined />
-                                    </div>
-                                    <p className="my-auto max-sm:w-full">
-                                        Đã đăng ký
-                                    </p>
-                                    <div className="flex flex-col justify-center">
-                                        <AiOutlineDown />
-                                    </div>
-                                </div>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent>
-                                <div className="p-2 rounded-lg select-none">
-                                    <DropdownMenuLabel>
-                                        Nhận thông báo
-                                    </DropdownMenuLabel>
-                                    <DropdownMenuSeparator />
-                                    <DropdownMenuItem>Tất cả</DropdownMenuItem>
-                                    <DropdownMenuItem>Hạn chế</DropdownMenuItem>
-                                    <DropdownMenuItem>Không</DropdownMenuItem>
-                                    <DropdownMenuItem
-                                        onClick={() => {
-                                            handleSubcribe();
-                                        }}
-                                    >
-                                        Hủy đăng ký
-                                    </DropdownMenuItem>
-                                </div>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-                    );
-                } else {
-                    return (
-                        <>
-                            <div
-                                className="flex gap-2 px-4 py-2 cursor-pointer rounded-[24px] border-[1px] hover:bg-slate-300 dark:bg-slate-900 dark:hover:bg-slate-800"
-                                onClick={() => {
-                                    handleSubcribe();
-                                }}
-                            >
-                                <p className="my-auto max-sm:w-full">Đăng ký</p>
-                            </div>
-                        </>
-                    );
-                }
-            }
-        }
-    }, [subcribe]);
-
     const HandleCurrentAccountAvatarRender = () => {
         if (status === "loading") {
-            return (
-                <Skeleton className="w-full h-full rounded-full" />
-            )
+            return <Skeleton className="w-full h-full rounded-full" />;
         } else if (status == "authenticated") {
             return (
                 <Image
@@ -626,7 +509,7 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
                     sizes="1/1"
                     fill
                 />
-            )
+            );
         } else {
             return (
                 <Image
@@ -638,27 +521,30 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
                     fill
                     sizes="1/1"
                 />
-            )
+            );
         }
-    }
+    };
 
     return (
         <div
-            className={`relative ${fullscreen ? "mt-0" : "mt-3"
-                } gap-10 h-full w-full overflow-y-scroll`}
+            className={`relative ${
+                fullscreen ? "mt-0" : "mt-3"
+            } gap-10 h-full w-full overflow-y-scroll`}
         >
             <div className="lg:flex">
                 <div
                     ref={fullRef}
-                    className={`flex group flex-col w-full  ${fullscreen
-                        ? "absolute w-screen top-0 left-0 bg-white dark:bg-slate-600 overflow-y-scroll p-0 hidden-scrollbar"
-                        : `relative lg:w-3/4 lg:px-10 max-sm:px-2 px-5`
-                        }`}
+                    className={`flex group flex-col w-full  ${
+                        fullscreen
+                            ? "absolute w-screen top-0 left-0 bg-white dark:bg-slate-600 overflow-y-scroll p-0 hidden-scrollbar"
+                            : `relative lg:w-3/4 lg:px-10 max-sm:px-2 px-5`
+                    }`}
                 >
                     <div
                         ref={anyRef}
-                        className={`flex justify-center relative ${loadedContent ? "" : "pt-[56.25%] max-h-[80vh]"
-                            } ${fullscreen ? "w-full h-screen" : ""} rounded-xl`}
+                        className={`flex justify-center relative ${
+                            loadedContent ? "" : "pt-[56.25%] max-h-[80vh]"
+                        } ${fullscreen ? "w-full h-screen" : ""} rounded-xl`}
                     >
                         <video
                             ref={ref}
@@ -667,15 +553,18 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
                             onTimeUpdate={onTimeUpdate}
                             onProgress={onProgress}
                             onClick={handlePlayPause}
-                            className={`${fullscreen ? "h-screen" : "max-h-[80vh]"
-                                } w-full`}
+                            className={`${
+                                fullscreen ? "h-screen" : "max-h-[80vh]"
+                            } w-full`}
                         />
                         <div
-                            className={`flex flex-col gap-2 z-20 absolute bottom-0 w-full ${hide
-                                ? "opacity-0"
-                                : "opacity-100 translate-y-0 transition-opacity duration-300 ease-in-out"
-                                } h-fit px-2 transform translate-y-[1px] ${fullscreen ? "px-3" : ""
-                                }`}
+                            className={`flex flex-col gap-2 z-20 absolute bottom-0 w-full ${
+                                hide
+                                    ? "opacity-0"
+                                    : "opacity-100 translate-y-0 transition-opacity duration-300 ease-in-out"
+                            } h-fit px-2 transform translate-y-[1px] ${
+                                fullscreen ? "px-3" : ""
+                            }`}
                         >
                             {/* timeline */}
                             <div className="flex items-center relative">
@@ -690,11 +579,12 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
                                     ></div>
                                     <div
                                         style={{
-                                            width: `${(currentTime /
-                                                //@ts-ignore
-                                                ref.current?.duration) *
+                                            width: `${
+                                                (currentTime /
+                                                    //@ts-ignore
+                                                    ref.current?.duration) *
                                                 100
-                                                }%`,
+                                            }%`,
                                         }}
                                         className="h-full bg-red-500 absolute top-0 rounded-lg"
                                     ></div>
@@ -759,10 +649,10 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
                                                     isNaN(ref.current?.duration)
                                                         ? 0
                                                         : Number.parseInt(
-                                                            ref.current?.duration.toFixed(
-                                                                0
-                                                            )
-                                                        )
+                                                              ref.current?.duration.toFixed(
+                                                                  0
+                                                              )
+                                                          )
                                                 )}
                                             </p>
                                         )}
@@ -794,15 +684,17 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
                             </div>
                         </div>
                         <div
-                            className={`${hide ? "" : "bg-controls"
-                                } absolute bottom-0 w-full h-[20%] z-10`}
+                            className={`${
+                                hide ? "" : "bg-controls"
+                            } absolute bottom-0 w-full h-[20%] z-10`}
                         />
                     </div>
 
                     {/* video property */}
                     <div
-                        className={`max-sm:px-2 mt-2 ${fullscreen ? "px-3" : ""
-                            }`}
+                        className={`max-sm:px-2 mt-2 ${
+                            fullscreen ? "px-3" : ""
+                        }`}
                     >
                         <p className="text-3xl font-bold my-3">
                             {videoData.videoData.title}
@@ -818,10 +710,14 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
                                                         href={`/channel/${videoData.channelData.tagName}`}
                                                     >
                                                         <div className="relative lg:w-[55px] lg:h-[55px] max-sm:w-[45px] max-sm:h-[45px] w-[40px] h-[40px]">
-                                                            {videoData.channelData.avatarImage && (
+                                                            {videoData
+                                                                .channelData
+                                                                .avatarImage && (
                                                                 <Image
                                                                     src={
-                                                                        videoData.channelData.avatarImage
+                                                                        videoData
+                                                                            .channelData
+                                                                            .avatarImage
                                                                     }
                                                                     alt=""
                                                                     className="rounded-full bg-transparent"
@@ -881,7 +777,15 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
                                 </div>
 
                                 <div className="flex px-3 py-2 max-sm:w-full">
-                                    <Subcribe />
+                                    {status == "loading" ? (
+                                        <Skeleton className="w-24 h-8 rounded-lg" />
+                                    ) : (
+                                        <SubcribeButton
+                                            session={session}
+                                            channelAccountId={videoData.channelData.accountId}
+                                            channelId={videoData.channelData.id}
+                                        />
+                                    )}
                                 </div>
                             </div>
                             <div className="flex justify-around items-center gap-3">
@@ -923,21 +827,29 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
                     </div>
                     {/* des */}
                     <div
-                        className={`rounded-xl p-3 my-4 flex flex-col gap-2 bg-slate-200 dark:bg-slate-900 ${fullscreen ? "px-3" : ""
-                            }`}
+                        className={`rounded-xl p-3 my-4 flex flex-col gap-2 bg-slate-200 dark:bg-slate-900 ${
+                            fullscreen ? "px-3" : ""
+                        }`}
                     >
                         <div className="flex gap-3">
                             <p>{videoData.videoData.view} lượt xem</p>
                             <p>
-                                {videoData.videoData.mediaType == 0 ? FormatDateTime(videoData.videoData.createdTime) : `Đã phát trực tiếp ${FormatDateTime(videoData.videoData.createdTime)}`}
+                                {videoData.videoData.mediaType == 0
+                                    ? FormatDateTime(
+                                          videoData.videoData.createdTime
+                                      )
+                                    : `Đã phát trực tiếp ${FormatDateTime(
+                                          videoData.videoData.createdTime
+                                      )}`}
                             </p>
                         </div>
                         <p className="">{videoData.videoData.des}</p>
                     </div>
                     {/* comment */}
                     <div
-                        className={`flex flex-col gap-2 ${fullscreen ? "px-3" : ""
-                            }`}
+                        className={`flex flex-col gap-2 ${
+                            fullscreen ? "px-3" : ""
+                        }`}
                     >
                         <div className="flex gap-3 px-3">
                             <p className="my-auto h-fit">
