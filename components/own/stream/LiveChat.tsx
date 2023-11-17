@@ -16,7 +16,7 @@ type Message = {
     room: number;
 };
 
-const socket = io("http://localhost:6074").connect();
+const socket = io("https://socket.erinasaiyukii.com").connect();
 
 export default function LiveChat({
     channelData,
