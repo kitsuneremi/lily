@@ -1,3 +1,5 @@
+import { Channel } from "diagnostics_channel"
+
 export type BigVideoDataType = {
     videoData: MediaDataType,
     channelData: ChannelDataType,
@@ -47,7 +49,8 @@ export type MediaDataType = {
     updatedAt: Date,
     like?: number,
     comment?: number,
-    thumbnail?: string
+    thumbnail?: string,
+    Channels?: ChannelDataType,
 }
 
 export type SessionDataType = {
