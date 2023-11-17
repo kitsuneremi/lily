@@ -1,26 +1,26 @@
 "use client";
 import { useMediaQuery, useOnClickOutside, useEffectOnce } from "usehooks-ts";
-import React, { Ref, useEffect, useState, useRef, Suspense, useCallback, memo } from "react";
-import { BsYoutube, BsBell, BsChatLeftDots } from "react-icons/bs";
+import React, {
+    useEffect,
+    useState,
+    useRef,
+    useCallback,
+    memo,
+} from "react";
+import { BsBell, BsChatLeftDots } from "react-icons/bs";
 import {
-    AiOutlineMenu,
     AiOutlineClose,
     AiOutlineRight,
     AiOutlineLeft,
     AiOutlineUpload,
     AiOutlineSearch,
-    AiOutlineHome,
 } from "react-icons/ai";
 import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
-import { Separator } from "@/components/ui/separator";
-import { LoadingOutlined } from "@ant-design/icons";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { ChannelDataType } from "@/types/type";
 import axios from "axios";
-import { ref, getDownloadURL } from "firebase/storage";
-import { storage } from "@/lib/firebase";
 import {
     Tooltip,
     TooltipContent,
@@ -42,11 +42,10 @@ import {
     DropdownMenuLabel,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 
-
-const Notification = dynamic(() => import("@/components/own/Notification"));
-export default function Navbar() {
+const Notification = dynamic(() => import("@/components/own/notification"));
+function Navbar() {
     const { data: session, status } = useSession();
     const { setTheme, theme } = useTheme();
     const { isBrowser } = useSsr();
@@ -122,266 +121,23 @@ export default function Navbar() {
         }
     }, [session]);
 
-
     const MenuRender = memo(() => {
-        return <Link
-            href={"/"}
-            className="text-xl flex items-center gap-2"
-        >
-            <div className="relative w-5 h-5 lg:w-9 lg:h-9">
-                <Image
-                    className="rounded-full animate-spin"
-                    src={
-                        "https://danviet.mediacdn.vn/upload/2-2019/images/2019-04-02/Vi-sao-Kha-Banh-tro-thanh-hien-tuong-dinh-dam-tren-mang-xa-hoi-khabanh-1554192528-width660height597.jpg"
-                    }
-                    fill
-                    sizes="1/1"
-                    alt="khá bảnh"
-                />
-            </div>
-        </Link>
-    })
-
-    const navbar = () => {
-        if (isBrowser) {
-            if (deviceType.isMobile) {
-                if (mobileShowSearch) {
-                    //device type: mobile, trạng thái: show search input
-                    return (
-                        <>
-                            <button className="text-xl">
-                                <AiOutlineClose
-                                    onClick={() => {
-                                        setMobileShowSearch(false);
-                                    }}
-                                />
-                            </button>
-
-                            <div className="relative flex gap-1 items-center rounded-2xl border-2 border-black">
-                                <div className="w-max flex gap-1 items-center">
-                                    <input
-                                        className="bg-transparent w-40 focus:outline-none ml-3 my-1"
-                                        onChange={(e) => {
-                                            setSearchValue(e.target.value);
-                                        }}
-                                        onFocus={() => {
-                                            setFocus(true);
-                                        }}
-                                        onBlur={() => setFocus(false)}
-                                    />
-                                    <div className="w-[2px] h-full relative after:absolute after:bg-slate-300 dark:after:bg-slate-500 after:h-[90%] after:top-[5%] after:left-0 after:w-full" />
-                                    <div className="h-full w-8 flex flex-col pl-2 justify-center cursor-pointer hover:bg-slate-400 dark:hover:bg-slate-700 rounded-r-2xl">
-                                        <AiOutlineSearch />
-                                    </div>
-                                </div>
-
-                                {focusing ? (
-                                    <div
-                                        className="absolute w-80 h-fit left-[-16px] items-center top-12 max-w-[90vw] bg-white dark:bg-slate-600 border-[1px] border-slate-400 rounded-lg"
-                                        ref={searchResultRef}
-                                    >
-                                        <div className="flex px-4 py-1 gap-2 h-max items-center">
-                                            <div className="flex items-center">
-                                                <AiOutlineSearch />
-                                            </div>
-                                            <div className="flex items-center flex-1 h-fit">
-                                                <p className="w-full text-lg text-ellipsis break-words h-max">
-                                                    {searchValue}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <></>
-                                )}
-                            </div>
-
-                            <div className="flex gap-3 items-center">
-                                <AiOutlineUpload />
-                                <BsBell />
-                                <BsChatLeftDots />
-                                <DropMenu />
-                            </div>
-                        </>
-                    );
-                } else if (mobileShowSearch == false) {
-                    // device type: mobile, trạng thái: ẩn search input
-                    return (
-                        <>
-                            <div
-                                className="flex w-40 gap-8 text-xl items-center"
-                                onClick={() => {
-                                    dispatch(reverse());
-                                }}
-                            >
-                                {openSidebar ? (
-                                    <AiOutlineRight />
-                                ) : (
-                                    <AiOutlineLeft />
-                                )}
-                                <TooltipProvider>
-                                    <Tooltip>
-                                        <TooltipTrigger>
-                                            <MenuRender />
-                                        </TooltipTrigger>
-                                        <TooltipContent>
-                                            <p>Quay về trang chủ</p>
-                                        </TooltipContent>
-                                    </Tooltip>
-                                </TooltipProvider>
-                            </div>
-                            <div className="flex gap-3 items-center">
-                                <div
-                                    className="lg:hidden"
-                                    onClick={() => {
-                                        setMobileShowSearch(true);
-                                    }}
-                                >
-                                    <AiOutlineSearch />
-                                </div>
-                                <AiOutlineUpload />
-                                <Notification />
-                                <BsChatLeftDots />
-                                <DropMenu />
-                            </div>
-                        </>
-                    );
-                } else {
-                    return <></>;
-                }
-            } else {
-                return (
-                    // device type: desktop hoặc tablet
-                    <>
-                        <div className="w-40 flex gap-8 select-none">
-                            <div
-                                className="text-xl flex items-center cursor-pointer"
-                                onClick={() => {
-                                    dispatch(reverse());
-                                }}
-                            >
-                                {openSidebar ? (
-                                    <AiOutlineRight />
-                                ) : (
-                                    <AiOutlineLeft />
-                                )}
-                            </div>
-                            <TooltipProvider>
-                                <Tooltip>
-                                    <TooltipTrigger>
-                                        <Link
-                                            href={"/"}
-                                            className="text-xl flex items-center gap-2"
-                                        >
-                                            <div className="relative w-5 h-5 lg:w-9 lg:h-9">
-                                                <Image
-                                                    className="rounded-full animate-spin"
-                                                    src={
-                                                        "https://danviet.mediacdn.vn/upload/2-2019/images/2019-04-02/Vi-sao-Kha-Banh-tro-thanh-hien-tuong-dinh-dam-tren-mang-xa-hoi-khabanh-1554192528-width660height597.jpg"
-                                                    }
-                                                    fill
-                                                    sizes="1/1"
-                                                    alt="khá bảnh"
-                                                />
-                                            </div>
-                                        </Link>
-                                    </TooltipTrigger>
-                                    <TooltipContent>
-                                        <p>Quay về trang chủ</p>
-                                    </TooltipContent>
-                                </Tooltip>
-                            </TooltipProvider>
-                        </div>
-                        <div className="relative flex gap-1 items-center rounded-2xl shadow-[0_0_2px_black] dark:bg-slate-800">
-                            <div className="w-max flex items-center h-full">
-                                <input
-                                    className="bg-transparent pr-1 w-60 focus:outline-none ml-3 my-1"
-                                    onChange={(e) => {
-                                        setSearchValue(e.target.value);
-                                    }}
-                                    onFocus={() => {
-                                        setFocus(true);
-                                    }}
-                                    onBlur={() => setFocus(false)}
-                                />
-                                <div className="w-[2px] h-full relative after:absolute after:bg-slate-300 dark:after:bg-slate-500 after:h-[90%] after:top-[5%] after:left-0 after:w-full" />
-                                <div className="h-full w-8 flex flex-col pl-2 justify-center cursor-pointer hover:bg-slate-400 dark:hover:bg-slate-700 text-[#020817] dark:text-[white] rounded-r-2xl">
-                                    <AiOutlineSearch />
-                                </div>
-                            </div>
-
-                            {focusing ? (
-                                <div
-                                    className="absolute w-80 h-fit left-[-16px] items-center top-12 max-w-[95vw] bg-white dark:bg-slate-600 border-[1px] border-slate-400 rounded-lg"
-                                    ref={searchResultRef}
-                                >
-                                    <div className="flex px-4 py-1 gap-9 h-max items-center">
-                                        <div className="flex items-center">
-                                            <AiOutlineSearch />
-                                        </div>
-                                        <div className="flex items-center flex-1 h-fit">
-                                            <p className="w-full text-lg text-ellipsis break-words h-max">
-                                                {searchValue}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            ) : (
-                                <></>
-                            )}
-                        </div>
-                        <div className="flex gap-3 items-center">
-                            <TooltipProvider>
-                                <Tooltip>
-                                    <TooltipTrigger>
-                                        <DropdownMenu>
-                                            <DropdownMenuTrigger>
-                                                <div className="text-2xl cursor-pointer">
-                                                    <AiOutlineUpload />
-                                                </div>
-                                            </DropdownMenuTrigger>
-                                            <DropdownMenuContent>
-                                                <DropdownMenuLabel>Loại nội dung đăng tải</DropdownMenuLabel>
-                                                <DropdownMenuSeparator />
-                                                <DropdownMenuItem><Link href={"/station/upload/video"} className="w-full">Video</Link></DropdownMenuItem>
-                                                <DropdownMenuItem><Link href={"/station/upload/livestream"} className="w-full">Sự kiện trực tiếp</Link></DropdownMenuItem>
-                                            </DropdownMenuContent>
-                                        </DropdownMenu>
-
-
-
-
-                                    </TooltipTrigger>
-                                    <TooltipContent>
-                                        <p>Đăng tải nội dung</p>
-                                    </TooltipContent>
-                                </Tooltip>
-                            </TooltipProvider>
-                            <Notification />
-                            <TooltipProvider>
-                                <Tooltip>
-                                    <TooltipTrigger>
-                                        <div className="text-2xl cursor-pointer">
-                                            <BsChatLeftDots />
-                                        </div>
-                                    </TooltipTrigger>
-                                    <TooltipContent>
-                                        <p>
-                                            Trò chuyện (đã có nhưng chưa cho vào
-                                            chạy)
-                                        </p>
-                                    </TooltipContent>
-                                </Tooltip>
-                            </TooltipProvider>
-                            <DropMenu />
-                        </div>
-                    </>
-                );
-            }
-        } else {
-            return <></>;
-        }
-    };
+        return (
+            <Link href={"/"} className="text-xl flex items-center gap-2">
+                <div className="relative w-5 h-5 lg:w-9 lg:h-9">
+                    <Image
+                        className="rounded-full animate-spin"
+                        src={
+                            "https://danviet.mediacdn.vn/upload/2-2019/images/2019-04-02/Vi-sao-Kha-Banh-tro-thanh-hien-tuong-dinh-dam-tren-mang-xa-hoi-khabanh-1554192528-width660height597.jpg"
+                        }
+                        fill
+                        sizes="1/1"
+                        alt="khá bảnh"
+                    />
+                </div>
+            </Link>
+        );
+    });
 
     const Collapse = ({
         trigger,
@@ -479,46 +235,53 @@ export default function Navbar() {
                 <MenuItem className="text-start">
                     <Skeleton className="h-full w-full" />
                 </MenuItem>
-            )
+            );
         } else if (session && personalChannelData == null) {
-            return <MenuItem
-                onClick={() => {
-                    router.push("regchannel");
-                }}
-            >
-                Chưa có kênh? Tạo ngay!
-            </MenuItem>
+            return (
+                <MenuItem
+                    onClick={() => {
+                        router.push("regchannel");
+                    }}
+                >
+                    Chưa có kênh? Tạo ngay!
+                </MenuItem>
+            );
         } else if (session && personalChannelData) {
-            return <><MenuItem className="bg-transparent">
-                <div className="flex gap-4">
-                    <div className="flex items-center">
-                        <div className="relative w-8 h-8">
-                            {personalChannelData.avatarImage && <Image
-                                className="rounded-full"
-                                src={
-                                    personalChannelData.avatarImage
-                                }
-                                alt=""
-                                fill
-                                sizes="1/1"
-                            />}
+            return (
+                <>
+                    <MenuItem className="bg-transparent">
+                        <div className="flex gap-4">
+                            <div className="flex items-center">
+                                <div className="relative w-8 h-8">
+                                    {personalChannelData.avatarImage && (
+                                        <Image
+                                            className="rounded-full"
+                                            src={
+                                                personalChannelData.avatarImage
+                                            }
+                                            alt=""
+                                            fill
+                                            sizes="1/1"
+                                        />
+                                    )}
+                                </div>
+                            </div>
+                            <div className="flex items-center">
+                                <p className="text-xl">{session.user.name}</p>
+                            </div>
                         </div>
-                    </div>
-                    <div className="flex items-center">
-                        <p className="text-xl">
-                            {session.user.name}
-                        </p>
-                    </div>
-                </div>
-            </MenuItem><MenuItem
-                onClick={() => {
-                    router.push("station");
-                }}
-            >
-                    Station
-                </MenuItem></>
+                    </MenuItem>
+                    <MenuItem
+                        onClick={() => {
+                            router.push("station");
+                        }}
+                    >
+                        Station
+                    </MenuItem>
+                </>
+            );
         }
-    }
+    };
 
     const DropMenu = () => {
         return (
@@ -554,8 +317,7 @@ export default function Navbar() {
                                             onClick={() => {
                                                 signOut({
                                                     redirect: true,
-                                                    callbackUrl:
-                                                        "/register",
+                                                    callbackUrl: "/register",
                                                 });
                                             }}
                                         >
@@ -595,7 +357,258 @@ export default function Navbar() {
         );
     };
 
-    return <>{navbar()}</>;
+    if (isBrowser) {
+        if (deviceType.isMobile) {
+            if (mobileShowSearch) {
+                //device type: mobile, trạng thái: show search input
+                return (
+                    <>
+                        <button className="text-xl">
+                            <AiOutlineClose
+                                onClick={() => {
+                                    setMobileShowSearch(false);
+                                }}
+                            />
+                        </button>
+
+                        <div className="relative flex gap-1 items-center rounded-2xl border-2 border-black">
+                            <div className="w-max flex gap-1 items-center">
+                                <input
+                                    className="bg-transparent w-40 focus:outline-none ml-3 my-1"
+                                    onChange={(e) => {
+                                        setSearchValue(e.target.value);
+                                    }}
+                                    onFocus={() => {
+                                        setFocus(true);
+                                    }}
+                                    onBlur={() => setFocus(false)}
+                                />
+                                <div className="w-[2px] h-full relative after:absolute after:bg-slate-300 dark:after:bg-slate-500 after:h-[90%] after:top-[5%] after:left-0 after:w-full" />
+                                <div className="h-full w-8 flex flex-col pl-2 justify-center cursor-pointer hover:bg-slate-400 dark:hover:bg-slate-700 rounded-r-2xl">
+                                    <AiOutlineSearch />
+                                </div>
+                            </div>
+
+                            {focusing ? (
+                                <div
+                                    className="absolute w-80 h-fit left-[-16px] items-center top-12 max-w-[90vw] bg-white dark:bg-slate-600 border-[1px] border-slate-400 rounded-lg"
+                                    ref={searchResultRef}
+                                >
+                                    <div className="flex px-4 py-1 gap-2 h-max items-center">
+                                        <div className="flex items-center">
+                                            <AiOutlineSearch />
+                                        </div>
+                                        <div className="flex items-center flex-1 h-fit">
+                                            <p className="w-full text-lg text-ellipsis break-words h-max">
+                                                {searchValue}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            ) : (
+                                <></>
+                            )}
+                        </div>
+
+                        <div className="flex gap-3 items-center">
+                            <AiOutlineUpload />
+                            <BsBell />
+                            <BsChatLeftDots />
+                            <DropMenu />
+                        </div>
+                    </>
+                );
+            } else if (mobileShowSearch == false) {
+                // device type: mobile, trạng thái: ẩn search input
+                return (
+                    <>
+                        <div
+                            className="flex w-40 gap-8 text-xl items-center"
+                            onClick={() => {
+                                dispatch(reverse());
+                            }}
+                        >
+                            {openSidebar ? (
+                                <AiOutlineRight />
+                            ) : (
+                                <AiOutlineLeft />
+                            )}
+                            <TooltipProvider>
+                                <Tooltip>
+                                    <TooltipTrigger>
+                                        <MenuRender />
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        <p>Quay về trang chủ</p>
+                                    </TooltipContent>
+                                </Tooltip>
+                            </TooltipProvider>
+                        </div>
+                        <div className="flex gap-3 items-center">
+                            <div
+                                className="lg:hidden"
+                                onClick={() => {
+                                    setMobileShowSearch(true);
+                                }}
+                            >
+                                <AiOutlineSearch />
+                            </div>
+                            <AiOutlineUpload />
+                            <Notification />
+                            <BsChatLeftDots />
+                            <DropMenu />
+                        </div>
+                    </>
+                );
+            } else {
+                return <></>;
+            }
+        } else {
+            return (
+                // device type: desktop hoặc tablet
+                <>
+                    <div className="w-40 flex gap-8 select-none">
+                        <div
+                            className="text-xl flex items-center cursor-pointer"
+                            onClick={() => {
+                                dispatch(reverse());
+                            }}
+                        >
+                            {openSidebar ? (
+                                <AiOutlineRight />
+                            ) : (
+                                <AiOutlineLeft />
+                            )}
+                        </div>
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger>
+                                    <Link
+                                        href={"/"}
+                                        className="text-xl flex items-center gap-2"
+                                    >
+                                        <div className="relative w-5 h-5 lg:w-9 lg:h-9">
+                                            <Image
+                                                className="rounded-full animate-spin"
+                                                src={
+                                                    "https://danviet.mediacdn.vn/upload/2-2019/images/2019-04-02/Vi-sao-Kha-Banh-tro-thanh-hien-tuong-dinh-dam-tren-mang-xa-hoi-khabanh-1554192528-width660height597.jpg"
+                                                }
+                                                fill
+                                                sizes="1/1"
+                                                alt="khá bảnh"
+                                            />
+                                        </div>
+                                    </Link>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <p>Quay về trang chủ</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
+                    </div>
+                    <div className="relative flex gap-1 items-center rounded-2xl shadow-[0_0_2px_black] dark:bg-slate-800">
+                        <div className="w-max flex items-center h-full">
+                            <input
+                                className="bg-transparent pr-1 w-60 focus:outline-none ml-3 my-1"
+                                onChange={(e) => {
+                                    setSearchValue(e.target.value);
+                                }}
+                                onFocus={() => {
+                                    setFocus(true);
+                                }}
+                                onBlur={() => setFocus(false)}
+                            />
+                            <div className="w-[2px] h-full relative after:absolute after:bg-slate-300 dark:after:bg-slate-500 after:h-[90%] after:top-[5%] after:left-0 after:w-full" />
+                            <div className="h-full w-8 flex flex-col pl-2 justify-center cursor-pointer hover:bg-slate-400 dark:hover:bg-slate-700 text-[#020817] dark:text-[white] rounded-r-2xl">
+                                <AiOutlineSearch />
+                            </div>
+                        </div>
+
+                        {focusing ? (
+                            <div
+                                className="absolute w-80 h-fit left-[-16px] items-center top-12 max-w-[95vw] bg-white dark:bg-slate-600 border-[1px] border-slate-400 rounded-lg"
+                                ref={searchResultRef}
+                            >
+                                <div className="flex px-4 py-1 gap-9 h-max items-center">
+                                    <div className="flex items-center">
+                                        <AiOutlineSearch />
+                                    </div>
+                                    <div className="flex items-center flex-1 h-fit">
+                                        <p className="w-full text-lg text-ellipsis break-words h-max">
+                                            {searchValue}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        ) : (
+                            <></>
+                        )}
+                    </div>
+                    <div className="flex gap-3 items-center">
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger>
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger>
+                                            <div className="text-2xl cursor-pointer">
+                                                <AiOutlineUpload />
+                                            </div>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent>
+                                            <DropdownMenuLabel>
+                                                Loại nội dung đăng tải
+                                            </DropdownMenuLabel>
+                                            <DropdownMenuSeparator />
+                                            <DropdownMenuItem>
+                                                <Link
+                                                    href={
+                                                        "/station/upload/video"
+                                                    }
+                                                    className="w-full"
+                                                >
+                                                    Video
+                                                </Link>
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem>
+                                                <Link
+                                                    href={
+                                                        "/station/upload/livestream"
+                                                    }
+                                                    className="w-full"
+                                                >
+                                                    Sự kiện trực tiếp
+                                                </Link>
+                                            </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <p>Đăng tải nội dung</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
+                        <Notification />
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger>
+                                    <div className="text-2xl cursor-pointer">
+                                        <BsChatLeftDots />
+                                    </div>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <p>
+                                        Trò chuyện (đã có nhưng chưa cho vào
+                                        chạy)
+                                    </p>
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
+                        <DropMenu />
+                    </div>
+                </>
+            );
+        }
+    }
 }
 
 const MenuItem = ({
@@ -615,3 +628,5 @@ const MenuItem = ({
         </div>
     );
 };
+
+export default memo(Navbar);
