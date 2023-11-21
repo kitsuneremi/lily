@@ -11,10 +11,7 @@ import React, {
     useCallback,
 } from "react";
 import axios from "axios";
-import {
-    BigVideoDataType,
-    CommentDataType,
-} from "@/types/type";
+import { BigVideoDataType, CommentDataType } from "@/types/type";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -33,7 +30,7 @@ import {
 import { FormatDateTime, fileURL, videoTimeFormater } from "@/lib/functional";
 import { useSession } from "next-auth/react";
 import CommentItem from "@/components/own/watch/comment/CommentItem";
-import Hls from "hls.js";
+import Hls, { HlsEventEmitter, ManifestParsedData } from "hls.js";
 import {
     ImVolumeHigh,
     ImVolumeMedium,
@@ -64,6 +61,7 @@ import { useLocalStorage, useEffectOnce } from "usehooks-ts";
 import { useToast } from "@/components/ui/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import SubcribeButton from "@/components/own/SubcribeButton";
+import { Event } from "video.js/dist/types/event-target";
 
 type quality = {
     available: number[];
@@ -700,7 +698,8 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
                             {videoData.videoData.title}
                         </p>
                         <div className="flex justify-between max-sm:flex-col">
-                            <div className="flex gap-2 max-sm:flex-col">
+                            <div className="flex gap-2">
+                                {/* channel img + sub count */}
                                 <div className="flex gap-3">
                                     <div className="flex flex-col justify-center">
                                         <TooltipProvider>
@@ -741,7 +740,7 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
                                             </Tooltip>
                                         </TooltipProvider>
                                     </div>
-                                    <div className="flex flex-col gap-2">
+                                    <div className="flex flex-col w-max gap-2 flex-shrink-0">
                                         <TooltipProvider>
                                             <Tooltip>
                                                 <TooltipTrigger>
@@ -769,7 +768,7 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
                                                 </TooltipContent>
                                             </Tooltip>
                                         </TooltipProvider>
-                                        <p>
+                                        <p className="w-fit">
                                             {videoData.channelData.sub} Người
                                             đăng ký
                                         </p>
@@ -778,17 +777,19 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
 
                                 <div className="flex px-3 py-2 max-sm:w-full">
                                     {status == "loading" ? (
-                                        <Skeleton className="w-24 h-8 rounded-lg" />
+                                        <Skeleton className="w-24 h-10 rounded-lg" />
                                     ) : (
                                         <SubcribeButton
                                             session={session}
-                                            channelAccountId={videoData.channelData.accountId}
+                                            channelAccountId={
+                                                videoData.channelData.accountId
+                                            }
                                             channelId={videoData.channelData.id}
                                         />
                                     )}
                                 </div>
                             </div>
-                            <div className="flex justify-around items-center gap-3">
+                            <div className="flex justify-around items-center gap-3 max-sm:overflow-x-scroll hidden-scrollbar">
                                 <div className="flex my-auto rounded-[24px] border-[1px]">
                                     <div className="flex gap-1 dark:bg-slate-900 hover:bg-slate-300 dark:hover:bg-slate-800 py-2 px-3 rounded-s-3xl cursor-pointer">
                                         <div
@@ -821,6 +822,30 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
                                 </div>
                                 <div className="flex items-center justify-center h-fit p-3 dark:bg-slate-900 hover:bg-slate-300 dark:hover:bg-slate-800 border-[1px] rounded-full">
                                     <AiOutlineShareAlt />
+                                </div>
+                                <div className="h-3 w-4">
+                                    <p>test</p>
+                                </div>
+                                <div className="h-3 w-4">
+                                    <p>test</p>
+                                </div>
+                                <div className="h-3 w-4">
+                                    <p>test</p>
+                                </div>
+                                <div className="h-3 w-4">
+                                    <p>test</p>
+                                </div>
+                                <div className="h-3 w-4">
+                                    <p>test</p>
+                                </div>
+                                <div className="h-3 w-4">
+                                    <p>test</p>
+                                </div>
+                                <div className="h-3 w-4">
+                                    <p>test</p>
+                                </div>
+                                <div className="h-3 w-4">
+                                    <p>test</p>
                                 </div>
                             </div>
                         </div>
