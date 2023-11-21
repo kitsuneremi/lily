@@ -87,7 +87,7 @@ export default function VideoItem({
                         )}
                     </div>
                 )}
-                <div className="flex w-full gap-3 pt-1">
+                <div className="flex w-full gap-3 pt-1 px-2">
                     <div className="w-[30px]">
                         <TooltipProvider>
                             <Tooltip>
