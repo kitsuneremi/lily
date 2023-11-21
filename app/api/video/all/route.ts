@@ -1,8 +1,9 @@
 import prisma from "@/lib/prisma";
 import { BigVideoDataType, ChannelDataType, CommentDataType, MediaDataType } from "@/types/type";
 import { getDownloadURL, ref } from "firebase/storage";
-import { type NextRequest } from "next/server";
 import { storage } from "@/lib/firebase";
+import { type NextRequest } from "next/server";
+
 
 export async function GET(req: NextRequest) {
   const list: BigVideoDataType[] = [];
