@@ -61,7 +61,7 @@ export default function Button({
         if (session.user.id === channelAccountId) {
             return (
                 <div
-                    className="px-4 py-2 cursor-pointer rounded-[24px] border-[1px] hover:bg-slate-300 dark:bg-slate-900 dark:hover:bg-slate-800"
+                    className="px-4 py-2 h-fit cursor-pointer rounded-[24px] border-[1px] hover:bg-slate-300 dark:bg-slate-900 dark:hover:bg-slate-800"
                     onClick={() => {
                         redirect("/station");
                     }}
