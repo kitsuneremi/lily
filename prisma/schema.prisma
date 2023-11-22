@@ -17,7 +17,7 @@ model Channels {
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
   streamKey     String          @unique
-  live          Boolean        @default(false)
+  live          Boolean         @default(false)
   account       Accounts        @relation(fields: [accountId], references: [id])
   ListVideo     ListVideo[]
   Media         Media[]

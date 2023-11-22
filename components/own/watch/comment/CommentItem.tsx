@@ -65,8 +65,8 @@ export default function CommentItem({ cmt }: { cmt: CommentDataType }) {
 
     return (
         <div className="flex gap-3">
-            <div className="w-[45px] h-full">
-                <div className="relative w-full h-[45px]">
+            <div className="w-[45px] h-full max-sm:w-5">
+                <div className="relative w-full h-[45px] max-sm:h-5">
                     <ImageRender />
                 </div>
             </div>
