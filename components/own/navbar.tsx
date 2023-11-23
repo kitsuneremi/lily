@@ -38,7 +38,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-const Notification = dynamic(() => import("@/components/own/notification"));
+const Notification = dynamic(() => import("@/components/own/Notification"));
 function Navbar() {
     const { data: session, status } = useSession();
     const { setTheme, theme } = useTheme();
@@ -60,7 +60,6 @@ function Navbar() {
         click: boolean;
         menuFocus: boolean;
     }>({ click: false, menuFocus: false });
-    const [show, setShow] = useState<boolean>(false);
 
     const deviceType = {
         isPc: useMediaQuery("(min-width: 1280px"),
@@ -111,23 +110,7 @@ function Navbar() {
         }
     }, [session]);
 
-    const MenuRender = memo(() => {
-        return (
-            <Link href={"/"} className="text-xl flex items-center gap-2">
-                <div className="relative w-5 h-5 lg:w-9 lg:h-9">
-                    <Image
-                        className="rounded-full animate-spin"
-                        src={
-                            "https://danviet.mediacdn.vn/upload/2-2019/images/2019-04-02/Vi-sao-Kha-Banh-tro-thanh-hien-tuong-dinh-dam-tren-mang-xa-hoi-khabanh-1554192528-width660height597.jpg"
-                        }
-                        fill
-                        sizes="1/1"
-                        alt="khá bảnh"
-                    />
-                </div>
-            </Link>
-        );
-    });
+
 
     const Collapse = ({
         trigger,
@@ -137,18 +120,9 @@ function Navbar() {
         content: React.ReactNode;
     }) => {
         return (
-            <div
-                className="flex flex-col gap-1 w-max group/box"
-                onMouseEnter={() => {
-                    setShow(true);
-                }}
-                onMouseLeave={() => {
-                    setShow(false);
-                }}
-            >
+            <div className="flex flex-col gap-1 w-max group/box">
                 <div>{trigger}</div>
-                {/* hidden group-hover/box:block hover:bg-transparent hover:block */}
-                {show && <div className="">{content}</div>}
+                {<div className="hidden group-hover/box:block hover:bg-transparent hover:block">{content}</div>}
             </div>
         );
     };
@@ -415,8 +389,6 @@ function Navbar() {
                         </div>
                     </>
                 );
-            } else {
-                return <></>;
             }
         } else {
             return (
@@ -531,6 +503,24 @@ function Navbar() {
     }
 }
 
+const MenuRender = memo(() => {
+    return (
+        <Link href={"/"} className="text-xl flex items-center gap-2">
+            <div className="relative w-5 h-5 lg:w-9 lg:h-9">
+                <Image
+                    className="rounded-full animate-spin"
+                    src={
+                        "https://danviet.mediacdn.vn/upload/2-2019/images/2019-04-02/Vi-sao-Kha-Banh-tro-thanh-hien-tuong-dinh-dam-tren-mang-xa-hoi-khabanh-1554192528-width660height597.jpg"
+                    }
+                    fill
+                    sizes="1/1"
+                    alt="khá bảnh"
+                />
+            </div>
+        </Link>
+    );
+});
+
 const MenuItem = ({
     children,
     className,
@@ -559,7 +549,7 @@ const SearchModule = () => {
         <>
             <div className="w-max flex items-center h-full">
                 <input
-                    className="bg-transparent pr-1 w-60 focus:outline-none ml-3 my-1"
+                    className="bg-transparent pr-1 w-60 max-sm:w-40 focus:outline-none ml-3 my-1"
                     ref={searchInputRef}
                     value={searchValue}
                     onChange={(e) => {

@@ -26,23 +26,32 @@ import Properties from "@/components/own/watch/Properties";
 import Description from "@/components/own/watch/Description";
 import { FaXmark } from "react-icons/fa6";
 
-export default function Expand({ fullscreen, videoData, rel }: { fullscreen: boolean, videoData: BigVideoDataType, rel: HTMLDivElement | null }) {
+export default function Expand({ fullscreen, videoData }: { fullscreen: boolean, videoData: BigVideoDataType}) {
     const { data: session, status } = useSession();
     const [commentData, setCommentData] = useState<CommentDataType[]>();
     const commentInputRef = useRef<HTMLInputElement>(null);
+    const boxRef = useRef<HTMLDivElement>(null);
 
     const { toast } = useToast();
 
     const [show, setShow] = useState<boolean>(false);
     const [top, setTop] = useState<number>()
 
+    // useEffect(() => {
+    //     if (rel) {
+    //         const rect = rel.getBoundingClientRect();
+    //         console.log(rect)
+    //         setTop(rect.bottom)
+    //     }
+    // }, [rel])
+
     useEffect(() => {
-        if (rel) {
-            const rect = rel.getBoundingClientRect();
+        const rect = boxRef.current?.getBoundingClientRect();
+        if(rect){
             console.log(rect)
-            setTop(rect.bottom)
+            setTop(rect.top)
         }
-    }, [rel])
+    },[boxRef.current, window.innerWidth])
 
     useEffectOnce(() => {
         axios
@@ -140,7 +149,7 @@ export default function Expand({ fullscreen, videoData, rel }: { fullscreen: boo
                 <div className="flex justify-between px-3 items-center">
                     <div className="flex gap-2 items-center">
                         <div className="flex gap-2 max-[400px]:flex-col">
-                            <div className="flex gap-2">
+                            <div className="flex gap-2 items-center">
                                 <p>{videoData.videoData.mediaType == 0 ? 'Bình luận' : videoData.videoData.mediaType == 1 ? 'Trò chuyện trực tiếp' : 'Trò chuyện trước đó'}</p>
                                 <p>{videoData.commentData.length}</p>
                             </div>
@@ -190,7 +199,7 @@ export default function Expand({ fullscreen, videoData, rel }: { fullscreen: boo
                         </button>
                     </form>
                 </div>
-                <div className="flex-1 overflow-y-scroll hidden-scrollbar">
+                <div className="flex-1 pb-5 overflow-y-scroll hidden-scrollbar">
                     <CommentRender />
                 </div>
             </div>
@@ -233,7 +242,7 @@ export default function Expand({ fullscreen, videoData, rel }: { fullscreen: boo
     }
 
     return (
-        <div className="">
+        <div className="" ref={boxRef}>
             {/* video property */}
             <Properties videoData={videoData} fullscreen />
             {/* des */}
@@ -265,14 +274,14 @@ export default function Expand({ fullscreen, videoData, rel }: { fullscreen: boo
                         </button>
                     </form>
                 </div>
-                {!show && <div className={`flex flex-col gap-2 max-lg:bg-slate-700 lg:hidden py-5 rounded-lg ${fullscreen ? "px-3" : ""}`} onClick={() => { setShow(true) }}>
+                {!show && <div className={`flex flex-col gap-2 max-lg:dark:bg-slate-700 max-lg:bg-slate-200 lg:hidden py-5 rounded-lg ${fullscreen ? "px-3" : ""}`} onClick={() => { setShow(true) }}>
                     {CommentOpenBox()}
                 </div>}
-                <div className="max-lg:hidden">
+                <div className="max-lg:hidden pb-5">
                     <CommentRender />
                 </div>
             </div>
-            {show && top && <div style={{ top: `${Math.floor(top) - 55}px`, height: window.innerHeight - Math.floor(top) }} className={`absolute w-full left-0 z-50 px-6 max-sm:px-1 bg-slate-400 dark:bg-slate-700 rounded-lg`}>
+            {show && top && <div style={{ top: `${Math.floor(top) - 76}px`, height: window.innerHeight - Math.floor(top) }} className={`absolute w-[calc(100vw-24px)] mt-2 min-h-full left-3 z-50 px-6 max-sm:px-1 bg-slate-200 dark:bg-slate-700 rounded-lg`}>
                 {Test()}
             </div>}
         </div>

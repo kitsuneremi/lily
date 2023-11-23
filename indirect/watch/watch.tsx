@@ -347,19 +347,19 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
     return (
         <div
             className={`relative ${fullscreen ? "mt-0" : "mt-3"
-                } gap-10 h-full w-full overflow-y-scroll`}
+                } h-full w-full overflow-y-scroll`}
         >
-            <div className="lg:flex">
+            <div className="flex max-lg:flex-col">
                 <div
                     ref={fullRef}
-                    className={`flex group flex-col w-full ${fullscreen
+                    className={`flex flex-col group w-full ${fullscreen
                         ? "absolute w-screen top-0 left-0 bg-white dark:bg-slate-600 overflow-y-scroll p-0 hidden-scrollbar"
                         : `relative lg:w-3/4 lg:px-10 max-sm:px-2 px-5`
                         }`}
                 >
                     <div
                         ref={anyRef}
-                        className={`flex justify-center relative ${loadedContent ? "" : "pt-[56.25%] max-h-[80vh]"
+                        className={`flex justify-center relative aspect-video ${loadedContent ? "" : "max-h-[80vh]"
                             } ${fullscreen ? "w-full h-screen" : ""} rounded-xl`}
                     >
                         <video
@@ -502,7 +502,7 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
                                 } absolute bottom-0 w-full h-[20%] z-10`}
                         />
                     </div>
-                    <Expand fullscreen videoData={videoData} rel={anyRef.current}/>
+                    <Expand fullscreen videoData={videoData}/>
                 </div>
                 <div className="lg:flex flex-grow w-full flex-1 px-5 pt-3">
                     <VideoSuggest
