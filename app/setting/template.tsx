@@ -3,8 +3,8 @@ import React, { Ref, useEffect, useState, useRef, Suspense } from "react";
 import Link from "next/link";
 import { redirect, usePathname, useRouter } from "next/navigation";
 
-import Sidebar from "@/components/own/absoluteSidebar";
-import Navbar from "@/components/own/navbar";
+import Sidebar from "@/components/own/AbsoluteSidebar";
+import Navbar from "@/components/own/Navbar";
 import { useOnClickOutside } from "usehooks-ts";
 import { useDispatch } from "react-redux";
 import { close, reverse, open } from "@/redux/features/sidebar-slice";

@@ -1,4 +1,4 @@
-import Navbar from "@/components/own/navbar"
+import Navbar from "@/components/own/Navbar"
 import { Metadata } from "next"
 
 export const metadata: Metadata = {

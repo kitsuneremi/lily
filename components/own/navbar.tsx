@@ -39,9 +39,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 const Notification = dynamic(() => import("@/components/own/Notification"));
-function Navbar() {
+export default function Navbar() {
     const { data: session, status } = useSession();
-    const { setTheme, theme } = useTheme();
+    const { setTheme } = useTheme();
     const { isBrowser } = useSsr();
     const router = useRouter();
     const dispatch = useDispatch();
@@ -503,7 +503,8 @@ function Navbar() {
     }
 }
 
-const MenuRender = memo(() => {
+const MenuRender = memo(
+    function Comp(){
     return (
         <Link href={"/"} className="text-xl flex items-center gap-2">
             <div className="relative w-5 h-5 lg:w-9 lg:h-9">
@@ -593,5 +594,3 @@ const SearchModule = () => {
         </>
     );
 };
-
-export default memo(Navbar);

@@ -1,7 +1,7 @@
 "use client";
 import LivePlayer from "@/components/own/stream/page";
-import Sidebar from "@/components/own/absoluteSidebar";
-import Navbar from "@/components/own/navbar";
+import Sidebar from "@/components/own/AbsoluteSidebar";
+import Navbar from "@/components/own/Navbar";
 import Image from "next/image";
 import VideoItem from "@/components/own/watch/VideoItem";
 import ThisChannelVideoItem from "@/components/own/watch/ThisChannelVideoItem";

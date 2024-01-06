@@ -56,8 +56,8 @@ export const getFileExt = (fileName: File) => {
     return fileName.name.substring(fileName.name.lastIndexOf(".") + 1);
 };
 
-export const baseURL = process.env.NODE_ENV !== "production" ? 'https://erinasaiyukii.com' : 'http://localhost:3000'
-export const fileURL = process.env.NODE_ENV !== "production" ? 'https://file.erinasaiyukii.com' : 'http://192.168.1.187:5001'
+export const baseURL = process.env.NODE_ENV == "production" ? 'https://erinasaiyukii.com' : 'http://localhost:3000'
+export const fileURL = process.env.NODE_ENV == "production" ? 'https://file.erinasaiyukii.com' : 'http://192.168.1.187:5001'
 
 const formatHelper = (time: number) => {
     if(time >= 3600){

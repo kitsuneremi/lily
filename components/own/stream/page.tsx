@@ -6,7 +6,7 @@ import 'video.js/dist/video-js.css';
 
 export default function LivePlayer({ name, streamData }: { name: string, streamData: MediaDataType }) {
     const videoRef = useRef<HTMLDivElement>(null);
-    const playerRef = useRef(null)
+    const playerRef = useRef<any>(null)
 
     const videoJsOptions = {
         autoplay: true,

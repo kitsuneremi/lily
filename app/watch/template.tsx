@@ -1,5 +1,5 @@
-import Sidebar from "@/components/own/absoluteSidebar";
-import Navbar from "@/components/own/navbar";
+import Sidebar from "@/components/own/AbsoluteSidebar";
+import Navbar from "@/components/own/Navbar";
 
 
 export default function Template({ children }: { children: React.ReactNode }) {

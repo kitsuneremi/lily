@@ -1,4 +1,4 @@
-import Navbar from "@/components/own/navbar";
+import Navbar from "@/components/own/Navbar";
 import Sidebar from "@/components/own/defaultSidebar";
 
 export default function Template({ children }: { children: React.ReactNode }) {

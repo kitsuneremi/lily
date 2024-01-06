@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import { ChannelDataType, VideoDataType } from "@/types/type";
+import { ChannelDataType, MediaDataType } from "@/types/type";
 import { useSession } from "next-auth/react";
 import axios from "axios";
 import { ref, getDownloadURL } from "firebase/storage";
@@ -20,7 +20,7 @@ import {
 export default function Page() {
     const [videoThumbnail, setVideoThumbnail] = useState<string>("");
     const [channelData, setChannelData] = useState<ChannelDataType>();
-    const [latestVideoData, setLatestVideoData] = useState<VideoDataType>();
+    const [latestVideoData, setLatestVideoData] = useState<MediaDataType>();
     const { data: session } = useSession();
 
     useEffect(() => {

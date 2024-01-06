@@ -4,7 +4,7 @@ import 'video.js/dist/video-js.css';
 
 const VideoJS = ({ name }: { name: string }) => {
     const videoRef = useRef<HTMLDivElement>(null);
-    const playerRef = useRef(null)
+    const playerRef = useRef<any>(null)
 
     const videoJsOptions = {
         autoplay: true,
@@ -38,8 +38,9 @@ const VideoJS = ({ name }: { name: string }) => {
                 // on prop change, for example:
             } else {
                 const player = playerRef.current;
-
+                //@ts-ignore
                 player.autoplay(options.autoplay);
+                //@ts-ignore
                 player.src(options.sources);
             }
         }
