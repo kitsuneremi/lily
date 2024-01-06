@@ -51,7 +51,7 @@ let timer: any;
 
 /**
  * 
- * @param link: string 
+ * @param mediaData: MediaDataType 
  */
 const sourceURL = (mediaData: MediaDataType) => {
     if(mediaData.mediaType == 0){
