@@ -57,6 +57,17 @@ export default function Page({
 
     const { toast } = useToast();
 
+    useEffect(() => {
+        if (session && streamData) {
+            console.log("join");
+            socket.emit("join", {
+                id: session.user.id,
+                room: streamData.id,
+            });
+        }
+    }, [session, streamData]);
+
+
     useEffectOnce(() => {
         const handleReceivedMessage = (data: Message) => {
             setList((prev) => [...prev, data]);
@@ -69,14 +80,6 @@ export default function Page({
         };
     });
 
-    useEffect(() => {
-        if (session && streamData) {
-            socket.emit("join", {
-                id: session.user.id,
-                room: streamData.id,
-            });
-        }
-    }, [session, streamData]);
 
     const sendComment = () => {
         if (session && session.user && isLive && streamData) {
