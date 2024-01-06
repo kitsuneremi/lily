@@ -11,7 +11,7 @@ import React, {
     useCallback,
 } from "react";
 import axios from "axios";
-import { BigVideoDataType, CommentDataType } from "@/types/type";
+import { BigVideoDataType, CommentDataType, MediaDataType } from "@/types/type";
 import { FormatDateTime, fileURL, videoTimeFormater } from "@/lib/functional";
 
 import Hls, { HlsEventEmitter, ManifestParsedData } from "hls.js";
@@ -39,6 +39,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import Properties from "@/components/own/watch/Properties";
 import Description from "@/components/own/watch/Description";
 import Expand from "@/components/own/watch/Expand";
+import { redirect } from "next/navigation";
 
 type quality = {
     available: number[];
@@ -48,11 +49,25 @@ type quality = {
 const formatter = (value: number) => `${value}%`;
 let timer: any;
 
+/**
+ * 
+ * @param link: string 
+ */
+const sourceURL = (mediaData: MediaDataType) => {
+    if(mediaData.mediaType == 0){
+        return `${fileURL}/api/video/${mediaData.link}`;
+    }else if(mediaData.mediaType == 1 && mediaData.isLive){
+        redirect(`/stream/${mediaData.link}`);
+        return '';
+    }else if(mediaData.mediaType == 1 && !mediaData.isLive){
+        return `${fileURL}/api/merge/${mediaData.link}/live`;
+    }else{
+        return ''
+    }
+}
+
 export default function Page({ videoData }: { videoData: BigVideoDataType }) {
-    const src =
-        videoData.videoData.mediaType == 0
-            ? `${fileURL}/api/video/${videoData.videoData.link}`
-            : `${fileURL}/api/merge/${videoData.videoData.link}/live`;
+    const src = sourceURL(videoData.videoData);
 
 
     const ref = useRef<HTMLVideoElement>(null);
