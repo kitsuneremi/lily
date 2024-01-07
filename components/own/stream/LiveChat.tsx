@@ -38,7 +38,7 @@ export default function LiveChat({
                 },
             })
             .then((res) => setList(res.data));
-    }, [streamData]);
+    }, [streamData]); 
 
     useEffectOnce(() => {
         const handleReceivedMessage = (data: Message) => {
@@ -77,7 +77,7 @@ export default function LiveChat({
     };
 
     return (
-        <div className="rounded-lg w-full shadow-[0_0_1px_4px_purple] flex flex-col">
+        <div className="rounded-lg w-full shadow-[0_0_1px_4px_] flex flex-col">
             <div className="bg-slate-700 px-3 py-1 rounded-t-lg text-sm">
                 Trò chuyện trực tiếp
             </div>
