@@ -1,14 +1,18 @@
 Dự án sử dụng nextjs 14
-Chạy trực tiếp tại
+Chạy trực tiếp tại (sắp đổi domain)
 ```bash
     https://erinasaiyukii.com
 ```
 
-Nếu thấy web không vào được/sập thì có thể do 1 vài nguyên nhân sau
-- đang ngủ -> tắt laptop
-- đang chơi game -> tắt visual code
+Bạn có thể test backend qua
+```bash
+    https://file.erinasaiyukii.com/api/merge/cldByLt6/live
+```
+mở file bằng VLC player :v
+
+Nếu thấy 1 số chức năng ko chạy thì có thể do 1 vài nguyên nhân sau
 - bọn cờ hó fpt đổi địa chỉ ip public
-- lỡ tay rút/ mèo cắn dây mạng
+- mất mạng
 - mất điện
 - đang thao tác config nginx proxy
 
@@ -18,8 +22,8 @@ Nếu thấy web không vào được/sập thì có thể do 1 vài nguyên nh�
 
 ## 1 số thông tin về project
 - dự án này bao gồm cả phần front-end lẫn backend, storage, server,...
-- frontend: nextjs 13.5
-- backend: next-server, expressjs,
+- frontend: nextjs 14
+- backend: nextjs api, expressjs,
 - proxy server: nginx
 
 - mô tả thêm về quy trình hoạt động
