@@ -582,7 +582,7 @@ const SearchModule = () => {
                             <AiOutlineSearch />
                         </div>
                         <div className="flex items-center flex-1 h-fit">
-                            <p className="w-full text-lg text-ellipsis break-words h-max">
+                            <p className="w-full text-lg whitespace-nowrap text-ellipsis h-max overflow-hidden">
                                 {searchValue}
                             </p>
                         </div>
