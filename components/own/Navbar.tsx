@@ -53,8 +53,7 @@ export default function Navbar() {
     const popoverTriggerRef = useRef<HTMLDivElement>(null);
     const popoverContentRef = useRef<HTMLDivElement>(null);
 
-    const [personalChannelData, setPersonalChannelData] =
-        useState<ChannelDataType>();
+    const [personalChannelData, setPersonalChannelData] = useState<ChannelDataType>();
     const [mobileShowSearch, setMobileShowSearch] = useState<boolean>();
     const [showPopover, setShowPopover] = useState<{
         click: boolean;
