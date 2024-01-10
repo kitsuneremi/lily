@@ -35,7 +35,7 @@ import { signOut, useSession } from "next-auth/react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
-const Notification = dynamic(() => import("@/components/own/Notification"));
+const Notification = dynamic(() => import("@/components/own/navbar/Notification"));
 
 const StudioNavbar = () => {
     // ref
