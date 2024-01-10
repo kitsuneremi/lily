@@ -19,6 +19,9 @@ const channelQuery = async (keyword: string) => {
                     }
                 }
             ]
+        },
+        select: {
+            name: true,
         }
     })
     return channels;
@@ -31,8 +34,9 @@ const videosQuery = async (keyword: string) => {
                 contains: keyword
             }
         },
-        include: {
-            Channels: true
+        select:{
+            title: true,
+            link:true
         }
     })
 
@@ -48,8 +52,9 @@ export async function GET(req: NextRequest) {
     if (keyword != null) {
 
         // test thử fetch data song song
-        const [channels, videos] = await Promise.all([channelQuery(keyword), videosQuery(keyword)])
+        // const [channels, videos] = await Promise.all([channelQuery(keyword), videosQuery(keyword)])
+        const videos = await videosQuery(keyword)
 
-        return new Response(JSON.stringify({ channels: channels, videos: videos }))
+        return new Response(JSON.stringify(videos))
     }
 }

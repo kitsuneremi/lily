@@ -1,12 +1,26 @@
+import axios from "axios";
 import { useRouter } from "next/navigation";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AiOutlineSearch } from "react-icons/ai";
+import Link from 'next/link'
 const SearchModule = () => {
     const router = useRouter();
     const searchInputRef = useRef<HTMLInputElement>(null);
     const searchResultRef = useRef<HTMLDivElement>(null);
     const [searchValue, setSearchValue] = useState<string>("");
     const [focusing, setFocus] = useState<boolean>(false);
+    const [searchResult, setSearchResult] = useState<any[]>([]);
+
+    useEffect(() => {
+        if (searchValue.trim().length > 0) {
+            axios.get(`/api/quicksearch?keyword=${searchValue}`).then((res) => {
+                console.log(res.data)
+                setSearchResult(res.data)
+            })
+        }else{
+            setFocus(false)
+        }
+    }, [searchValue])
     return (
         <>
             <div className="relative flex gap-1 items-center rounded-2xl border-[1px] border-[#ccccc] bg-slate-100 dark:bg-slate-800">
@@ -36,18 +50,23 @@ const SearchModule = () => {
 
                 {focusing &&
                     <div
-                        className="absolute w-80 h-fit left-[-16px] items-center top-12 max-w-[95vw] bg-white dark:bg-slate-600 border-[1px] border-slate-400 rounded-lg"
+                        className="absolute w-80 h-fit left-[-16px] items-center top-12 max-w-[95vw] bg-slate-50 dark:bg-slate-600 border-[1px] border-slate-100 rounded-lg shadow-lg"
                         ref={searchResultRef}
                     >
-                        <div className="flex px-4 py-1 gap-9 h-max items-center">
-                            <div className="flex items-center">
-                                <AiOutlineSearch />
-                            </div>
-                            <div className="flex items-center flex-1 h-fit">
-                                <p className="w-full text-lg whitespace-nowrap text-ellipsis h-max overflow-hidden">
-                                    {searchValue}
-                                </p>
-                            </div>
+                        <div className="flex flex-col flex-1 h-fit p-3">
+                            {searchResult.map((item, index) => {
+                                return (
+                                    <Link href={`/watch/${item.link}`}>
+                                    <div className="w-full flex gap-2 px-2 py-1 items-center rounded-md m-1 hover:scale-105 hover:bg-slate-200 hover:shadow-lg" key={index}>
+                                        <AiOutlineSearch />
+                                        <p className="w-full text-lg whitespace-nowrap text-ellipsis h-max overflow-hidden">
+                                            {item.title}
+                                        </p>
+                                    </div>
+                                    </Link>
+                                )
+                            })}
+
                         </div>
                     </div>
                 }
