@@ -56,8 +56,8 @@ const SearchModule = () => {
                         <div className="flex flex-col flex-1 h-fit p-3">
                             {searchResult.map((item, index) => {
                                 return (
-                                    <Link href={`/watch/${item.link}`}>
-                                    <div className="w-full flex gap-2 px-2 py-1 items-center rounded-md m-1 hover:scale-105 hover:bg-slate-200 hover:shadow-lg" key={index}>
+                                    <Link href={`/watch/${item.link}`} key={index}>
+                                    <div className="w-full flex gap-2 px-2 py-1 items-center rounded-md m-1 hover:scale-105 hover:bg-slate-200 hover:shadow-lg">
                                         <AiOutlineSearch />
                                         <p className="w-full text-lg whitespace-nowrap text-ellipsis h-max overflow-hidden">
                                             {item.title}
