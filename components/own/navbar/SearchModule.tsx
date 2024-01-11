@@ -33,7 +33,7 @@ const SearchModule = () => {
                     const [userHistoryData, KeywordSearchData] = await Promise.all([searchHistoryPromise, searchKeyword])
                     setSearchResult({ userHistory: userHistoryData.data, keywordSearch: KeywordSearchData.data })
                 } else {
-                    searchKeyword.then(res => { setSearchResult(res.data) })
+                    searchKeyword.then(res => { setSearchResult({ keywordSearch: res.data, userHistory: [] }) })
                 }
 
             }
@@ -42,15 +42,6 @@ const SearchModule = () => {
             setFocus(false)
         }
     }, [searchValue])
-
-
-    const handleSearchResultRender = () => {
-        return (
-            <>
-
-            </>
-        )
-    }
 
     return (
         <>
