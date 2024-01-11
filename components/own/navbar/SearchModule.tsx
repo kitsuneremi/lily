@@ -17,7 +17,7 @@ const SearchModule = () => {
                 console.log(res.data)
                 setSearchResult(res.data)
             })
-        }else{
+        } else {
             setFocus(false)
         }
     }, [searchValue])
@@ -57,16 +57,15 @@ const SearchModule = () => {
                             {searchResult.map((item, index) => {
                                 return (
                                     <Link href={`/watch/${item.link}`} key={index}>
-                                    <div className="w-full flex gap-2 px-2 py-1 items-center rounded-md m-1 hover:scale-105 hover:bg-slate-200 hover:shadow-lg">
-                                        <AiOutlineSearch />
-                                        <p className="w-full text-lg whitespace-nowrap text-ellipsis h-max overflow-hidden">
-                                            {item.title}
-                                        </p>
-                                    </div>
+                                        <div className="w-full flex gap-2 px-2 py-1 items-center rounded-md m-1 hover:scale-105 hover:bg-slate-200 hover:shadow-lg hover:text[18px] hover:text-purple-950 dark:hover:text-purple-400">
+                                            <AiOutlineSearch />
+                                            <p className="w-full text-lg whitespace-nowrap text-ellipsis h-max overflow-hidden">
+                                                {item.title}
+                                            </p>
+                                        </div>
                                     </Link>
                                 )
                             })}
-
                         </div>
                     </div>
                 }

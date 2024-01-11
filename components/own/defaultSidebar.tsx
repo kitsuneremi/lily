@@ -19,12 +19,32 @@ import Image from "next/image";
 import { useSession } from "next-auth/react";
 import axios from "axios";
 import { ReduceString } from "@/lib/functional";
-
+import dynamic from "next/dynamic";
+const SubcribedChannelRender = dynamic(() => import('@/components/own/sidebar/SubcribbedChannelRender'))
 type subcribe = {
     name: string;
     tagName: string;
     image: string;
 };
+
+
+const listMenu = [
+    {
+        title: "Trang chủ",
+        icon: <AiOutlineHome />,
+        link: "/",
+    },
+    {
+        title: "Shorts",
+        icon: <AiOutlineHome />,
+        link: "/shorts",
+    },
+    {
+        title: "Kênh đăng ký",
+        icon: <AiOutlineHome />,
+        link: "/subcribe",
+    }
+]
 
 export default function Sidebar() {
     const { isBrowser } = useSsr();
@@ -35,8 +55,8 @@ export default function Sidebar() {
         isAbsolute: useMediaQuery("(max-width: 1199px)"),
     };
 
-    const [subcribeList, setSubscribeList] = useState<subcribe[]>();
-    const [showFullSubcribe, setShowFullSubcribe] = useState<boolean>(false);
+    const [subcribedList, setSubscribedList] = useState<subcribe[]>();
+
 
     const sidebarRef = useRef<HTMLDivElement>(null);
 
@@ -66,155 +86,47 @@ export default function Sidebar() {
                     },
                 })
                 .then((res) => {
-                    setSubscribeList(res.data);
+                    setSubscribedList(res.data);
                 });
         }
     }, [session]);
 
-    const SubcribedChannel = ({ item }: { item: subcribe }) => {
-        return (
-            <Link href={`/channel/${item.tagName}`}>
-                <div className="flex items-center gap-2 cursor-pointer hover:bg-slate-300 dark:hover:bg-slate-600 px-2 py-1 rounded-lg">
-                    <div className="flex flex-col justify-center">
-                        <div className="flex items-center w-4 h-4 relative">
-                            <Image
-                                fill
-                                sizes={"1/1"}
-                                src={item.image}
-                                alt={item.name}
-                                className="rounded-full"
-                            />
-                        </div>
-                    </div>
-                    <div
-                        className={`flex justify-center items-center ${
-                            openSidebar ? "" : "hidden"
-                        }`}
-                    >
-                        <p className="">
-                            {ReduceString({ maxLength: 16, string: item.name })}
-                        </p>
-                    </div>
-                </div>
-            </Link>
-        );
-    };
 
-    const subcribeRender = useCallback(() => {
-        if (subcribeList) {
-            return (
-                <>
-                    <div className="w-full h-[2px] relative after:absolute after:bg-slate-300 dark:after:bg-slate-500 after:h-[90%] after:top-[5%] after:left-0 after:w-full" />
-                    <p className="w-full text-lg pl-2">Kênh đăng ký</p>
-                    {/* kênh đăng ký */}
-                    <div className="">
-                        {subcribeList.length > 5 && (
-                            <div
-                                className="w-full"
-                                onClick={() => {
-                                    setShowFullSubcribe((prev) => {
-                                        return !prev;
-                                    });
-                                }}
-                            >
-                                {showFullSubcribe
-                                    ? "Ẩn bớt"
-                                    : `Hiển thị {subcribeList.length - 5} kênh nữa`}
-                            </div>
-                        )}
-                        {showFullSubcribe
-                            ? subcribeList.map((item, index) => {
-                                  return (
-                                      <SubcribedChannel
-                                          item={item}
-                                          key={index}
-                                      />
-                                  );
-                              })
-                            : subcribeList.slice(0, 5).map((item, index) => {
-                                  return (
-                                      <SubcribedChannel
-                                          item={item}
-                                          key={index}
-                                      />
-                                  );
-                              })}
-                    </div>
-                </>
-            );
-        }
-    }, [subcribeList]);
 
     const FullRender = () => {
         return (
-            <>
-                <Link href={"/"} className="w-full">
-                    <div
-                        className={`flex justify-start items-center rounded-md hover:shadow-lg ${
-                            openSidebar ? "gap-2" : ""
-                        } w-full rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 py-2 px-2`}
-                    >
-                        <div className="flex flex-col justify-center">
-                            <AiOutlineHome />
-                        </div>
-                        <div
-                            className={`flex justify-center items-center ${
-                                openSidebar ? "" : "hidden"
-                            }`}
-                        >
-                            <p className="">Trang chủ</p>
-                        </div>
-                    </div>
-                </Link>
-                <Link href={"/shorts"} className="w-full">
-                    <div
-                        className={`flex justify-start items-center ${
-                            openSidebar ? "gap-2" : ""
-                        } w-full rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 py-2 px-2`}
-                    >
-                        <div className="flex flex-col justify-center">
-                            <AiOutlineHome />
-                        </div>
-                        <div
-                            className={`flex justify-center items-center ${
-                                openSidebar ? "" : "hidden"
-                            }`}
-                        >
-                            <p className="">Short</p>
-                        </div>
-                    </div>
-                </Link>
-                <Link href={"/subcribe"} className="w-full">
-                    <div
-                        className={`flex justify-start items-center ${
-                            openSidebar ? "gap-2" : ""
-                        } w-full rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 py-2 px-2`}
-                    >
-                        <div className="flex flex-col justify-center">
-                            <AiOutlineHome />
-                        </div>
-                        <div
-                            className={`flex justify-center items-center ${
-                                openSidebar ? "" : "hidden"
-                            }`}
-                        >
-                            <p className="">Kênh đăng ký</p>
-                        </div>
-                    </div>
-                </Link>
+            <div className="py-2">
+                {listMenu.map((menu, index) => {
+                    return (
+                        <Link href={menu.link} className="w-full" key={index}>
+                            <div
+                                className={`flex justify-start items-center rounded-md hover:shadow-lg hover:scale-105 group ${openSidebar ? "gap-2" : ""
+                                    } w-full rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 py-2 px-2`}
+                            >
+                                <div className="flex flex-col justify-center group-hover:text-[17px] group-hover:text-purple-900 dark:group-hover:text-purple-400 group-hover:font-semibold">
+                                    {menu.icon}
+                                </div>
+                                <div
+                                    className={`flex justify-center items-center group-hover:text-[17px] group-hover:text-purple-900 dark:group-hover:text-purple-400 group-hover:font-semibold ${openSidebar ? "" : "hidden"
+                                        }`}
+                                >
+                                    <p className="">{menu.title}</p>
+                                </div>
+                            </div>
+                        </Link>
+                    )
+                })}
 
-                <div className="w-full h-[2px] relative after:absolute after:bg-slate-300 dark:after:bg-slate-500 after:h-[90%] after:top-[5%] after:left-0 after:w-full" />
+                <div className="w-full my-2 h-[2px] relative after:absolute after:bg-slate-300 dark:after:bg-slate-500 after:h-[90%] after:top-[5%] after:left-0 after:w-full" />
                 {/* tùy chọn thuộc về tài khỏan/kênh */}
                 <Link href={"/feed/you"} className="w-full">
                     <div
-                        className={`flex justify-start items-center ${
-                            openSidebar ? "gap-2" : ""
-                        } w-full rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 py-1 px-2`}
+                        className={`flex justify-start items-center ${openSidebar ? "gap-2" : ""
+                            } w-full rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 py-1 px-2`}
                     >
                         <div
-                            className={`flex justify-center items-center ${
-                                openSidebar ? "" : "hidden"
-                            }`}
+                            className={`flex justify-center items-center ${openSidebar ? "" : "hidden"
+                                }`}
                         >
                             <p className="">Bạn</p>
                         </div>
@@ -225,17 +137,15 @@ export default function Sidebar() {
                 </Link>
                 <Link href={`/channel/`} className="w-full">
                     <div
-                        className={`flex justify-start items-center ${
-                            openSidebar ? "gap-2" : ""
-                        } w-full rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 py-2 px-2`}
+                        className={`flex justify-start items-center ${openSidebar ? "gap-2" : ""
+                            } w-full rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 py-2 px-2`}
                     >
                         <div className="flex flex-col justify-center">
                             <AiOutlineHome />
                         </div>
                         <div
-                            className={`flex justify-center items-center ${
-                                openSidebar ? "" : "hidden"
-                            }`}
+                            className={`flex justify-center items-center ${openSidebar ? "" : "hidden"
+                                }`}
                         >
                             <p className="">Kênh của bạn</p>
                         </div>
@@ -243,40 +153,36 @@ export default function Sidebar() {
                 </Link>
                 <Link href={"/feed/later"} className="w-full">
                     <div
-                        className={`flex justify-start items-center ${
-                            openSidebar ? "gap-2" : ""
-                        } w-full rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 py-2 px-2`}
+                        className={`flex justify-start items-center ${openSidebar ? "gap-2" : ""
+                            } w-full rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 py-2 px-2`}
                     >
                         <div className="flex flex-col justify-center">
                             <AiOutlineHome />
                         </div>
                         <div
-                            className={`flex justify-center items-center ${
-                                openSidebar ? "" : "hidden"
-                            }`}
+                            className={`flex justify-center items-center ${openSidebar ? "" : "hidden"
+                                }`}
                         >
                             <p className="">Video xem sau</p>
                         </div>
                     </div>
                 </Link>
 
-                {subcribeRender}
+                {subcribedList && <SubcribedChannelRender subcribedList={subcribedList} />}
 
-                <div className="w-full h-[2px] relative after:absolute after:bg-slate-300 dark:after:bg-slate-500 after:h-[90%] after:top-[5%] after:left-0 after:w-full" />
+                <div className="w-full my-2 h-[2px] relative after:absolute after:bg-slate-300 dark:after:bg-slate-500 after:h-[90%] after:top-[5%] after:left-0 after:w-full" />
 
                 <Link href={"/setting/account"} className="w-full">
                     <div
-                        className={`flex justify-start items-center ${
-                            openSidebar ? "gap-2" : ""
-                        } w-full rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 py-2 px-2`}
+                        className={`flex justify-start items-center ${openSidebar ? "gap-2" : ""
+                            } w-full rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 py-2 px-2`}
                     >
                         <div className="flex flex-col justify-center">
                             <AiFillSetting />
                         </div>
                         <div
-                            className={`flex justify-center items-center ${
-                                openSidebar ? "" : "hidden"
-                            }`}
+                            className={`flex justify-center items-center ${openSidebar ? "" : "hidden"
+                                }`}
                         >
                             <p className="">Cài đặt</p>
                         </div>
@@ -284,23 +190,21 @@ export default function Sidebar() {
                 </Link>
                 <Link href={"/feedback"} className="w-full">
                     <div
-                        className={`flex justify-start items-center ${
-                            openSidebar ? "gap-2" : ""
-                        } w-full rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 py-2 px-2`}
+                        className={`flex justify-start items-center ${openSidebar ? "gap-2" : ""
+                            } w-full rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 py-2 px-2`}
                     >
                         <div className="flex flex-col justify-center">
                             <MdFeedback />
                         </div>
                         <div
-                            className={`flex justify-center items-center ${
-                                openSidebar ? "" : "hidden"
-                            }`}
+                            className={`flex justify-center items-center ${openSidebar ? "" : "hidden"
+                                }`}
                         >
                             <p className="">Góp ý</p>
                         </div>
                     </div>
                 </Link>
-            </>
+            </div>
         );
     };
 
@@ -384,11 +288,10 @@ export default function Sidebar() {
                     </div> */}
                     <div
                         ref={sidebarRef}
-                        className={`${
-                            openSidebar
-                                ? "overflow-y-scroll min-w-[220px] h-[calc(100vh-64px)] flex fixed top-16 flex-col gap-1 w-max items-start hidden-scrollbar px-3 bg-slate-50 dark:bg-slate-800 z-50"
-                                : "hidden"
-                        }`}
+                        className={`${openSidebar
+                            ? "overflow-y-scroll min-w-[220px] h-[calc(100vh-64px)] flex fixed top-16 flex-col gap-1 w-max items-start hidden-scrollbar px-3 bg-slate-50 dark:bg-slate-800 z-50"
+                            : "hidden"
+                            }`}
                     >
                         <FullRender />
                     </div>

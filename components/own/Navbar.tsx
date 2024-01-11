@@ -201,70 +201,60 @@ export default function Navbar() {
 
     if (isBrowser) {
         if (deviceType.isMobile) {
-            if (mobileShowSearch) {
-                //device type: mobile, trạng thái: show search input
-                return (
-                    <>
-                        <button className="text-xl ml-3">
-                            <AiOutlineClose
-                                onClick={() => {
-                                    setMobileShowSearch(false);
-                                }}
-                            />
-                        </button>
+            return (
+                <>
+                    {mobileShowSearch ? <div className="flex w-40 gap-8 text-xl items-center">
+                        <div onClick={() => {
+                            dispatch(reverse());
+                        }}>
+                            {openSidebar ? (
+                                <AiOutlineRight />
+                            ) : (
+                                <AiOutlineLeft />
+                            )}
+                        </div>
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger>
+                                    <MenuRender />
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <p>Quay về trang chủ</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
+                    </div>
+                        :
+                        <>
+                            <button className="text-xl ml-3">
+                                <AiOutlineClose
+                                    onClick={() => {
+                                        setMobileShowSearch(false);
+                                    }}
+                                />
+                            </button>
+                            <SearchModule />
+                        </>
 
-                        <SearchModule />
+                    }
 
-                        <div className="flex gap-3 items-center">
-                            <AiOutlineUpload />
-                            <BsBell />
-                            <BsChatLeftDots />
-                            <DropMenu />
-                        </div>
-                    </>
-                );
-            } else if (mobileShowSearch == false) {
-                // device type: mobile, trạng thái: ẩn search input
-                return (
-                    <>
-                        <div className="flex w-40 gap-8 text-xl items-center">
-                            <div onClick={() => {
-                                dispatch(reverse());
-                            }}>
-                                {openSidebar ? (
-                                    <AiOutlineRight />
-                                ) : (
-                                    <AiOutlineLeft />
-                                )}
-                            </div>
-                            <TooltipProvider>
-                                <Tooltip>
-                                    <TooltipTrigger>
-                                        <MenuRender />
-                                    </TooltipTrigger>
-                                    <TooltipContent>
-                                        <p>Quay về trang chủ</p>
-                                    </TooltipContent>
-                                </Tooltip>
-                            </TooltipProvider>
-                        </div>
-                        <div className="flex gap-3 items-center">
-                            <div
-                                className="lg:hidden"
-                                onClick={() => {
-                                    setMobileShowSearch(true);
-                                }}
-                            >
-                                <AiOutlineSearch />
-                            </div>
-                            <AiOutlineUpload />
-                            <Notification />
-                            <BsChatLeftDots />
-                            <DropMenu />
-                        </div>
-                    </>
-                );
-            }
+
+                    <div className="flex gap-3 items-center">
+                        {!mobileShowSearch && <div
+                            className="lg:hidden"
+                            onClick={() => {
+                                setMobileShowSearch(true);
+                            }}
+                        >
+                            <AiOutlineSearch />
+                        </div>}
+                        <AiOutlineUpload />
+                        <Notification />
+                        <BsChatLeftDots />
+                        <DropMenu />
+                    </div>
+                </>
+            )
         } else {
             return (
                 // device type: desktop hoặc tablet

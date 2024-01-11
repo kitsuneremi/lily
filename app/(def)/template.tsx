@@ -1,5 +1,8 @@
-import Navbar from "@/components/own/Navbar";
-import Sidebar from "@/components/own/defaultSidebar";
+// import Navbar from "@/components/own/Navbar";
+// import Sidebar from "@/components/own/defaultSidebar";
+import dynamic from "next/dynamic";
+const Navbar = dynamic(() => import("@/components/own/Navbar"));
+const Sidebar = dynamic(() => import("@/components/own/defaultSidebar"));
 
 export default function Template({ children }: { children: React.ReactNode }) {
     return (
