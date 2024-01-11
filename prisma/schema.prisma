@@ -44,6 +44,7 @@ model Media {
   DetailTags      DetailTags?
   Likes           Likes[]
   Channels        Channels          @relation(fields: [channelId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "channelId")
+  ViewHistory     ViewHistory[]
 
   @@index([channelId], map: "channelId")
 }
@@ -206,4 +207,31 @@ model Accounts {
   Member        Member[]
   Notifications Notifications[]
   Subcribes     Subcribes[]
+  SearchHistory SearchHistory[]
+  ViewHistory   ViewHistory[]
+}
+
+model SearchHistory {
+  id        Int      @id @default(autoincrement())
+  accountId Int
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  account   Accounts @relation(fields: [accountId], references: [id])
+
+  @@index([accountId], map: "SearchHistory_accountId_fkey")
+}
+
+model ViewHistory {
+  id        Int      @id @default(autoincrement())
+  accountId Int
+  mediaId   Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  account   Accounts @relation(fields: [accountId], references: [id])
+  media     Media    @relation(fields: [mediaId], references: [id])
+  mediaProgress Int
+
+  @@index([accountId], map: "ViewHistory_accountId_fkey")
+  @@index([mediaId], map: "ViewHistory_mediaId_fkey")
 }

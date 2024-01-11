@@ -50,7 +50,7 @@ const SubcribeRender = ({ subcribedList }: { subcribedList: subcribe[] }) => {
     if (subcribedList) {
         return (
             <>
-                <div className="w-full h-[2px] relative after:absolute after:bg-slate-300 dark:after:bg-slate-500 after:h-[90%] after:top-[5%] after:left-0 after:w-full" />
+                <div className="w-full my-2 h-[2px] relative after:absolute after:bg-slate-300 dark:after:bg-slate-500 after:h-[90%] after:top-[5%] after:left-0 after:w-full" />
                 <p className="w-full text-lg pl-2">Kênh đăng ký</p>
                 {/* kênh đăng ký */}
                 <div className="">
