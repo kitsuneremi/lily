@@ -148,10 +148,7 @@ async function ChannelRender() {
     const session = await getServerSession(authOptions);
     if (session) {
         const channelDataPromise = fetch(`${baseURL}/api/channel/data?accountId=${session.user.id}`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-            },
+            method: "GET"
         })
 
         const channelData = await (await channelDataPromise).json() as ChannelDataType;
