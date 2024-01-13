@@ -9,10 +9,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useSession, signOut } from "next-auth/react";
 import { CiMenuBurger } from "react-icons/ci";
-import { ChannelDataType } from "@/types/type";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
-import { baseURL } from "@/lib/functional";
+import ChannelRender from "@/components/own/navbar/CheckChannel";
 
 export default function LastMenu() {
     const popoverTriggerRef = useRef<HTMLDivElement>(null);
@@ -142,59 +139,4 @@ export default function LastMenu() {
             </div>
         </>
     );
-}
-
-async function ChannelRender() {
-    const session = await getServerSession(authOptions);
-    if (session) {
-        const channelDataPromise = fetch(`${baseURL}/api/channel/data?accountId=${session.user.id}`, {
-            method: "GET"
-        })
-
-        const channelData = await (await channelDataPromise).json() as ChannelDataType;
-
-        if (channelData) {
-            return (
-                <>
-                    <MenuItem className="bg-transparent">
-                        <div className="flex gap-4">
-                            <div className="flex items-center">
-                                <div className="relative w-8 h-8">
-                                    {channelData.avatarImage && (
-                                        <Image
-                                            className="rounded-full"
-                                            src={
-                                                channelData.avatarImage
-                                            }
-                                            alt=""
-                                            fill
-                                            sizes="1/1"
-                                        />
-                                    )}
-                                </div>
-                            </div>
-                            <div className="flex items-center">
-                                <p className="text-xl">{session.user.name}</p>
-                            </div>
-                        </div>
-                    </MenuItem>
-                    <MenuItem>
-                        <Link className="w-full h-full" href={'/station'}>
-                            Station
-                        </Link>
-                    </MenuItem>
-                </>
-            )
-        } else {
-            return (
-                <MenuItem>
-                    <Link className="w-full h-full" href={'/regchannel'}>
-                        Chưa có kênh? Tạo ngay!
-                    </Link>
-                </MenuItem>
-            )
-        }
-    } else {
-        return <>no session</>
-    }
 }
