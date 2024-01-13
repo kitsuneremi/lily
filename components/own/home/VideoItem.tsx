@@ -47,6 +47,20 @@ export default function VideoItem({
 
     const [hover, setHover] = useState<boolean>(false);
 
+    const mouseEnter = () => {
+        setTimeout(() => {
+            if(!hover){
+                setHover(true)
+            }
+        }, 200)
+    }
+
+    const mouseOut = () => {
+        if(hover){
+            setHover(false)
+        }
+    } 
+
     return (
         <Link href={genLink()}>
             <motion.div
@@ -57,14 +71,14 @@ export default function VideoItem({
                 className="p-[1px] hover:rgb rounded-lg">
                 <div className="max-[640px]:max-w-[78vw] w-full p-4 grid items-center h-fit rounded-lg hover:shadow-xl bg-white dark:bg-slate-800">
                     {videoData.mediaType == 0 ? (
-                        <div className="relative w-full aspect-video rounded-md bg-transparent" onMouseEnter={() => { setHover(true) }} onMouseOutCapture={() => { setHover(false) }} onMouseLeave={() => { setHover(false) }}>
+                        <div className="relative w-full aspect-video rounded-md bg-transparent" onMouseEnter={() => { mouseEnter() }} onMouseOutCapture={() => { mouseOut() }} onMouseLeave={() => { mouseOut() }}>
                             {hover ? <QuickPlayer mediaData={videoData} className="w-full h-full rounded-md" /> : videoData && videoData.thumbnail ? (
                                 <Image
                                     alt=""
                                     className="rounded-md bg-transparent"
                                     fill
                                     sizes="16/9"
-                                    src={videoData.thumbnail}
+                                    src={videoData.thumbnail} 
                                     loading="lazy"
                                 />
                             ) : (
@@ -74,7 +88,7 @@ export default function VideoItem({
                         </div>
 
                     ) : (
-                        <div className="relative w-full aspect-video rounded-md bg-opacity-40 bg-slate-100 flex justify-center" onMouseEnter={() => { setHover(true) }} onMouseOutCapture={() => { setHover(false) }} onMouseOut={() => { setHover(false) }} onMouseLeave={() => { setHover(false) }}>
+                        <div className="relative w-full aspect-video rounded-md bg-opacity-40 bg-slate-100 flex justify-center" onMouseEnter={() => { mouseEnter() }} onMouseOutCapture={() => { mouseOut() }}>
                             {hover ? <QuickPlayer mediaData={videoData} className="absolute left-0 top-0 w-full h-full rounded-md" /> : <div className="h-full aspect-square relative">
                                 {videoData && videoData.thumbnail ? (
                                     <Image
