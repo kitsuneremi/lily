@@ -1,65 +1,86 @@
-'use server'
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { Skeleton } from "@/components/ui/skeleton";
 import MenuItem from "./MenuItem";
 import Image from "next/image";
+import axios from 'axios'
+import { useState, useEffect } from "react";
 import { ChannelDataType } from "@/types/type";
-import Link from "next/link";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
-import { baseURL } from "@/lib/functional";
-export default async function ChannelRender() {
-    const session = await getServerSession(authOptions);
-    if (session) {
-        const channelDataPromise = fetch(`${baseURL}/api/channel/data?accountId=${session.user.id}`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-            },
-        })
+const ChannelRender = () => {
+    const {data:session} = useSession();
+    const router = useRouter();
+    const [personalChannelData, setPersonalChannelData] = useState<ChannelDataType>();
 
-        const channelData = await (await channelDataPromise).json() as ChannelDataType;
+    useEffect(() => {
+        if (session && session.user) {
+            axios
+                .get("/api/channel/data", {
+                    params: {
+                        accountId: session.user.id,
+                    },
+                })
+                .then((res) => {
+                    if (res.status == 200) {
+                        setPersonalChannelData(res.data);
+                    }
+                })
+                .catch((e) => {
+                    console.log(e);
+                });
+        }
+    }, [session]);
 
-        if (channelData) {
-            return (
-                <>
-                    <MenuItem className="bg-transparent">
-                        <div className="flex gap-4">
-                            <div className="flex items-center">
-                                <div className="relative w-8 h-8">
-                                    {channelData.avatarImage && (
-                                        <Image
-                                            className="rounded-full"
-                                            src={
-                                                channelData.avatarImage
-                                            }
-                                            alt=""
-                                            fill
-                                            sizes="1/1"
-                                        />
-                                    )}
-                                </div>
-                            </div>
-                            <div className="flex items-center">
-                                <p className="text-xl">{session.user.name}</p>
+    if (!session && personalChannelData == undefined) {
+        return (
+            <MenuItem className="text-start">
+                <Skeleton className="h-full w-full" />
+            </MenuItem>
+        );
+    } else if (session && personalChannelData == null) {
+        return (
+            <MenuItem
+                onClick={() => {
+                    router.push("regchannel");
+                }}
+            >
+                Chưa có kênh? Tạo ngay!
+            </MenuItem>
+        );
+    } else if (session && personalChannelData) {
+        return (
+            <>
+                <MenuItem className="bg-transparent">
+                    <div className="flex gap-4">
+                        <div className="flex items-center">
+                            <div className="relative w-8 h-8">
+                                {personalChannelData.avatarImage && (
+                                    <Image
+                                        className="rounded-full"
+                                        src={
+                                            personalChannelData.avatarImage
+                                        }
+                                        alt=""
+                                        fill
+                                        sizes="1/1"
+                                    />
+                                )}
                             </div>
                         </div>
-                    </MenuItem>
-                    <MenuItem>
-                        <Link className="w-full h-full" href={'/station'}>
-                            Station
-                        </Link>
-                    </MenuItem>
-                </>
-            )
-        } else {
-            return (
-                <MenuItem>
-                    <Link className="w-full h-full" href={'/regchannel'}>
-                        Chưa có kênh? Tạo ngay!
-                    </Link>
+                        <div className="flex items-center">
+                            <p className="text-xl">{session.user.name}</p>
+                        </div>
+                    </div>
                 </MenuItem>
-            )
-        }
-    } else {
-        return <>no session</>
+                <MenuItem
+                    onClick={() => {
+                        router.push("station");
+                    }}
+                >
+                    Station
+                </MenuItem>
+            </>
+        );
     }
 }
+
+export default ChannelRender
