@@ -2,7 +2,7 @@ import dynamic from "next/dynamic";
 import MenuItem from '@/components/own/navbar/MenuItem'
 import ModeSetting from "@/components/own/navbar/ModeSetting";
 import { redirect, useRouter } from "next/navigation";
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, Suspense } from "react";
 import { Skeleton } from '@/components/ui/skeleton'
 import { useOnClickOutside } from "usehooks-ts";
 import Image from 'next/image'
@@ -93,7 +93,9 @@ export default function LastMenu() {
                     >
                         {session?.user ? (
                             <div className="shadow-[0_0_5px_purple] p-3 bg-white dark:bg-[#020817]">
-                                <ChannelRender />
+                                <Suspense fallback={<Skeleton className="h-full w-full rounded-full" />}>
+                                    <ChannelRender />
+                                </Suspense>
                                 <MenuItem className="text-start">
                                     <div
                                         onClick={() => {

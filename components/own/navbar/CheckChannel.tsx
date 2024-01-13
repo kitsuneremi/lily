@@ -65,7 +65,7 @@ const ChannelRender = async () => {
             )
         }
     } else {
-        return <></>
+        return <>no session</>
     }
 }
 
