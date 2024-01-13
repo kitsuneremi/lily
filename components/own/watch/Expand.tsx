@@ -51,7 +51,7 @@ export default function Expand({ fullscreen, videoData }: { fullscreen: boolean,
             console.log(rect)
             setTop(rect.top)
         }
-    },[boxRef.current, window.innerWidth])
+    },[boxRef.current])
 
     useEffectOnce(() => {
         axios

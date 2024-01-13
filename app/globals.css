@@ -81,6 +81,29 @@
     color: black;
     background-color: white;
   }
+
+  @keyframes borderAnimation {
+    0% {
+      border-color: red yellow green blue red;
+      background-position: 0%;
+    }
+
+    100% {
+      border-color: red yellow green blue red;
+      background-position: 100%;
+    }
+  }
+
+  .rgb {
+    background: conic-gradient(from 90deg,
+        red,
+        yellow,
+        green,
+        blue,
+        red);
+    background-size: 400% 400%;
+    animation: borderAnimation 5s infinite linear;
+  }
 }
 
 @layer base {

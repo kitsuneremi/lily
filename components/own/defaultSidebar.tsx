@@ -103,7 +103,7 @@ export default function Sidebar() {
                                 className={`flex justify-start items-center rounded-md hover:shadow-lg hover:scale-105 group ${openSidebar ? "gap-2" : ""
                                     } w-full rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 py-2 px-2`}
                             >
-                                <div className="flex flex-col justify-center group-hover:text-[17px] group-hover:text-purple-900 dark:group-hover:text-purple-400 group-hover:font-semibold">
+                                <div className="flex flex-col justify-center group-hover:scale-105 group-hover:text-purple-900 dark:group-hover:text-purple-400 group-hover:font-semibold">
                                     {menu.icon}
                                 </div>
                                 <div

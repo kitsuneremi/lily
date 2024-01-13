@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { AiOutlineSearch } from "react-icons/ai";
 import Link from 'next/link'
 import { useSession } from "next-auth/react";
+import { useOnClickOutside } from "usehooks-ts";
 
 // type SearchResult = {
 //     keywordSearch: { title: string, link: string }[],
@@ -21,7 +22,7 @@ const SearchModule = () => {
     const searchInputRef = useRef<HTMLInputElement>(null);
     const searchResultRef = useRef<HTMLDivElement>(null);
     const [searchValue, setSearchValue] = useState<string>("");
-    const [focusing, setFocus] = useState<boolean>(false);
+    const [focusing, setFocus] = useState<{ input: boolean, menu: boolean }>({ input: false, menu: false });
     const [searchResult, setSearchResult] = useState<SearchResult>({ keywordSearch: [], userHistory: [] });
 
     useEffect(() => {
@@ -39,9 +40,15 @@ const SearchModule = () => {
             }
             fetchData();
         } else {
-            setFocus(false)
+            setFocus({ input: false, menu: false })
         }
     }, [searchValue])
+
+    useOnClickOutside(searchResultRef, () => {
+        setFocus(prev => { return { ...prev, menu: false } })
+    })
+
+    
 
     return (
         <>
@@ -55,9 +62,9 @@ const SearchModule = () => {
                             setSearchValue(e.target.value);
                         }}
                         onFocus={() => {
-                            setFocus(true);
+                            setFocus({ input: true, menu: false });
                         }}
-                        onBlur={() => setFocus(false)}
+                        onBlur={() => setFocus(prev => { return { ...prev, input: false } })}
                     />
                     <div className="w-[2px] h-full relative after:absolute after:bg-slate-300 dark:after:bg-slate-500 after:h-[90%] after:top-[5%] after:left-0 after:w-full" />
                     <div
@@ -70,10 +77,12 @@ const SearchModule = () => {
                     </div>
                 </div>
 
-                {focusing &&
+                {/* serch result render */}
+                {(focusing.input || focusing.menu) &&
                     <div
                         className="absolute w-80 h-fit left-[-16px] items-center top-12 max-w-[95vw] bg-slate-50 dark:bg-slate-600 border-[1px] border-slate-100 rounded-lg shadow-lg"
                         ref={searchResultRef}
+                        onMouseDown={() => { setFocus({ input: false, menu: true })}}
                     >
                         <div className="flex flex-col flex-1 h-fit p-3">
                             {searchResult.userHistory.map((item, index) => {
