@@ -1,16 +1,12 @@
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import { Skeleton } from "@/components/ui/skeleton";
+'use server'
 import MenuItem from "./MenuItem";
 import Image from "next/image";
-import axios from 'axios'
-import { useState, useEffect } from "react";
 import { ChannelDataType } from "@/types/type";
 import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { baseURL } from "@/lib/functional";
-const ChannelRender = async () => {
+export default async function ChannelRender() {
     const session = await getServerSession(authOptions);
     if (session) {
         const channelDataPromise = fetch(`${baseURL}/api/channel/data?accountId=${session.user.id}`, {
@@ -21,7 +17,6 @@ const ChannelRender = async () => {
         })
 
         const channelData = await (await channelDataPromise).json() as ChannelDataType;
-
 
         if (channelData) {
             return (
@@ -68,5 +63,3 @@ const ChannelRender = async () => {
         return <>no session</>
     }
 }
-
-export default ChannelRender
