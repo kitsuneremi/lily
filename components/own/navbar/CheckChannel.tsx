@@ -14,9 +14,8 @@ const ChannelRender = () => {
     const router = useRouter();
     const dispatch = useDispatch();
     const [finishRequest, setFinishRequest] = useState<boolean>(false);
-    const personalChannelData = useAppSelector((state) => { state.channelReducer.value.channelData });
+    const personalChannelData = useAppSelector((state) => { state.channelReducer.value.channelData; }) as unknown as ChannelDataType;
     useEffect(() => {
-        //@ts-expect-error
         if (personalChannelData.id == -1) {
             if (session && session.user) {
                 setFinishRequest(false);
@@ -55,7 +54,6 @@ const ChannelRender = () => {
                 Chưa có kênh? Tạo ngay!
             </MenuItem>
         );
-        //@ts-expect-error
     } else if (finishRequest && session && personalChannelData) {
         return (
             <>
@@ -63,9 +61,7 @@ const ChannelRender = () => {
                     <div className="flex gap-4">
                         <div className="flex items-center">
                             <div className="relative w-8 h-8">
-                                {/*@ts-expect-error */}
                                 {personalChannelData.avatarImage && (
-                                    /*@ts-expect-error */
                                     <Image className="rounded-full" src={personalChannelData.avatarImage}
                                         alt=""
                                         fill
