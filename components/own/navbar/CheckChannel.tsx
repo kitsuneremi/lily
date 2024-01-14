@@ -18,14 +18,23 @@ const ChannelRender = () => {
     const dispatch: AppDispatch = useDispatch();
 
     useEffect(() => {
-        if(!personalChannelData){
-            if (session && session.user) {
-                setFinishRequest(false);
-                const asy = dispatch(fetchChannelData(session.user.id));
-                asy.then(() => {setFinishRequest(true)});
+        const fetchData = async () => {
+            if (!personalChannelData) {
+                if (session && session.user) {
+                    setFinishRequest(false);
+                    try {
+                        await dispatch(fetchChannelData(session.user.id));
+                        setFinishRequest(true);
+                    } catch (error) {
+                        console.error('Error fetching channel data:', error);
+                    }
+                }
             }
-        }
-    }, [dispatch]);
+        };
+    
+        fetchData();
+    }, [dispatch, personalChannelData, session]);
+    
 
     useEffect(() => {
         console.log(personalChannelData)
