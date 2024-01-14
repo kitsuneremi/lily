@@ -4,7 +4,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import MenuItem from "./MenuItem";
 import Image from "next/image";
 import axios from 'axios'
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo } from "react";
 import { ChannelDataType } from "@/types/type";
 const ChannelRender = () => {
     const {data:session} = useSession();
@@ -15,8 +15,7 @@ const ChannelRender = () => {
     useEffect(() => {
         if (session && session.user) {
             setFinishRequest(false);
-            axios
-                .get("/api/channel/data", {
+            axios.get("/api/channel/data", {
                     params: {
                         accountId: session.user.id,
                     },
@@ -31,7 +30,7 @@ const ChannelRender = () => {
                     console.log(e);
                 });
         }
-    }, [session]);
+    }, []);
 
     if (!finishRequest) {
         return (
@@ -86,4 +85,4 @@ const ChannelRender = () => {
     }
 }
 
-export default ChannelRender
+export default memo(ChannelRender)
