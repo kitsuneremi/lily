@@ -1,15 +1,11 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import type { ChannelDataType } from '@/types/type';
 
-interface ChannelDataResponse {
-    channelData: ChannelDataType;
-}
 
 export const fetchChannelData = createAsyncThunk('channelData/fetchData', async (id: number) => {
     const response = await fetch(`https://erinasaiyukii.com/api/channel/data?accountId=${id}`);
-    const data: ChannelDataResponse = await response.json();
-    console.log(data)
-    return data.channelData;
+    const data = await response.json();
+    return data as ChannelDataType;
 });
 
 type Init = {

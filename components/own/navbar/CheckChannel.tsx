@@ -35,11 +35,6 @@ const ChannelRender = () => {
         fetchData();
     }, [dispatch, personalChannelData, session]);
     
-
-    useEffect(() => {
-        console.log(personalChannelData)
-    },[personalChannelData])
-
     if (!finishRequest) {
         return (
             <MenuItem className="text-start">
