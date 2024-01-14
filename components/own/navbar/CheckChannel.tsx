@@ -16,7 +16,7 @@ const ChannelRender = () => {
     const [finishRequest, setFinishRequest] = useState<boolean>(false);
     const personalChannelData = useAppSelector((state) => { state.channelReducer.value.channelData; }) as unknown as ChannelDataType;
     useEffect(() => {
-        if (personalChannelData.id == -1) {
+        if (!personalChannelData) {
             if (session && session.user) {
                 setFinishRequest(false);
                 axios.get("/api/channel/data", {
