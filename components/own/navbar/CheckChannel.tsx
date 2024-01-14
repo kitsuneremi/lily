@@ -7,36 +7,42 @@ import axios from 'axios'
 import { useState, useEffect, memo } from "react";
 import { ChannelDataType } from "@/types/type";
 import { useDispatch } from "react-redux";
-import { set } from '@/redux/features/current-channel-slice'
-import { useAppSelector } from "@/redux/storage";
+import { set, fetchChannelData } from '@/redux/features/current-channel-slice'
+import { AppDispatch, useAppSelector } from "@/redux/storage";
 const ChannelRender = () => {
     const { data: session } = useSession();
     const router = useRouter();
-    const dispatch = useDispatch();
     const [finishRequest, setFinishRequest] = useState<boolean>(false);
-    const personalChannelData = useAppSelector((state) => { state.channelReducer.value.channelData; }) as unknown as ChannelDataType;
-    useEffect(() => {
-        if (!personalChannelData) {
-            if (session && session.user) {
-                setFinishRequest(false);
-                axios.get("/api/channel/data", {
-                    params: {
-                        accountId: session.user.id,
-                    },
-                })
-                    .then((res) => {
-                        if (res.status == 200) {
-                            setFinishRequest(true);
-                            dispatch(set(res.data))
-                        }
-                    })
-                    .catch((e) => {
-                        console.log(e);
-                    });
-            }
-        }
+    const personalChannelData = useAppSelector((state) => state.channelReducer.value.channelData);
 
-    }, [personalChannelData]);
+    const dispatch: AppDispatch = useDispatch();
+
+    useEffect(() => {
+        dispatch(fetchChannelData());
+    }, [dispatch]);
+
+    // useEffect(() => {
+    //     if (!personalChannelData) {
+    //         if (session && session.user) {
+    //             setFinishRequest(false);
+    //             axios.get("/api/channel/data", {
+    //                 params: {
+    //                     accountId: session.user.id,
+    //                 },
+    //             })
+    //                 .then((res) => {
+    //                     if (res.status == 200) {
+    //                         setFinishRequest(true);
+    //                         dispatch(set(res.data))
+    //                     }
+    //                 })
+    //                 .catch((e) => {
+    //                     console.log(e);
+    //                 });
+    //         }
+    //     }
+
+    // }, [personalChannelData]);
 
     if (!finishRequest) {
         return (

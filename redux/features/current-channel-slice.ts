@@ -1,5 +1,15 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import type { ChannelDataType } from '@/types/type';
+
+interface ChannelDataResponse {
+  channelData: ChannelDataType;
+}
+
+export const fetchChannelData = createAsyncThunk('channelData/fetchData', async () => {
+  const response = await fetch('https://erinasaiyukii.com/api/channel/data');
+  const data: ChannelDataResponse = await response.json();
+  return data.channelData;
+});
 
 type Init = {
   value: {
@@ -31,6 +41,11 @@ export const channelData = createSlice({
     set: (state, action: PayloadAction<Init>) => {
       state.value.channelData = action.payload.value.channelData;
     },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(fetchChannelData.fulfilled, (state, action) => {
+      state.value.channelData = action.payload;
+    });
   },
 });
 

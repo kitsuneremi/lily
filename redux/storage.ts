@@ -1,4 +1,4 @@
-import { configureStore } from '@reduxjs/toolkit'
+import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit'
 import sidebarReducer from './features/sidebar-slice'
 import watchsidebarReducer from './features/watch-sidebar-slice'
 import channelReducer from './features/current-channel-slice'
@@ -9,7 +9,8 @@ export const storage = configureStore({
         sidebarReducer,
         watchsidebarReducer,
         channelReducer
-    }
+    },
+    middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
 })
 
 
