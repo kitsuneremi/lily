@@ -27,6 +27,10 @@ const ChannelRender = () => {
         }
     }, [dispatch]);
 
+    useEffect(() => {
+        console.log(personalChannelData)
+    },[personalChannelData])
+
     if (!finishRequest) {
         return (
             <MenuItem className="text-start">
