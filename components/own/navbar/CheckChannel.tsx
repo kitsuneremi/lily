@@ -12,8 +12,9 @@ import { AppDispatch, useAppSelector } from "@/redux/storage";
 const ChannelRender = () => {
     const { data: session } = useSession();
     const router = useRouter();
-    const [finishRequest, setFinishRequest] = useState<boolean>(false);
+    
     const personalChannelData = useAppSelector((state) => state.channelReducer.value.channelData);
+    const [finishRequest, setFinishRequest] = useState<boolean>(personalChannelData ? true : false);
 
     const dispatch: AppDispatch = useDispatch();
 
