@@ -5,8 +5,8 @@ interface ChannelDataResponse {
   channelData: ChannelDataType;
 }
 
-export const fetchChannelData = createAsyncThunk('channelData/fetchData', async () => {
-  const response = await fetch('https://erinasaiyukii.com/api/channel/data');
+export const fetchChannelData = createAsyncThunk('channelData/fetchData', async (id: number) => {
+  const response = await fetch(`https://erinasaiyukii.com/api/channel/data?accountId=${id}`);
   const data: ChannelDataResponse = await response.json();
   return data.channelData;
 });

@@ -18,31 +18,11 @@ const ChannelRender = () => {
     const dispatch: AppDispatch = useDispatch();
 
     useEffect(() => {
-        dispatch(fetchChannelData());
+        if (session && session.user) {
+            const asy = dispatch(fetchChannelData(session.user.id));
+            asy.then(() => {setFinishRequest(true)});
+        }
     }, [dispatch]);
-
-    // useEffect(() => {
-    //     if (!personalChannelData) {
-    //         if (session && session.user) {
-    //             setFinishRequest(false);
-    //             axios.get("/api/channel/data", {
-    //                 params: {
-    //                     accountId: session.user.id,
-    //                 },
-    //             })
-    //                 .then((res) => {
-    //                     if (res.status == 200) {
-    //                         setFinishRequest(true);
-    //                         dispatch(set(res.data))
-    //                     }
-    //                 })
-    //                 .catch((e) => {
-    //                     console.log(e);
-    //                 });
-    //         }
-    //     }
-
-    // }, [personalChannelData]);
 
     if (!finishRequest) {
         return (
