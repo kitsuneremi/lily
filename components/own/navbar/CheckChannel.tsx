@@ -9,10 +9,12 @@ import { ChannelDataType } from "@/types/type";
 const ChannelRender = () => {
     const {data:session} = useSession();
     const router = useRouter();
+    const [finishRequest, setFinishRequest] = useState<boolean>(false);
     const [personalChannelData, setPersonalChannelData] = useState<ChannelDataType>();
 
     useEffect(() => {
         if (session && session.user) {
+            setFinishRequest(false);
             axios
                 .get("/api/channel/data", {
                     params: {
@@ -22,6 +24,7 @@ const ChannelRender = () => {
                 .then((res) => {
                     if (res.status == 200) {
                         setPersonalChannelData(res.data);
+                        setFinishRequest(true);
                     }
                 })
                 .catch((e) => {
@@ -30,13 +33,13 @@ const ChannelRender = () => {
         }
     }, [session]);
 
-    if (!session && personalChannelData == undefined) {
+    if (!finishRequest) {
         return (
             <MenuItem className="text-start">
                 <Skeleton className="h-full w-full" />
             </MenuItem>
         );
-    } else if (session && personalChannelData == null) {
+    } else if (finishRequest && session && personalChannelData == null) {
         return (
             <MenuItem
                 onClick={() => {
@@ -46,7 +49,7 @@ const ChannelRender = () => {
                 Chưa có kênh? Tạo ngay!
             </MenuItem>
         );
-    } else if (session && personalChannelData) {
+    } else if (finishRequest && session && personalChannelData) {
         return (
             <>
                 <MenuItem className="bg-transparent">
