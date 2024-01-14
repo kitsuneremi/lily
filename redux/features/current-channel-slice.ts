@@ -8,6 +8,7 @@ interface ChannelDataResponse {
 export const fetchChannelData = createAsyncThunk('channelData/fetchData', async (id: number) => {
     const response = await fetch(`https://erinasaiyukii.com/api/channel/data?accountId=${id}`);
     const data: ChannelDataResponse = await response.json();
+    console.log(data)
     return data.channelData;
 });
 
@@ -31,7 +32,6 @@ export const channelData = createSlice({
     },
     extraReducers: (builder) => {
         builder.addCase(fetchChannelData.fulfilled, (state, action) => {
-            console.log('slice:' + action.payload);
             state.value.channelData = action.payload;
         });
     },
