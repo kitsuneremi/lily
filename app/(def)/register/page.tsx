@@ -60,12 +60,23 @@ export default function Page(){
             }
         } else {
             if (usernameRef.current && usernameRef.current.value !== '' && passwordRef.current && passwordRef.current.value !== '') {
-                await signIn('credentials', {
+                const data =  await signIn('credentials', {
                     username: usernameRef.current.value,
                     password: passwordRef.current.value,
                     redirect: true,
                     callbackUrl: '/'
                 })
+                if(data?.ok){
+                    toast({
+                        title: "Đăng nhập thành công",
+                        description: "Chào mừng bạn trở lại",
+                    })
+                }else if(data?.error){
+                    toast({
+                        title: "Đăng nhập thất bại",
+                        description: "Tên đăng nhập hoặc mật khẩu không đúng",
+                    })
+                }
             } else {
                 toast({
                     title: "Có gì đó thiếu thiếu ???",

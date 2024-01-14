@@ -1,12 +1,14 @@
 import { configureStore } from '@reduxjs/toolkit'
 import sidebarReducer from './features/sidebar-slice'
 import watchsidebarReducer from './features/watch-sidebar-slice'
+import channelReducer from './features/current-channel-slice'
 import { TypedUseSelectorHook, useSelector } from 'react-redux'
 
 export const storage = configureStore({
     reducer: {
         sidebarReducer,
         watchsidebarReducer,
+        channelReducer
     }
 })
 

@@ -6,31 +6,38 @@ import Image from "next/image";
 import axios from 'axios'
 import { useState, useEffect, memo } from "react";
 import { ChannelDataType } from "@/types/type";
+import { useDispatch } from "react-redux";
+import { set } from '@/redux/features/current-channel-slice'
+import { useAppSelector } from "@/redux/storage";
 const ChannelRender = () => {
-    const {data:session} = useSession();
+    const { data: session } = useSession();
     const router = useRouter();
+    const dispatch = useDispatch();
     const [finishRequest, setFinishRequest] = useState<boolean>(false);
-    const [personalChannelData, setPersonalChannelData] = useState<ChannelDataType>();
-
+    const personalChannelData = useAppSelector((state) => { state.channelReducer.value.channelData });
     useEffect(() => {
-        if (session && session.user) {
-            setFinishRequest(false);
-            axios.get("/api/channel/data", {
+        //@ts-expect-error
+        if (personalChannelData.id == -1) {
+            if (session && session.user) {
+                setFinishRequest(false);
+                axios.get("/api/channel/data", {
                     params: {
                         accountId: session.user.id,
                     },
                 })
-                .then((res) => {
-                    if (res.status == 200) {
-                        setPersonalChannelData(res.data);
-                        setFinishRequest(true);
-                    }
-                })
-                .catch((e) => {
-                    console.log(e);
-                });
+                    .then((res) => {
+                        if (res.status == 200) {
+                            setFinishRequest(true);
+                            dispatch(set(res.data))
+                        }
+                    })
+                    .catch((e) => {
+                        console.log(e);
+                    });
+            }
         }
-    }, []);
+
+    }, [personalChannelData]);
 
     if (!finishRequest) {
         return (
@@ -48,6 +55,7 @@ const ChannelRender = () => {
                 Chưa có kênh? Tạo ngay!
             </MenuItem>
         );
+        //@ts-expect-error
     } else if (finishRequest && session && personalChannelData) {
         return (
             <>
@@ -55,12 +63,10 @@ const ChannelRender = () => {
                     <div className="flex gap-4">
                         <div className="flex items-center">
                             <div className="relative w-8 h-8">
+                                {/*@ts-expect-error */}
                                 {personalChannelData.avatarImage && (
-                                    <Image
-                                        className="rounded-full"
-                                        src={
-                                            personalChannelData.avatarImage
-                                        }
+                                    /*@ts-expect-error */
+                                    <Image className="rounded-full" src={personalChannelData.avatarImage}
                                         alt=""
                                         fill
                                         sizes="1/1"

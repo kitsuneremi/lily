@@ -93,9 +93,7 @@ export default function LastMenu() {
                     >
                         {session?.user ? (
                             <div className="shadow-[0_0_5px_purple] p-3 bg-white dark:bg-[#020817]">
-                                <Suspense fallback={<Skeleton className="h-full w-full rounded-full" />}>
-                                    <ChannelRender />
-                                </Suspense>
+                                <ChannelRender />
                                 <MenuItem className="text-start">
                                     <div
                                         onClick={() => {
