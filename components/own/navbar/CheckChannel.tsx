@@ -18,9 +18,12 @@ const ChannelRender = () => {
     const dispatch: AppDispatch = useDispatch();
 
     useEffect(() => {
-        if (session && session.user) {
-            const asy = dispatch(fetchChannelData(session.user.id));
-            asy.then(() => {setFinishRequest(true)});
+        if(personalChannelData.id == -1){
+            if (session && session.user) {
+                setFinishRequest(false);
+                const asy = dispatch(fetchChannelData(session.user.id));
+                asy.then(() => {setFinishRequest(true)});
+            }
         }
     }, [dispatch]);
 
