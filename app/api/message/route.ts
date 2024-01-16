@@ -28,7 +28,7 @@ export async function POST(req: Request) {
         }
     })
     console.log(mem)
-    if (mem != null) {
+    if (mem != null) { 
         const msg = await prisma.message.create({
             data: {
                 content: body.content,

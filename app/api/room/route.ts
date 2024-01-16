@@ -1,4 +1,5 @@
 import prisma from "@/lib/prisma";
+import { NextRequest, NextResponse } from "next/server";
 
 
 interface RequestBody {
@@ -8,8 +9,29 @@ interface RequestBody {
 }
 
 
-export async function GET(req: Request) {
-
+export async function GET(req: NextRequest, res: NextResponse) {
+    const searchParams = req.nextUrl.searchParams;
+    const id = searchParams.get('id');
+    if (id && Number.parseInt(id)) {
+        const room = await prisma.room.findMany({
+            where: {
+                id: Number.parseInt(id)
+            },
+            include: {
+                Member: {
+                    select: {
+                        id: true,
+                        roomId: true,
+                        accountId: true,
+                        name: true
+                    }
+                }
+            }
+        })
+        return new NextResponse(JSON.stringify(room))
+    } else {
+        return new NextResponse(null, { status: 400 })
+    }
 }
 
 

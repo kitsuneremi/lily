@@ -32,6 +32,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import MessageBox from "./navbar/Message";
 
 const Notification = dynamic(() => import("@/components/own/navbar/Notification"));
 const SearchModule = dynamic(() => import("@/components/own/navbar/SearchModule"));
@@ -112,7 +113,7 @@ export default function Navbar() {
                         </div>}
                         <AiOutlineUpload />
                         <Notification />
-                        <BsChatLeftDots />
+                        <MessageBox />
                         <LastMenu />
                     </div>
                 </>
@@ -205,21 +206,7 @@ export default function Navbar() {
                             </Tooltip>
                         </TooltipProvider>
                         <Notification />
-                        <TooltipProvider>
-                            <Tooltip>
-                                <TooltipTrigger>
-                                    <div className="text-2xl cursor-pointer">
-                                        <BsChatLeftDots />
-                                    </div>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                    <p>
-                                        Trò chuyện (đã có nhưng chưa cho vào
-                                        chạy)
-                                    </p>
-                                </TooltipContent>
-                            </Tooltip>
-                        </TooltipProvider>
+                        <MessageBox />
                         <LastMenu />
                     </div>
                 </>
@@ -228,7 +215,7 @@ export default function Navbar() {
     }
 }
 
-const MenuRender = () => {
+const MenuRender = ():React.ReactNode => {
     return (
         <Link href={"/"} className="text-xl flex items-center gap-2" >
             <div className="relative w-5 h-5 lg:w-9 lg:h-9">

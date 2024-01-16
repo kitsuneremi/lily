@@ -42,7 +42,7 @@ export default function LastMenu() {
         );
     });
 
-    const AccountAvatarRender = () => {
+    const AccountAvatarRender = (): React.ReactNode => {
         if (authenStatus == "loading") {
             return <Skeleton className="h-full w-full rounded-full" />;
         } else if (authenStatus == "authenticated" && session && session.user.image != "") {
@@ -63,8 +63,6 @@ export default function LastMenu() {
             );
         }
     };
-
-    useEffect(() => { console.log(authenStatus) }, [authenStatus])
 
     return (
         <>
