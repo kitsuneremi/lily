@@ -34,7 +34,6 @@ import { Slider } from "antd";
 import type { MenuProps } from "antd";
 import { Dropdown } from "antd";
 import { useLocalStorage, useEffectOnce } from "usehooks-ts";
-
 import { Skeleton } from "@/components/ui/skeleton";
 import Properties from "@/components/own/watch/Properties";
 import Description from "@/components/own/watch/Description";
@@ -54,14 +53,14 @@ let timer: any;
  * @param mediaData: MediaDataType 
  */
 const sourceURL = (mediaData: MediaDataType) => {
-    if(mediaData.mediaType == 0){
+    if (mediaData.mediaType == 0) {
         return `${fileURL}/api/video/${mediaData.link}`;
-    }else if(mediaData.mediaType == 1 && mediaData.isLive){
+    } else if (mediaData.mediaType == 1 && mediaData.isLive) {
         redirect(`/stream/${mediaData.link}`);
         return '';
-    }else if(mediaData.mediaType == 1 && !mediaData.isLive){
+    } else if (mediaData.mediaType == 1 && !mediaData.isLive) {
         return `${fileURL}/api/merge/${mediaData.link}/live`;
-    }else{
+    } else {
         return ''
     }
 }
@@ -69,13 +68,11 @@ const sourceURL = (mediaData: MediaDataType) => {
 export default function Page({ videoData }: { videoData: BigVideoDataType }) {
     const src = sourceURL(videoData.videoData);
 
-
     const ref = useRef<HTMLVideoElement>(null);
     const fullRef = useRef<HTMLDivElement>(null);
     const anyRef = useRef<HTMLDivElement>(null);
-    const propertiesRef = useRef<HTMLDivElement>(null);
-    const [volume, setVolume] = useLocalStorage("volume", 100);
 
+    const [volume, setVolume] = useLocalStorage("volume", 100);
     const [currentTime, setCurrentTime] = useState<number>(0);
     const [loadedProgress, setLoadedProgress] = useState<number>(0);
     const [speed, setSpeed] = useState<number>(1);
@@ -83,12 +80,8 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
         current: 0,
         available: [],
     });
-
-
     const [fullscreen, setFullscreen] = useState<boolean>(false);
     const [loadedContent, setLoadedContent] = useState<boolean>(false);
-
-
     const [hide, setHide] = useState<boolean>(false);
 
     const loadVideo = async () => {
@@ -135,21 +128,15 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
         }
     }, [ref.current?.currentTime]);
 
-
-
-
-
     useEffect(() => {
-        const video = ref.current;
-        if (video) {
-            video.playbackRate = speed;
+        if (ref.current) {
+            ref.current.playbackRate = speed;
         }
     }, [speed]);
 
     useEffect(() => {
-        const video = ref.current;
-        if (video) {
-            video.volume = volume / 100;
+        if (ref.current) {
+            ref.current.volume = volume / 100;
         }
     }, [volume]);
 
@@ -238,62 +225,39 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
             anyRef.current?.removeEventListener("mousemove", handleMouseMove);
             anyRef.current?.removeEventListener("mouseleave", handleMouseLeave);
         };
-    }, [""]);
-
-    const VolumeIcon = () => {
-        if (volume == 0) {
-            return <ImVolumeMute2 />;
-        } else if (volume > 75) {
-            return <ImVolumeHigh />;
-        } else if (volume > 50) {
-            return <ImVolumeMedium />;
-        } else if (volume > 25) {
-            return <ImVolumeLow />;
-        } else {
-            return <ImVolumeMute />;
-        }
-    };
+    }, [0]);
 
     const onTimeUpdate = (e: any) => {
-        const video = e.target;
-        setCurrentTime(video.currentTime);
+        setCurrentTime(e.target.currentTime);
     };
 
     const onProgress = (e: any) => {
-        const video = e.target;
-        if (video.buffered.length > 0) {
-            const loadedChunks = video.buffered.end(0);
-            const totalChunks = video.duration;
+        if (e.target.buffered.length > 0) {
+            const loadedChunks = e.target.buffered.end(0);
+            const totalChunks = e.target.duration;
             const progress = (loadedChunks / totalChunks) * 100;
             setLoadedProgress(progress);
         }
     };
 
     const onTimelineClick = (e: any) => {
-        const timeline = document.getElementById("timeline");
-        const video = ref.current;
-        if (timeline && video) {
-            const rect = timeline.getBoundingClientRect();
+        if (document.getElementById("timeline") && ref.current) {
+            const rect = document.getElementById("timeline")!.getBoundingClientRect();
             const offsetX = e.clientX - rect.left;
             const timelineWidth = rect.width;
-            const newPosition = (offsetX / timelineWidth) * video.duration;
-            video.currentTime = newPosition;
+            const newPosition = (offsetX / timelineWidth) * ref.current.duration;
+            ref.current.currentTime = newPosition;
         }
     };
 
     const handlePlayPause = () => {
-        const video = ref.current;
-        if (video) {
-            if (video.paused) {
-                video.play();
+        if (ref.current) {
+            if (ref.current.paused) {
+                ref.current.play();
             } else {
-                video.pause();
+                ref.current.pause();
             }
         }
-    };
-
-    const handleFullscreen = () => {
-        setFullscreen((prev) => !prev);
     };
 
     const items: MenuProps["items"] = [
@@ -351,13 +315,6 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
             ],
         },
     ];
-
-
-
-
-
-
-
 
     return (
         <div
@@ -421,6 +378,7 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
                             {/* control */}
                             <div className="flex justify-between items-center">
                                 <div className="flex gap-2">
+                                    {/* play pause button */}
                                     <div className="flex items-center">
                                         <div
                                             className="text-2xl cursor-pointer"
@@ -436,6 +394,7 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
                                             <MdSkipNext />
                                         </div>
                                     </div>
+                                    {/* next button */}
                                     <div className="flex items-center gap-1">
                                         <div
                                             className="text-lg cursor-pointer"
@@ -452,7 +411,7 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
                                                 // }
                                             }}
                                         >
-                                            {VolumeIcon()}
+                                            <VolumeIcon volume={volume} />
                                         </div>
 
                                         {/* @kitsuneremi khẹc */}
@@ -501,7 +460,7 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
                                     </Dropdown>
                                     <div
                                         className="text-md cursor-pointer flex items-center"
-                                        onClick={handleFullscreen}
+                                        onClick={() => setFullscreen(prev => { return !prev })}
                                     >
                                         {fullscreen ? (
                                             <BsFullscreenExit />
@@ -517,7 +476,7 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
                                 } absolute bottom-0 w-full h-[20%] z-10`}
                         />
                     </div>
-                    <Expand fullscreen videoData={videoData}/>
+                    <Expand fullscreen videoData={videoData} />
                 </div>
                 <div className="lg:flex flex-grow w-full flex-1 px-5 pt-3">
                     <VideoSuggest
@@ -529,3 +488,18 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
         </div>
     );
 }
+
+
+const VolumeIcon = ({ volume }: { volume: number }) => {
+    if (volume == 0) {
+        return <ImVolumeMute2 />;
+    } else if (volume > 75) {
+        return <ImVolumeHigh />;
+    } else if (volume > 50) {
+        return <ImVolumeMedium />;
+    } else if (volume > 25) {
+        return <ImVolumeLow />;
+    } else {
+        return <ImVolumeMute />;
+    }
+};
