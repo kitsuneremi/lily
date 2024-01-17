@@ -48,7 +48,7 @@ export default function Navbar() {
         (state) => state.sidebarReducer.value.sidebar
     );
 
-    const [mobileShowSearch, setMobileShowSearch] = useState<boolean>();
+    const [mobileShowSearch, setMobileShowSearch] = useState<boolean>(false);
 
     const deviceType = {
         isPc: useMediaQuery("(min-width: 1280px"),
