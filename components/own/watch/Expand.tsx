@@ -21,7 +21,7 @@ import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useToast } from "@/components/ui/use-toast";
 import { useEffectOnce } from 'usehooks-ts'
-import VideoSuggest from "@/components/own/watch/VIdeoSuggest";
+import VideoSuggest from "@/components/own/watch/VideoSuggest/VideoSuggest";
 import Properties from "@/components/own/watch/Properties";
 import Description from "@/components/own/watch/Description";
 import { FaXmark } from "react-icons/fa6";

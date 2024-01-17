@@ -1,5 +1,5 @@
 "use client";
-import VideoSuggest from "@/components/own/watch/VIdeoSuggest";
+import VideoSuggest from "@/components/own/watch/VideoSuggest/VideoSuggest";
 import React, {
     useEffect,
     useRef,

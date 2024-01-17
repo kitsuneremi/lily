@@ -2,7 +2,6 @@
 import Image from "next/image";
 import VideoItem from "@/components/own/watch/VideoItem";
 import ThisChannelVideoItem from "@/components/own/watch/ThisChannelVideoItem";
-import VideoSuggest from "@/components/own/watch/VIdeoSuggest";
 import React, {
     useEffect,
     useRef,
@@ -39,6 +38,10 @@ import Properties from "@/components/own/watch/Properties";
 import Description from "@/components/own/watch/Description";
 import Expand from "@/components/own/watch/Expand";
 import { redirect } from "next/navigation";
+import dynamic from "next/dynamic";
+
+const VideoSuggestPrefetch = dynamic(() => import('@/components/own/watch/VideoSuggest/PrefetchData'))
+
 
 type quality = {
     available: number[];
@@ -479,7 +482,7 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
                     <Expand fullscreen videoData={videoData} />
                 </div>
                 <div className="lg:flex flex-grow w-full flex-1 px-5 pt-3">
-                    <VideoSuggest
+                    <VideoSuggestPrefetch
                         channelData={videoData.channelData}
                         videoId={videoData.videoData.id}
                     />
