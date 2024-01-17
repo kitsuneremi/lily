@@ -50,6 +50,10 @@ export default function MessageBox() {
         }
     }, [targetUser])
 
+    useEffect(() => {
+        console.log(showMessageBox)
+    },[showMessageBox])
+
     useOnClickOutside(messageBoxButtonRef, () => { setShowMessageBox(prev => { return { click: !prev.click, menuFocus: prev.menuFocus } }) })
     useOnClickOutside(messageBoxMenuRef, () => { setShowMessageBox(prev => { return { click: prev.click, menuFocus: !prev.menuFocus } }) })
 
@@ -64,11 +68,11 @@ export default function MessageBox() {
     }
 
     return (
-        <div>
+        <div className="relative">
             <TooltipProvider>
                 <Tooltip>
                     <TooltipTrigger>
-                        <div className="text-2xl cursor-pointer" onClick={() => { setShowMessageBox(prev => { return { click: !prev.click, menuFocus: false } }) }}>
+                        <div className="max-md:text-base text-2xl cursor-pointer" onClick={() => { setShowMessageBox(prev => { return { click: !prev.click, menuFocus: false } }) }}>
                             <BsChatLeftDots />
                         </div>
                     </TooltipTrigger>
@@ -78,8 +82,8 @@ export default function MessageBox() {
                 </Tooltip>
             </TooltipProvider>
             {
-                showMessageBox &&
-                <div ref={messageBoxMenuRef} onMouseDown={() => { setShowMessageBox({ click: false, menuFocus: true }) }} className="absolute flex flex-col top-20 w-96 h-40">
+                (showMessageBox.click || showMessageBox.menuFocus) &&
+                <div ref={messageBoxMenuRef} onMouseDown={() => { setShowMessageBox({ click: false, menuFocus: true }) }} className="absolute z-50 flex flex-col top-20 right-0 w-96 h-40">
                     {
                         targetUser ?
                             <div className="flex flex-col gap-2">
