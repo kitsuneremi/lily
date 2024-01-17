@@ -27,7 +27,7 @@ const prefetchOtherVideoInChannel = async ({ videoId, channelId }: { videoId: nu
 const prefecthOtherVideo = async ({ videoId }: { videoId: number }) => {
     const dataPromise = fetch(`${baseURL}/api/video/all/except?videoId=${videoId}`,
         {
-            method: 'GET'
+            method: 'GET',
         }
     )
     return await (await dataPromise).json();

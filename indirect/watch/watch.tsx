@@ -32,8 +32,8 @@ import Expand from "@/components/own/watch/Expand";
 import { redirect } from "next/navigation";
 import dynamic from "next/dynamic";
 import { useToast } from "@/components/ui/use-toast";
-
-const VideoSuggestPrefetch = dynamic(() => import('@/components/own/watch/VideoSuggest/PrefetchData'))
+import VideoSuggestPrefetch from '@/components/own/watch/VideoSuggest/PrefetchData'
+// const VideoSuggestPrefetch = dynamic(() => import('@/components/own/watch/VideoSuggest/PrefetchData'))
 
 
 type quality = {
@@ -467,10 +467,10 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
                     <Expand fullscreen videoData={videoData} />
                 </div>
                 <div className="lg:flex flex-grow w-full flex-1 px-5 pt-3">
-                    {/* <VideoSuggestPrefetch
+                    <VideoSuggestPrefetch
                         channelData={videoData.channelData}
                         videoId={videoData.videoData.id}
-                    /> */}
+                    />
                 </div>
             </div>
         </div>
