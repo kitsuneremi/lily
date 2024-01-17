@@ -1,19 +1,14 @@
 "use client";
-import Image from "next/image";
-import VideoItem from "@/components/own/watch/VideoItem";
-import ThisChannelVideoItem from "@/components/own/watch/ThisChannelVideoItem";
 import React, {
     useEffect,
     useRef,
-    useState,
-    FormEvent,
-    useCallback,
+    useState
 } from "react";
 import axios from "axios";
-import { BigVideoDataType, CommentDataType, MediaDataType } from "@/types/type";
-import { FormatDateTime, fileURL, videoTimeFormater } from "@/lib/functional";
+import { BigVideoDataType, MediaDataType } from "@/types/type";
+import { fileURL, videoTimeFormater } from "@/lib/functional";
 
-import Hls, { HlsEventEmitter, ManifestParsedData } from "hls.js";
+import Hls from "hls.js";
 import {
     ImVolumeHigh,
     ImVolumeMedium,
@@ -33,12 +28,10 @@ import { Slider } from "antd";
 import type { MenuProps } from "antd";
 import { Dropdown } from "antd";
 import { useLocalStorage, useEffectOnce } from "usehooks-ts";
-import { Skeleton } from "@/components/ui/skeleton";
-import Properties from "@/components/own/watch/Properties";
-import Description from "@/components/own/watch/Description";
 import Expand from "@/components/own/watch/Expand";
 import { redirect } from "next/navigation";
 import dynamic from "next/dynamic";
+import { useToast } from "@/components/ui/use-toast";
 
 const VideoSuggestPrefetch = dynamic(() => import('@/components/own/watch/VideoSuggest/PrefetchData'))
 
@@ -70,6 +63,7 @@ const sourceURL = (mediaData: MediaDataType) => {
 
 export default function Page({ videoData }: { videoData: BigVideoDataType }) {
     const src = sourceURL(videoData.videoData);
+    const { toast } = useToast();
 
     const ref = useRef<HTMLVideoElement>(null);
     const fullRef = useRef<HTMLDivElement>(null);
@@ -93,6 +87,19 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
         hls.on(Hls.Events.MEDIA_ATTACHED, function () {
             console.log("video and hls.js are now bound together !");
         });
+        hls.on(Hls.Events.FPS_DROP, () => {
+            toast({
+                title: 'quá trình phát gặp trục trặc?',
+                description: 'kiểm tra mức sử dụng cpu/ram nhé'
+            })
+        })
+        hls.on(Hls.Events.ERROR, function (event, data) {
+            console.log(event + data);
+            toast({
+                title: '',
+                description: ''
+            })
+        })
         hls.on(Hls.Events.MANIFEST_PARSED, function (event, data) {
             setQuality((prev) => {
                 return {
@@ -166,28 +173,6 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
             }
         });
     });
-
-    // useEffect(() => {
-    //     const channelAvatarStorageRef = fireRef(
-    //         storage,
-    //         `/channel/avatars/${videoData.channelData.tagName}`
-    //     );
-    //     getDownloadURL(channelAvatarStorageRef).then((url) =>
-    //         setChannelAvatar(url)
-    //     );
-    //     if (session) {
-    //         try {
-    //             const currentAccountStorageRef = fireRef(
-    //                 storage,
-    //                 //@ts-ignore
-    //                 `/accounts/${session?.user.id}`
-    //             );
-    //             getDownloadURL(currentAccountStorageRef).then((url) =>
-    //                 setCurrentAccountAvatar(url)
-    //             );
-    //         } catch (error) {}
-    //     }
-    // }, [""]);
 
     useEffect(() => {
         if (fullRef.current && document) {
@@ -482,10 +467,10 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
                     <Expand fullscreen videoData={videoData} />
                 </div>
                 <div className="lg:flex flex-grow w-full flex-1 px-5 pt-3">
-                    <VideoSuggestPrefetch
+                    {/* <VideoSuggestPrefetch
                         channelData={videoData.channelData}
                         videoId={videoData.videoData.id}
-                    />
+                    /> */}
                 </div>
             </div>
         </div>

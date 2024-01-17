@@ -9,19 +9,26 @@ export default async function SuggestVideo({
     videoId: number;
     channelData: ChannelDataType;
 }) {
-    const otherVideoInChannel = await prefetchOtherVideoInChannel({ videoId: videoId, channelId: channelData.id });
-    const otherVideo = await prefecthOtherVideo({ videoId: videoId });
+    const [otherVideoInChannel, otherVideo] = await Promise.all([prefetchOtherVideoInChannel({ videoId: videoId, channelId: channelData.id }), prefecthOtherVideo({ videoId: videoId })]);
 
     return <VideoSuggest channelData={channelData} otherVideo={otherVideo} otherVideoInChannel={otherVideoInChannel} />
 }
 
 
 const prefetchOtherVideoInChannel = async ({ videoId, channelId }: { videoId: number, channelId: number }) => {
-    const dataPromise = fetch(`${baseURL}/api/video/channel/except?videoId=${videoId}&channelId=${channelId}`)
+    const dataPromise = fetch(`${baseURL}/api/video/channel/except?videoId=${videoId}&channelId=${channelId}`,
+        {
+            method: 'GET',
+        }
+    )
     return await (await dataPromise).json();
 }
 
 const prefecthOtherVideo = async ({ videoId }: { videoId: number }) => {
-    const dataPromise = fetch(`${baseURL}/api/video/all/except?videoId=${videoId}`)
+    const dataPromise = fetch(`${baseURL}/api/video/all/except?videoId=${videoId}`,
+        {
+            method: 'GET'
+        }
+    )
     return await (await dataPromise).json();
 }
