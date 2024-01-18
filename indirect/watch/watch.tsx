@@ -54,7 +54,7 @@ const sourceURL = (mediaData: MediaDataType) => {
     } else if (mediaData.mediaType == 1 && mediaData.isLive) {
         redirect(`/stream/${mediaData.link}`);
         return '';
-    } else if (mediaData.mediaType == 1 && !mediaData.isLive) {
+    } else if ((mediaData.mediaType == 1 && !mediaData.isLive) || mediaData.mediaType == 2) {
         return `${fileURL}/api/merge/${mediaData.link}/live`;
     } else {
         return ''
