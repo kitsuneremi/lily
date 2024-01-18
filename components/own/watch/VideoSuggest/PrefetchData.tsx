@@ -1,17 +1,38 @@
-'use server';
+'use client'
 import { ChannelDataType, VideoWithoutComment, MediaDataType } from '@/types/type'
 import { baseURL } from '@/lib/functional';
 import VideoSuggest from './VideoSuggest';
-export default async function SuggestVideo({
+import { useEffectOnce } from 'usehooks-ts';
+import { useState } from 'react'
+export default function SuggestVideo({
     videoId,
     channelData,
 }: {
     videoId: number;
     channelData: ChannelDataType;
 }) {
-    const [otherVideoInChannel, otherVideo] = await Promise.all([prefetchOtherVideoInChannel({ videoId: videoId, channelId: channelData.id }), prefecthOtherVideo({ videoId: videoId })]);
+    const [otherVideoInChannel, setOtherVideoInChannel] = useState<any>();
+    const [otherVideo, setOtherVideo] = useState<any>();
 
-    return <VideoSuggest channelData={channelData} otherVideo={otherVideo} otherVideoInChannel={otherVideoInChannel} />
+    useEffectOnce(() => {
+        prefetchOtherVideoInChannel({ videoId: videoId, channelId: channelData.id }).then((data) => {
+            setOtherVideoInChannel(data);
+        });
+    })
+
+    useEffectOnce(() => {
+        prefecthOtherVideo({ videoId: videoId }).then((data) => {
+            setOtherVideo(data);
+        })
+    })
+
+    // const [otherVideoInChannel, otherVideo] = await Promise.all([prefetchOtherVideoInChannel({ videoId: videoId, channelId: channelData.id }), prefecthOtherVideo({ videoId: videoId })]);
+    if (otherVideo && otherVideoInChannel) {
+        return <VideoSuggest channelData={channelData} otherVideo={otherVideo} otherVideoInChannel={otherVideoInChannel} />
+    }else {
+        return <></>
+    }
+
 }
 
 

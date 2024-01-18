@@ -1,4 +1,4 @@
-'use server'
+'use client'
 import { MediaDataType, VideoWithoutComment } from "@/types/type";
 import VideoItem from "@/components/own/watch/VideoItem";
 import { Skeleton } from "@/components/ui/skeleton";
