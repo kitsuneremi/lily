@@ -2,13 +2,14 @@ import { MediaDataType } from '@/types/type';
 import React, { useRef, useEffect } from 'react';
 import videojs from 'video.js';
 import 'video.js/dist/video-js.css';
+import { fileURL } from '@/lib/functional'
 
 const genlink = ({ type, link }: { type: number, link: string }) => {
-    if(type == 0){
+    if (type == 0) {
         return `/merge/${link}/index`
-    }else if(type == 1){
+    } else if (type == 1) {
         return `/live/${link}`
-    }else{
+    } else {
         return `merge/${link}/live`
     }
 }
@@ -30,7 +31,7 @@ const QuickPlayer = (
         fluid: false,
         islive: mediaData.isLive,
         sources: [{
-            src: "https://file.erinasaiyukii.com/api/" + genlink({type: mediaData.mediaType, link: mediaData.link}),
+            src: fileURL + "/api/" + genlink({ type: mediaData.mediaType, link: mediaData.link }),
             type: 'application/x-mpegURL'
         }]
     };
@@ -94,7 +95,7 @@ const QuickPlayer = (
 
     return (
         <div data-vjs-player className={className}>
-            <div ref={videoRef} className='w-full h-full'/>
+            <div ref={videoRef} className='w-full h-full' />
         </div>
     );
 }

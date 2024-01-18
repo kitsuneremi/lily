@@ -1,4 +1,5 @@
 'use client'
+import { fileURL } from '@/lib/functional';
 import { type MediaDataType, BigVideoDataType, LiveData, ChannelDataType } from '@/types/type';
 import React, { useRef, useEffect } from 'react';
 import videojs from 'video.js';
@@ -16,7 +17,7 @@ export default function LivePlayer({ name, streamData }: { name: string, streamD
         fluid: true,
         islive: streamData.isLive,
         sources: [{
-            src: `https://file.erinasaiyukii.com/api/live/${name}`,
+            src: `${fileURL}/api/live/${name}`,
             type: 'application/x-mpegURL'
         }]
     };
