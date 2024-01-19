@@ -51,7 +51,7 @@ export default function Sidebar() {
 
     const { data: session, status } = useSession();
     const deviceType = {
-        isFlex: useMediaQuery("(min-width: 1200px"),
+        isFlex: useMediaQuery("(min-width: 1200px)"),
         isAbsolute: useMediaQuery("(max-width: 1199px)"),
     };
 
