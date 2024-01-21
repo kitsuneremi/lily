@@ -10,6 +10,18 @@ import { useOnClickOutside } from "usehooks-ts";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
 import axios from "axios";
+import { socketURL } from "@/lib/functional";
+import io from "socket.io-client";
+
+type Message = {
+    accountId: number;
+    name: string;
+    image: string;
+    content: string;
+    room: number;
+};
+
+const socket = io(socketURL).connect();
 
 export default function MessageBox() {
 
@@ -24,7 +36,7 @@ export default function MessageBox() {
     const [listMessage, setListMessage] = useState<any[]>([]);
     const [targetUser, setTargetUser] = useState<any>(null);
     const [targetRoom, setTargetRoom] = useState<any>(null);
-    const [messageContent, setMessageContent] = useState<any>('')
+    const [messageContent, setMessageContent] = useState<string>('')
 
     useEffect(() => {
         if (session && session.user) {
@@ -32,6 +44,18 @@ export default function MessageBox() {
                 setAvailableRoom(res.data)
             })
         }
+    }, [session])
+
+    useEffect(() => {
+        const handleReceivedMessage = (data: Message) => {
+            setListMessage((prev) => [...prev, data]);
+        };
+
+        socket.on("rcvmsg", handleReceivedMessage);
+
+        return () => {
+            socket.off("rcvmsg", handleReceivedMessage);
+        };
     }, [])
 
     useEffect(() => {
@@ -43,16 +67,16 @@ export default function MessageBox() {
                 })
 
 
-                // axios.get(`/api/messages?from=${session.user.id}&to=${targetUser.id}`).then(res => {
-                //     setListMessage(res.data)
-                // })
+                axios.get(`/api/messages?from=${session.user.id}&to=${targetUser.id}`).then(res => {
+                    setListMessage(res.data)
+                })
             }
         }
-    }, [targetUser])
+    }, [targetUser, session])
 
     useEffect(() => {
         console.log(showMessageBox)
-    },[showMessageBox])
+    }, [showMessageBox])
 
     useOnClickOutside(messageBoxButtonRef, () => { setShowMessageBox(prev => { return { click: !prev.click, menuFocus: prev.menuFocus } }) })
     useOnClickOutside(messageBoxMenuRef, () => { setShowMessageBox(prev => { return { click: prev.click, menuFocus: !prev.menuFocus } }) })

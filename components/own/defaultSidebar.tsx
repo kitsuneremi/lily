@@ -47,9 +47,8 @@ const listMenu = [
 ]
 
 export default function Sidebar() {
-    const { isBrowser } = useSsr();
-
     const { data: session, status } = useSession();
+
     const deviceType = {
         isFlex: useMediaQuery("(min-width: 1200px)"),
         isAbsolute: useMediaQuery("(max-width: 1199px)"),
@@ -75,7 +74,7 @@ export default function Sidebar() {
         } else if (deviceType.isAbsolute) {
             dispatch(close());
         }
-    }, []);
+    }, ['']);
 
     useEffect(() => {
         if (status === "authenticated") {
@@ -118,7 +117,7 @@ export default function Sidebar() {
                 })}
 
                 <div className="w-full my-2 h-[2px] relative after:absolute after:bg-slate-300 dark:after:bg-slate-500 after:h-[90%] after:top-[5%] after:left-0 after:w-full" />
-                {/* tùy chọn thuộc về tài khỏan/kênh */}
+                {/* tùy chọn thuộc về tài khoản kênh */}
                 <Link href={"/feed/you"} className="w-full">
                     <div
                         className={`flex justify-start items-center ${openSidebar ? "gap-2" : ""
@@ -207,96 +206,85 @@ export default function Sidebar() {
             </div>
         );
     };
-
-    const MiniRender = () => {
-        return (
-            <>
-                <Link href={"/"}>
-                    <div className="flex flex-col items-center hover:bg-slate-200 dark:hover:bg-slate-700 p-1 ml-2 rounded-lg">
-                        <div className="text-2xl max-sm:text-base">
-                            <AiOutlineHome />
+    return (
+        <>
+            {
+                deviceType.isFlex
+                    ?
+                        openSidebar
+                        ?
+                        <div className={`flex min-w-[200px] flex-col gap-1 w-max overflow-y-scroll items-start hidden-scrollbar px-3`}>
+                            {FullRender()}
                         </div>
-                        <p className="text-xs">Trang chủ</p>
-                    </div>
-                </Link>
-                <Link href={"/shorts"}>
-                    <div className="flex flex-col items-center hover:bg-slate-200 dark:hover:bg-slate-700  p-1 ml-2 rounded-lg">
-                        <div className="text-2xl max-sm:text-base">
-                            <AiOutlineHome />
+                        :
+                        <div className="w-max flex flex-col gap-3">
+                            {MiniRender()}
                         </div>
-                        <p className="text-xs">Shorts</p>
-                    </div>
-                </Link>
-                <Link href={"/subcribe"}>
-                    <div className="flex flex-col items-center hover:bg-slate-200 dark:hover:bg-slate-700  p-1 ml-2 rounded-lg">
-                        <div className="text-2xl max-sm:text-base">
-                            <AiOutlineHome />
-                        </div>
-                        <p className="text-xs text-center">Kênh đăng ký</p>
-                    </div>
-                </Link>
-                <Link href={"/feed/you"}>
-                    <div className="flex flex-col items-center hover:bg-slate-200 dark:hover:bg-slate-700  p-1 ml-2 rounded-lg">
-                        <div className="text-2xl max-sm:text-base">
-                            <AiOutlineHome />
-                        </div>
-                        <p className="text-xs">Bạn</p>
-                    </div>
-                </Link>
-                <Link href={"/setting/account"}>
-                    <div className="flex flex-col items-center hover:bg-slate-200 dark:hover:bg-slate-700  p-1 ml-2 rounded-lg">
-                        <div className="text-2xl max-sm:text-base">
-                            <AiFillSetting />
-                        </div>
-                        <p className="text-xs">Cài đặt</p>
-                    </div>
-                </Link>
-                <Link href={"/feedback"}>
-                    <div className="flex flex-col items-center hover:bg-slate-200 dark:hover:bg-slate-700  p-1 ml-2 rounded-lg">
-                        <div className="text-2xl max-sm:text-base">
-                            <MdFeedback />
-                        </div>
-                        <p className="text-xs">Phản hồi</p>
-                    </div>
-                </Link>
-            </>
-        );
-    };
-
-    if (isBrowser) {
-        if (deviceType.isFlex) {
-            if (openSidebar) {
-                return (
-                    <div
-                        className={`flex min-w-[200px] flex-col gap-1 w-max overflow-y-scroll items-start hidden-scrollbar px-3`}
+                    :
+                    <div ref={sidebarRef} className={`${openSidebar
+                        ? "overflow-y-scroll min-w-[220px] h-[calc(100vh-64px)] flex fixed top-16 flex-col gap-1 w-max items-start hidden-scrollbar px-3 bg-slate-50 dark:bg-slate-800 z-50"
+                        : "hidden"
+                        }`}
                     >
-                        <FullRender />
+                        {FullRender()}
                     </div>
-                );
-            } else {
-                return (
-                    <div className="w-max flex flex-col gap-3">
-                        <MiniRender />
-                    </div>
-                );
             }
-        } else if (deviceType.isAbsolute) {
-            return (
-                <>
-                    {/* <div className="w-max flex flex-col gap-3">
-                        <MiniRender />
-                    </div> */}
-                    <div
-                        ref={sidebarRef}
-                        className={`${openSidebar
-                            ? "overflow-y-scroll min-w-[220px] h-[calc(100vh-64px)] flex fixed top-16 flex-col gap-1 w-max items-start hidden-scrollbar px-3 bg-slate-50 dark:bg-slate-800 z-50"
-                            : "hidden"
-                            }`}
-                    >
-                        <FullRender />
-                    </div>
-                </>
-            );
-        }
-    }
+        </>
+    )
 }
+
+
+const MiniRender = () => {
+    return (
+        <>
+            <Link href={"/"}>
+                <div className="flex flex-col items-center hover:bg-slate-200 dark:hover:bg-slate-700 p-1 ml-2 rounded-lg">
+                    <div className="text-2xl max-sm:text-base">
+                        <AiOutlineHome />
+                    </div>
+                    <p className="text-xs">Trang chủ</p>
+                </div>
+            </Link>
+            <Link href={"/shorts"}>
+                <div className="flex flex-col items-center hover:bg-slate-200 dark:hover:bg-slate-700  p-1 ml-2 rounded-lg">
+                    <div className="text-2xl max-sm:text-base">
+                        <AiOutlineHome />
+                    </div>
+                    <p className="text-xs">Shorts</p>
+                </div>
+            </Link>
+            <Link href={"/subcribe"}>
+                <div className="flex flex-col items-center hover:bg-slate-200 dark:hover:bg-slate-700  p-1 ml-2 rounded-lg">
+                    <div className="text-2xl max-sm:text-base">
+                        <AiOutlineHome />
+                    </div>
+                    <p className="text-xs text-center">Kênh đăng ký</p>
+                </div>
+            </Link>
+            <Link href={"/feed/you"}>
+                <div className="flex flex-col items-center hover:bg-slate-200 dark:hover:bg-slate-700  p-1 ml-2 rounded-lg">
+                    <div className="text-2xl max-sm:text-base">
+                        <AiOutlineHome />
+                    </div>
+                    <p className="text-xs">Bạn</p>
+                </div>
+            </Link>
+            <Link href={"/setting/account"}>
+                <div className="flex flex-col items-center hover:bg-slate-200 dark:hover:bg-slate-700  p-1 ml-2 rounded-lg">
+                    <div className="text-2xl max-sm:text-base">
+                        <AiFillSetting />
+                    </div>
+                    <p className="text-xs">Cài đặt</p>
+                </div>
+            </Link>
+            <Link href={"/feedback"}>
+                <div className="flex flex-col items-center hover:bg-slate-200 dark:hover:bg-slate-700  p-1 ml-2 rounded-lg">
+                    <div className="text-2xl max-sm:text-base">
+                        <MdFeedback />
+                    </div>
+                    <p className="text-xs">Phản hồi</p>
+                </div>
+            </Link>
+        </>
+    );
+};

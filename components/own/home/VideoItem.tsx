@@ -1,12 +1,9 @@
 "use client";
-import { ref, getDownloadURL } from "firebase/storage";
-import { storage } from "@/lib/firebase";
 import Link from "next/link";
 import Image from "next/image";
 import { FormatDateTime, ReduceString } from "@/lib/functional";
 import { useCallback, useEffect, useState } from "react";
 import { MediaDataType, ChannelDataType } from "@/types/type";
-
 import {
     Tooltip,
     TooltipContent,
@@ -43,23 +40,23 @@ export default function VideoItem({
         } else {
             return `/watch/${videoData.link}`;
         }
-    }, []);
+    }, ['']);
 
     const [hover, setHover] = useState<boolean>(false);
 
-    const mouseEnter = () => {
+    const mouseEnter = useCallback(() => {
         setTimeout(() => {
-            if(!hover){
+            if (!hover) {
                 setHover(true)
             }
         }, 200)
-    }
+    }, [''])
 
-    const mouseOut = () => {
-        if(hover){
+    const mouseOut = useCallback(() => {
+        if (hover) {
             setHover(false)
         }
-    } 
+    }, [''])
 
     return (
         <Link href={genLink()}>
@@ -72,18 +69,22 @@ export default function VideoItem({
                 <div className="max-[640px]:max-w-[78vw] w-full p-4 grid items-center h-fit rounded-lg hover:shadow-xl bg-white dark:bg-slate-800">
                     {videoData.mediaType == 0 ? (
                         <div className="relative w-full aspect-video rounded-md bg-transparent" onMouseEnter={() => { mouseEnter() }} onMouseOutCapture={() => { mouseOut() }} onMouseLeave={() => { mouseOut() }}>
-                            {hover ? <QuickPlayer mediaData={videoData} className="w-full h-full rounded-md" /> : videoData && videoData.thumbnail ? (
-                                <Image
-                                    alt=""
-                                    className="rounded-md bg-transparent"
-                                    fill
-                                    sizes="16/9"
-                                    src={videoData.thumbnail} 
-                                    loading="lazy"
-                                />
-                            ) : (
-                                <Skeleton className="w-full h-full rounded-md" />
-                            )
+                            {hover
+                                ?
+                                <QuickPlayer mediaData={videoData} className="w-full h-full rounded-md" />
+                                :
+                                videoData && videoData.thumbnail ? (
+                                    <Image
+                                        alt=""
+                                        className="rounded-md bg-transparent"
+                                        fill
+                                        sizes="16/9"
+                                        src={videoData.thumbnail}
+                                        loading="lazy"
+                                    />
+                                ) : (
+                                    <Skeleton className="w-full h-full rounded-md" />
+                                )
                             }
                         </div>
 

@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import HomePage from '@/indirect/home/home'
-import prisma from '@/lib/prisma'
 import { baseURL } from '@/lib/functional'
 
 export const metadata: Metadata = {
