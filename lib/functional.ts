@@ -56,9 +56,14 @@ export const getFileExt = (fileName: File) => {
     return fileName.name.substring(fileName.name.lastIndexOf(".") + 1);
 };
 
-export const baseURL = 'https://erinasaiyukii.com'
-export const fileURL = 'https://file.lyart.pro.vn'
-export const liveURL = 'https://live.lyart.pro.vn'
+// export const baseURL = 'https://erinasaiyukii.com'
+// export const fileURL = 'https://file.lyart.pro.vn'
+// export const liveURL = 'https://live.lyart.pro.vn'
+
+export const baseURL = 'http://localhost:3000'
+export const fileURL = 'http://localhost:5001'
+export const liveURL = 'http://localhost:5001'
+export const socketURL = 'http://localhost:6074'
 
 const formatHelper = (time: number) => {
     if(time >= 3600){
