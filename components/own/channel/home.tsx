@@ -38,12 +38,12 @@ export default function ChannelHome({
 
     return (
         <div className="flex flex-col">
-            <div className="flex flex-col gap-3">
-                <div className="flex gap-5">
-                    <p>Video phổ cmn biến</p>
-                    <p className="flex gap-2 items-center">
-                        <FaPlay /> Phát cmn hết
-                    </p>
+            <div className="flex flex-col gap-2">
+                <div className="flex gap-5 px-5">
+                    <p className="text-lg font-semibold">Video phổ biến</p>
+                    {/* <p className="flex gap-2 items-center">
+                        <FaPlay /> Phát toàn bộ
+                    </p> */}
                 </div>
 
                 <div className="overflow-x-auto relative w-full grid grid-flow-col h-max gap-3">

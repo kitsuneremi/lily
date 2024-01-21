@@ -42,13 +42,13 @@ const SearchModule = () => {
         } else {
             setFocus({ input: false, menu: false })
         }
-    }, [searchValue])
+    }, [searchValue, session])
 
     useOnClickOutside(searchResultRef, () => {
         setFocus(prev => { return { ...prev, menu: false } })
     })
 
-    
+
 
     return (
         <>
@@ -80,17 +80,24 @@ const SearchModule = () => {
                 {/* serch result render */}
                 {(focusing.input || focusing.menu) &&
                     <div
-                        className="absolute w-80 h-fit left-[-16px] items-center top-12 max-w-[95vw] bg-slate-50 dark:bg-slate-600 border-[1px] border-slate-100 rounded-lg shadow-lg"
+                        className="absolute w-80 h-fit left-[-16px] items-center top-12 max-w-[95vw] bg-slate-50 dark:bg-slate-900 border-[1px] border-slate-100 rounded-lg shadow-lg"
                         ref={searchResultRef}
-                        onMouseDown={() => { setFocus({ input: false, menu: true })}}
+                        onMouseDown={() => { setFocus({ input: false, menu: true }) }}
                     >
                         <div className="flex flex-col flex-1 h-fit p-3">
+                            {
+                                (searchResult.keywordSearch.length == 0 && searchResult.userHistory.length == 0)
+                                &&
+                                <div className="w-full h-9 flex items-center justify-center">
+                                    <p className="text-lg font-semibold">chưa có lịch sử tìm kiếm</p>
+                                </div>
+                            }
                             {searchResult.userHistory.map((item, index) => {
                                 return (
                                     <Link href={`/search?keyword=${item.content}`} key={index}>
-                                        <div className="w-full flex gap-2 px-2 py-1 items-center rounded-md m-1 hover:scale-105 hover:bg-slate-200 hover:shadow-lg hover:text[18px] hover:text-purple-950 dark:hover:text-purple-400">
+                                        <div className="w-full flex gap-2 px-2 py-1 items-center rounded-md m-1 hover:scale-105 hover:w-[93%] hover:bg-slate-200 dark:hover:bg-slate-700 hover:shadow-lg hover:text[18px] hover:text-purple-950 dark:hover:text-purple-400">
                                             <AiOutlineSearch />
-                                            <p className="w-full text-lg whitespace-nowrap text-ellipsis h-max overflow-hidden">
+                                            <p className="w-full text-lg font-semibold whitespace-nowrap text-ellipsis h-max overflow-hidden">
                                                 {item.content}
                                             </p>
                                         </div>
@@ -100,9 +107,9 @@ const SearchModule = () => {
                             {searchResult.keywordSearch.map((item, index) => {
                                 return (
                                     <Link href={`/watch/${item.link}`} key={index}>
-                                        <div className="w-full flex gap-2 px-2 py-1 items-center rounded-md m-1 hover:scale-105 hover:bg-slate-200 hover:shadow-lg hover:text[18px] hover:text-purple-950 dark:hover:text-purple-400">
+                                        <div className="w-full flex gap-2 px-2 py-1 items-center rounded-md m-1 hover:scale-105 hover:w-[93%] hover:bg-slate-200 dark:hover:bg-slate-700 hover:shadow-lg hover:text[18px] hover:text-purple-950 dark:hover:text-purple-400">
                                             <AiOutlineSearch />
-                                            <p className="w-full text-lg whitespace-nowrap text-ellipsis h-max overflow-hidden">
+                                            <p className="w-full text-lg font-semibold whitespace-nowrap text-ellipsis h-max overflow-hidden">
                                                 {item.title}
                                             </p>
                                         </div>

@@ -58,7 +58,7 @@ export default function Navbar() {
                         ?
                         mobileShowSearch
                             ?
-                            <button className="text-xl ml-3">
+                            <button className="text-2xl lg:text-3xl ml-3">
                                 <AiOutlineClose
                                     onClick={() => {
                                         setMobileShowSearch(false);
@@ -66,7 +66,7 @@ export default function Navbar() {
                                 />
                             </button>
                             :
-                            <div onClick={() => { dispatch(reverse()); }}>
+                            <div className="text-2xl lg:text-3xl" onClick={() => { dispatch(reverse()); }}>
                                 {openSidebar ? (
                                     <AiOutlineRight />
                                 ) : (
@@ -74,7 +74,7 @@ export default function Navbar() {
                                 )}
                             </div>
                         :
-                        <div onClick={() => { dispatch(reverse()); }}>
+                        <div className="text-2xl lg:text-3xl" onClick={() => { dispatch(reverse()); }}>
                             {openSidebar ? (
                                 <AiOutlineRight />
                             ) : (
