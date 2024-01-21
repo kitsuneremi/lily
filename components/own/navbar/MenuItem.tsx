@@ -7,7 +7,7 @@ const MenuItem = ({
     return (
         <div
             className={cn(
-                "w-full px-3 py-3 rounded-sm cursor-pointer hover:bg-slate-300 dark:hover:bg-slate-700",
+                "w-full px-3 py-3 rounded-lg cursor-pointer hover:bg-slate-300 dark:hover:bg-slate-700 hover:scale-105",
                 className
             )}
             {...props}

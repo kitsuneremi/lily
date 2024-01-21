@@ -22,10 +22,12 @@ import { useDispatch } from "react-redux";
 import { useAppSelector } from "@/redux/storage";
 import { close, reverse } from "@/redux/features/sidebar-slice";
 import MessageBox from "./navbar/Message";
-
+import LastMenu from '@/components/own/navbar/LastMenu'
+import UploadBox from "./navbar/Upload";
 const Notification = dynamic(() => import("@/components/own/navbar/Notification"));
 const SearchModule = dynamic(() => import("@/components/own/navbar/SearchModule"));
-const LastMenu = dynamic(() => import("@/components/own/navbar/LastMenu"));
+// const LastMenu = dynamic(() => import("@/components/own/navbar/LastMenu"));
+
 
 
 export default function Navbar() {
@@ -39,8 +41,8 @@ export default function Navbar() {
 
     const deviceType = {
         isPc: useMediaQuery("(min-width: 1280px"),
-        isTablet: useMediaQuery("(min-width:700px) and (max-width: 1279px)"),
-        isMobile: useMediaQuery("(max-width: 699px)"),
+        isTablet: useMediaQuery("(min-width:768px) and (max-width: 1279px)"),
+        isMobile: useMediaQuery("(max-width: 767px)"),
     };
 
     useEffectOnce(() => {
@@ -107,14 +109,14 @@ export default function Navbar() {
             {(!deviceType.isMobile || (deviceType.isMobile && mobileShowSearch)) && <SearchModule />}
             <div className="flex gap-3 items-center">
                 {!mobileShowSearch && <div
-                    className="lg:hidden"
+                    className="md:hidden text-2xl lg:text-3xl"
                     onClick={() => {
                         setMobileShowSearch(true);
                     }}
                 >
                     <AiOutlineSearch />
                 </div>}
-                <AiOutlineUpload />
+                <UploadBox />
                 <Notification />
                 <MessageBox />
                 <LastMenu />

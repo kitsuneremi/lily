@@ -4,7 +4,7 @@ import { Metadata } from "next";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from 'next/navigation'
-import { baseURL } from "@/lib/functional";
+import { baseURL, RedirectIfNotAuthen } from "@/lib/functional";
 import { ChannelDataType } from "@/types/type";
 // const channelDataFetch = async () => {
 //     const channels = await prisma.channels.findFirst({
@@ -41,7 +41,7 @@ export default async function Layout({
 
     const session = await getServerSession(authOptions);
     if (session) {
-        const channelData:ChannelDataType = await fetchChannelData(session.user.id)
+        const channelData: ChannelDataType = await fetchChannelData(session.user.id)
         if (channelData) {
             return (
                 <div className="w-screen h-screen">
@@ -56,7 +56,8 @@ export default async function Layout({
             return redirect('/regchannel');
         }
     } else {
-        return redirect('/register');
+        RedirectIfNotAuthen({ callback: "/station" })
+        return
     }
 
 }

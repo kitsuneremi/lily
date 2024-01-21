@@ -94,7 +94,7 @@ export default function Sidebar() {
 
     const FullRender = () => {
         return (
-            <div className="py-2">
+            <div className="py-2 w-full">
                 {listMenu.map((menu, index) => {
                     return (
                         <Link href={menu.link} className="w-full" key={index}>
@@ -207,7 +207,7 @@ export default function Sidebar() {
         );
     };
     return (
-        <>
+        <div className="shadow-md shadow-slate-600 mr-2">
             {
                 deviceType.isFlex
                     ?
@@ -217,19 +217,19 @@ export default function Sidebar() {
                             {FullRender()}
                         </div>
                         :
-                        <div className="w-max flex flex-col gap-3">
+                        <div className="w-max flex flex-col gap-3 pr-3">
                             {MiniRender()}
                         </div>
                     :
                     <div ref={sidebarRef} className={`${openSidebar
-                        ? "overflow-y-scroll min-w-[220px] h-[calc(100vh-64px)] flex fixed top-16 flex-col gap-1 w-max items-start hidden-scrollbar px-3 bg-slate-50 dark:bg-slate-800 z-50"
+                        ? "overflow-y-scroll min-w-[220px] h-[calc(100vh-64px)] flex fixed top-16 flex-col gap-1 w-max items-start hidden-scrollbar px-3 bg-slate-50 dark:bg-slate-950 z-50"
                         : "hidden"
                         }`}
                     >
                         {FullRender()}
                     </div>
             }
-        </>
+        </div>
     )
 }
 

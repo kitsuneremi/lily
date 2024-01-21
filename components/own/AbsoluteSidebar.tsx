@@ -223,7 +223,7 @@ export default function Sidebar() {
     if (isBrowser) {
         if (openSidebar) {
             return (
-                <div ref={sidebarRef} className={`${openSidebar ? 'overflow-y-scroll min-w-[220px] h-full flex fixed top-16 flex-col gap-1 w-max items-start hidden-scrollbar px-3 bg-slate-300 dark:bg-slate-800 z-50' : 'hidden'}`}>
+                <div ref={sidebarRef} className={'overflow-y-scroll min-w-[220px] h-full flex fixed top-16 flex-col gap-1 w-max items-start hidden-scrollbar px-3 bg-slate-300 dark:bg-slate-950 z-50'}>
                     <FullRender />
                 </div>
             )

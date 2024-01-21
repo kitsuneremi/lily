@@ -1,3 +1,9 @@
+import { redirect } from 'next/navigation'
+
+export function RedirectIfNotAuthen({ callback }: { callback: string }) {
+    redirect(`/api/auth/signin?callbackUrl=${callback}`)
+}
+
 export function ReduceString({ string, maxLength }: { string: string, maxLength: number }) {
     if (!string) {
         return '';
@@ -56,22 +62,24 @@ export const getFileExt = (fileName: File) => {
     return fileName.name.substring(fileName.name.lastIndexOf(".") + 1);
 };
 
-export const baseURL = 'https://erinasaiyukii.com'
-export const fileURL = 'https://file.lyart.pro.vn'
-export const liveURL = 'https://live.lyart.pro.vn'
-export const socketURL = 'https://socket.lyart.pro.vn'
+// export const baseURL = 'https://erinasaiyukii.com'
+// export const fileURL = 'https://file.lyart.pro.vn'
+// export const liveURL = 'https://live.lyart.pro.vn'
+// export const liveSocketURL = 'https://socket.lyart.pro.vn/live'
+// export const chatSocketURL = 'https://socket.lyart.pro.vn/chat'
 
-// export const baseURL = 'http://localhost:3000'
-// export const fileURL = 'http://localhost:5001'
-// export const liveURL = 'http://localhost:5001'
-// export const socketURL = 'http://localhost:6074'
+export const baseURL = 'http://localhost:3000'
+export const fileURL = 'http://localhost:5001'
+export const liveURL = 'http://localhost:5001'
+export const liveSocketURL = 'http://localhost:6074/live'
+export const chatSocketURL = 'http://localhost:6074/chat'
 
 const formatHelper = (time: number) => {
-    if(time >= 3600){
+    if (time >= 3600) {
         return `${Math.floor(time / 3600)}:${Math.floor(time % 3600 / 60)}:${time % 60}`;
-    }else if (time >= 60) {
+    } else if (time >= 60) {
         return `${Math.floor(time / 60)}:${time % 60}`;
-    }else{
+    } else {
         return `0:${time}`;
     }
 }

@@ -8,6 +8,14 @@ import { ref, getDownloadURL } from "firebase/storage";
 import { storage } from "@/lib/firebase";
 import axios from "axios";
 import { redirect } from "next/navigation";
+import {
+    Carousel,
+    CarouselContent,
+    CarouselItem,
+    CarouselNext,
+    CarouselPrevious,
+} from "@/components/ui/carousel"
+
 
 export default function ChannelHome({
     channelData,
@@ -37,11 +45,19 @@ export default function ChannelHome({
                         <FaPlay /> Phát cmn hết
                     </p>
                 </div>
-                <div className="overflow-x-scroll hidden-scrollbar w-full grid grid-flow-col-dense h-max gap-3">
-                    {listPo.map((video, index) => {
-                        return <VideoItem videoData={video.videoData} key={index} />;
-                    })}
+
+                <div className="overflow-x-auto relative w-full grid grid-flow-col h-max gap-3">
+
                 </div>
+                <Carousel>
+                    <CarouselContent>
+                        {listPo.map((video, index) => {
+                            return <CarouselItem key={index} className="basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5"><VideoItem videoData={video.videoData} key={index} /></CarouselItem>;
+                        })}
+                    </CarouselContent>
+                </Carousel>
+
+
             </div>
         </div>
     );
@@ -50,7 +66,7 @@ export default function ChannelHome({
 const VideoItem = ({ videoData }: { videoData: MediaDataType }) => {
     return (
         <div
-            className="flex flex-col cursor-pointer w-full h-max lg:min-w-[20%]"
+            className="flex flex-col cursor-pointer w-full h-max shadow-lg p-3 border-[1px] border-slate-600 border-opacity-10 rounded-xl hover:scale-105   "
             onClick={() => redirect(`/watch/${videoData.link}`)}
         >
             {videoData.mediaType == 0 ? (
@@ -86,20 +102,21 @@ const VideoItem = ({ videoData }: { videoData: MediaDataType }) => {
                     </div>
                     {(videoData.mediaType == 1 || videoData.mediaType == 2) && (
                         <div
-                            className={`${
-                                videoData.mediaType == 1
-                                    ? "bg-red-600"
-                                    : "bg-slate-600"
-                            } text-white px-1 py-[1px] absolute bottom-1 left-1 text-xs`}
+                            className={`${videoData.mediaType == 1
+                                ? "bg-red-600"
+                                : "bg-slate-600"
+                                } text-white px-1 py-[1px] absolute bottom-1 left-1 text-xs`}
                         >
                             Trực tiếp
                         </div>
                     )}
                 </div>
             )}
-            <p>{videoData.title}</p>
-            <div className="flex justify-between">
-                <p>{videoData.view} lượt xem</p>
+            <div className="max-h-14 text-lg font-bold my-2">
+                <p>{videoData.title}</p>
+            </div>
+            <div className="flex justify-between max-h-7 text-xs font-thin">
+                <p className="">{videoData.view} lượt xem</p>
                 <p>{FormatDateTime(videoData.createdTime)}</p>
             </div>
         </div>

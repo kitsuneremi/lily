@@ -24,6 +24,10 @@ const nextConfig = {
         hostname: "danviet.mediacdn.vn",
         protocol: "https",
       },
+      {
+        hostname: "avatars.githubusercontent.com",
+        protocol: "https"
+      }
     ],
   },
   transpilePackages: ["@pqina/pintura", "@pqina/react-pintura"],

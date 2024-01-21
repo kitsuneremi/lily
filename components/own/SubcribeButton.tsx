@@ -1,4 +1,4 @@
-import { MediaDataType, SessionDataType, SubcribeType } from "@/types/type";
+import { ChannelDataType, MediaDataType, SessionDataType, SubcribeType } from "@/types/type";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -12,25 +12,24 @@ import axios from "axios";
 import { redirect } from "next/navigation";
 import { NotificationOutlined } from "@ant-design/icons";
 import { AiOutlineDown } from "react-icons/ai";
+import { useSession } from "next-auth/react";
+import { Skeleton } from "../ui/skeleton";
 
-export default function Button({
-    session,
-    channelAccountId,
-    channelId
+export default function SubcribeButton({
+    channelData
 }: {
-    session: SessionDataType | null;
-    channelAccountId: number;
-    channelId: number
+    channelData: ChannelDataType;
 }) {
+    const { data: session, status: authenStatus } = useSession();
     const [subcribe, setSubcribe] = useState<SubcribeType>();
 
     useEffect(() => {
         if (session && session.user) {
-            if (session.user.id !== channelAccountId) {
+            if (session.user.id !== channelData.accountId) {
                 axios
                     .get("/api/subcribe", {
                         params: {
-                            targetChannel: channelId,
+                            targetChannel: channelData.id,
                             accountId: session.user.id,
                         },
                     })
@@ -39,7 +38,7 @@ export default function Button({
                     });
             }
         }
-    }, [session]);
+    }, [channelData.accountId, channelData.id, session]);
 
     const handleSubcribe = useCallback(() => {
         if (session && session.user) {
@@ -47,7 +46,7 @@ export default function Button({
                 .post("/api/subcribe/addordelete", {
                     //@ts-ignore
                     accountId: session.user.id,
-                    channelId: channelId,
+                    channelId: channelData.id,
                 })
                 .then((val) => {
                     setSubcribe(val.data);
@@ -55,13 +54,13 @@ export default function Button({
         } else {
             redirect("/register");
         }
-    }, []);
+    }, [channelData, session]);
 
     if (session && session.user) {
-        if (session.user.id === channelAccountId) {
+        if (session.user.id === channelData.accountId) {
             return (
                 <div
-                    className="px-4 py-2 h-fit cursor-pointer rounded-[24px] border-[1px] hover:bg-slate-300 dark:bg-slate-900 dark:hover:bg-slate-800"
+                    className="px-4 py-2 h-fit text-lg font-semibold cursor-pointer rounded-[24px] border-[1px] bg-slate-50 border-slate-600 border-opacity-20 shadow-md hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800"
                     onClick={() => {
                         redirect("/station");
                     }}
@@ -74,7 +73,7 @@ export default function Button({
                 return (
                     <DropdownMenu>
                         <DropdownMenuTrigger className="outline-none max-sm:w-full">
-                            <div className="flex gap-2 px-4 py-2 rounded-[24px] border-[1px] hover:bg-slate-300 dark:bg-slate-900 dark:hover:bg-slate-800">
+                            <div className="flex gap-2 px-4 py-2 rounded-[24px] border-[1px] border-slate-600 border-opacity-40 shadow-md hover:bg-slate-300 dark:bg-slate-900 dark:hover:bg-slate-800">
                                 <div className="flex flex-col justify-center animate-bounce dark:text-white">
                                     <NotificationOutlined />
                                 </div>
@@ -110,7 +109,7 @@ export default function Button({
                 return (
                     <>
                         <div
-                            className="flex gap-2 px-4 py-2 cursor-pointer rounded-[24px] border-[1px] hover:bg-slate-300 dark:bg-slate-900 dark:hover:bg-slate-800"
+                            className="flex gap-2 px-4 py-2 cursor-pointer rounded-[24px] border-[1px] border-slate-600 border-opacity-40 shadow-md hover:bg-slate-300 dark:bg-slate-900 dark:hover:bg-slate-800"
                             onClick={() => {
                                 handleSubcribe();
                             }}
@@ -121,5 +120,15 @@ export default function Button({
                 );
             }
         }
+    } else {
+        return (
+            <div
+                className="flex gap-2 px-4 py-2 cursor-pointer rounded-[24px] border-[1px] border-slate-600 border-opacity-40 shadow-md hover:bg-slate-300 dark:bg-slate-900 dark:hover:bg-slate-800"
+                onClick={() => { redirect('/register') }}
+            >
+                <p className="my-auto max-sm:w-full">Đăng ký</p>
+            </div>
+        )
     }
 }
+

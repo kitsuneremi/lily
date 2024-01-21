@@ -29,7 +29,7 @@ const fetchVideoData = async ({ link }: { link: string }) => {
     return data;
 }
 
-export default async ({ params, searchParams }: Props) => {
+export default async function WatchPage({ params, searchParams }: Props){
     const data = await fetchVideoData({ link: params.link })
     return <Watch videoData={data}></Watch>
 }

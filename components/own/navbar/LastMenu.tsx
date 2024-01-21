@@ -1,4 +1,4 @@
-import dynamic from "next/dynamic";
+'use client'
 import MenuItem from '@/components/own/navbar/MenuItem'
 import ModeSetting from "@/components/own/navbar/ModeSetting";
 import { redirect, useRouter } from "next/navigation";
@@ -42,27 +42,7 @@ export default function LastMenu() {
         );
     });
 
-    const AccountAvatarRender = (): React.ReactNode => {
-        if (authenStatus == "loading") {
-            return <Skeleton className="h-full w-full rounded-full" />;
-        } else if (authenStatus == "authenticated" && session && session.user.image != "") {
-            return (
-                <Image
-                    src={session.user.image}
-                    className="rounded-full"
-                    fill
-                    sizes="1/1"
-                    alt=""
-                />
-            );
-        } else {
-            return (
-                <div className="flex text-xl bg-slate-200 dark:bg-slate-900 rounded-full w-full h-full items-center justify-center">
-                    <CiMenuBurger />
-                </div>
-            );
-        }
-    };
+
 
     return (
         <>
@@ -76,11 +56,11 @@ export default function LastMenu() {
                     }}
                     ref={popoverTriggerRef}
                 >
-                    {AccountAvatarRender()}
+                    <AccountAvatarRender />
                 </div>
                 {(showPopover.click || showPopover.menuFocus) && (
                     <div
-                        className="absolute w-max top-9 right-0 h-fit"
+                        className="absolute w-max top-11 right-0 h-fit rounded-xl px-3 py-2 bg-white dark:bg-[#020817] shadow-2xl border-[1px] border-solid border-slate-800 border-opacity-50"
                         ref={popoverContentRef}
                         onClick={() => {
                             setShowPopover({
@@ -90,7 +70,7 @@ export default function LastMenu() {
                         }}
                     >
                         {session?.user ? (
-                            <div className="shadow-[0_0_5px_purple] p-3 bg-white dark:bg-[#020817]">
+                            <div className="">
                                 <ChannelRender />
                                 <MenuItem className="text-start">
                                     <div
@@ -114,7 +94,7 @@ export default function LastMenu() {
                                 <ModeSetting />
                             </div>
                         ) : (
-                            <div className="flex flex-col gap-2 shadow-[0_0_5px_purple] p-3 rounded-lg bg-white dark:bg-[#020817]">
+                            <div className="flex flex-col gap-2">
                                 <MenuItem className="bg-gradient-to-r from-cyan-200 to-cyan-400 dark:from-cyan-400 dark:to-cyan-200 dark:hover:from-cyan-600 dark:hover:to-cyan-300 hover:bg-gradient-to-l hover:from-cyan-300 hover:to-cyan-600">
                                     <Link href={"/register"}>
                                         Đăng nhập
@@ -136,3 +116,27 @@ export default function LastMenu() {
         </>
     );
 }
+
+
+const AccountAvatarRender = (): React.ReactNode => {
+    const { data: session, status: authenStatus } = useSession();
+    if (authenStatus == "loading") {
+        return <Skeleton className="h-full w-full rounded-full" />;
+    } else if (authenStatus == "authenticated" && session && session.user.image != "") {
+        return (
+            <Image
+                src={session.user.image}
+                className="rounded-full"
+                fill
+                sizes="1/1"
+                alt=""
+            />
+        );
+    } else {
+        return (
+            <div className="flex text-xl bg-slate-200 dark:bg-slate-900 rounded-full w-full h-full items-center justify-center">
+                <CiMenuBurger />
+            </div>
+        );
+    }
+};

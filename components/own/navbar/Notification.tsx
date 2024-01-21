@@ -88,7 +88,7 @@ export default function Notification() {
                 <Tooltip>
                     <TooltipTrigger>
                         <div
-                            className="md:text-2xl flex items-center cursor-pointer"
+                            className="text-2xl lg:text-3xl flex items-center cursor-pointer"
                             ref={popoverTriggerRef}
                             onClick={() => {
                                 setShowPopover((prev) => {

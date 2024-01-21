@@ -180,17 +180,7 @@ export default function Properties({ videoData, fullscreen }: { videoData: BigVi
                     </div>
 
                     <div className="flex px-3 py-2 max-sm:w-full">
-                        {status == "loading" ? (
-                            <Skeleton className="w-24 h-10 rounded-lg" />
-                        ) : (
-                            <SubcribeButton
-                                session={session}
-                                channelAccountId={
-                                    videoData.channelData.accountId
-                                }
-                                channelId={videoData.channelData.id}
-                            />
-                        )}
+                        <SubcribeButton channelData={videoData.channelData} />
                     </div>
                 </div>
                 <div className="flex items-center gap-3 max-sm:overflow-x-scroll max-sm:w-full max-sm:my-2 hidden-scrollbar">
