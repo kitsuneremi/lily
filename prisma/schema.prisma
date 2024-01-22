@@ -174,7 +174,8 @@ model Member {
   Account   Accounts  @relation(fields: [accountId], references: [id])
   Room      Room      @relation(fields: [roomId], references: [id])
   Message   Message[]
-
+  createdAt DateTime @default(now())
+  deletedAt DateTime?
   @@index([accountId], map: "Member_accountId_fkey")
   @@index([roomId], map: "Member_roomId_fkey")
 }

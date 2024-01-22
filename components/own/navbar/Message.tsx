@@ -37,7 +37,8 @@ type Member = {
     memberId: number,
     accountId: number,
     accountName: string,
-    nickname: string | undefined
+    nickname: string | undefined,
+    deletedAt: Date | null
 }
 
 type Room = {
@@ -76,12 +77,30 @@ export default function MessageBox() {
     useOnClickOutside(targetuserMessageMenuRef, () => { setTargetUserMessageMenuOpen(prev => { return { menu: false, button: prev.button } }) })
 
     useEffect(() => {
+        if (session && targetRoom) {
+            socket.removeAllListeners()
+            socket.emit("join", {
+                id: session.user.id,
+                room: targetRoom.id,
+            });
+        }
+    }, [session, targetRoom]);
+
+    useEffect(() => {
         if (session && session.user) {
             axios.get(`/api/room?id=${session.user.id}`).then(res => {
                 setAvailableRoom(res.data)
             })
         }
     }, [session])
+
+    useEffect(() => {
+        if (targetRoom) {
+            axios.get(`/api/message?room=${targetRoom.id}`).then(res => {
+                setListMessage(res.data)
+            })
+        }
+    }, [targetRoom])
 
     useEffect(() => {
         if (session && session.user) {
@@ -101,7 +120,7 @@ export default function MessageBox() {
         return () => {
             socket.off("rcvmsg", handleReceivedMessage);
         };
-    }, [])
+    }, [targetRoom])
 
     // useEffect(() => {
     //     if (session && session.user) {

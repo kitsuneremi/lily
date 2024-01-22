@@ -36,11 +36,11 @@ const prefetch = async ({ value }: { value: string | number }) => {
 
 export default async function Profile({ params, searchParams }: Props) {
 
-
+    const prefetchData = await prefetch({ value: params.id });
 
     return (
         <Suspense fallback={<>loading</>}>
-            <DirectPageProfile />
+            <DirectPageProfile profileData={prefetchData} />
         </Suspense>
     )
 }

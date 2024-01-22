@@ -1,5 +1,5 @@
 import prisma from '@/lib/prisma';
-
+import messageModel from '@/model/message'
 interface RequestBody {
     content: string;
     room: number;
@@ -28,18 +28,9 @@ export async function POST(req: Request) {
         }
     })
     console.log(mem)
-    if (mem != null) { 
-        const msg = await prisma.message.create({
-            data: {
-                content: body.content,
-                roomId: body.room,
-                memberId: mem.id
-            }
-        })
-        return new Response(JSON.stringify(msg));
+    if (mem && !mem.deletedAt) {
+        return new Response(JSON.stringify({ message: "save at socket server, not here" }), { status: 200 });
     }
-
-
     return new Response(null, { status: 204 })
 }
 

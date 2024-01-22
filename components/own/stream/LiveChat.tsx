@@ -7,7 +7,7 @@ import { useEffectOnce } from "usehooks-ts";
 import io from "socket.io-client";
 import { Session } from "next-auth";
 import axios from "axios";
-
+import { liveSocketURL } from '@/lib/functional'
 type Message = {
     accountId: number;
     name: string;
@@ -16,7 +16,7 @@ type Message = {
     room: number;
 };
 
-const socket = io("https://socket.erinasaiyukii.com").connect();
+const socket = io(liveSocketURL).connect();
 
 export default function LiveChat({
     channelData,
@@ -38,7 +38,7 @@ export default function LiveChat({
                 },
             })
             .then((res) => setList(res.data));
-    }, [streamData]); 
+    }, [streamData]);
 
     useEffectOnce(() => {
         const handleReceivedMessage = (data: Message) => {
@@ -59,7 +59,7 @@ export default function LiveChat({
                 room: streamData.id,
             });
         }
-    }, [session]);
+    }, [session, streamData.id]);
 
     const sendComment = () => {
         if (session && session.user) {
@@ -99,11 +99,10 @@ export default function LiveChat({
                             </div>
                             <div className="flex flex-col">
                                 <div
-                                    className={`text-sm m-0 px-2 py-1 ${
-                                        item.accountId == channelData.id
+                                    className={`text-sm m-0 px-2 py-1 ${item.accountId == channelData.id
                                             ? "rounded-md bg-yellow-400 text-black font-semibold"
                                             : ""
-                                    }`}
+                                        }`}
                                 >
                                     {item.name}
                                 </div>
