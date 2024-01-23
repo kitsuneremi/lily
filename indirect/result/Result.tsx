@@ -88,16 +88,7 @@ export default function ResultPage({
                                                 </p>
                                             </div>
                                             <div className="flex h-full flex-col justify-center items-center">
-                                                <SubcribeButton
-                                                    session={session}
-                                                    channelAccountId={
-                                                        data.channels[0]
-                                                            .accountId
-                                                    }
-                                                    channelId={
-                                                        data.channels[0].id
-                                                    }
-                                                />
+                                                <SubcribeButton channelData={data.channels[0]} />
                                             </div>
                                         </div>
                                     </div>
@@ -152,9 +143,8 @@ export default function ResultPage({
         <div className="w-full h-full flex flex-col gap-3 items-start xl:pl-[8%] lg:pl-[5%]">
             <div className="flex gap-2">
                 <button
-                    className={`px-4 py-1 font-bold bg-slate-100 hover:bg-slate-300 dark:bg-slate-700 rounded-lg ${
-                        tab == 0 ? "bg-slate-800 text-white hover:bg-slate-800" : ""
-                    }`}
+                    className={`px-4 py-1 font-bold bg-slate-100 hover:bg-slate-300 dark:bg-slate-700 rounded-lg ${tab == 0 ? "bg-slate-800 text-white hover:bg-slate-800" : ""
+                        }`}
                 >
                     tất cả
                 </button>
@@ -170,9 +160,8 @@ const VideoRender = (listVideo: MediaDataType[]) => {
     return listVideo.map((video, index) => {
         return (
             <Link
-                href={`${video.mediaType == 1 ? "/stream" : "/watch"}/${
-                    video.link
-                }`}
+                href={`${video.mediaType == 1 ? "/stream" : "/watch"}/${video.link
+                    }`}
                 key={index}
             >
                 <div className="flex gap-6 w-max items-stretch p-4 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700">
@@ -210,11 +199,10 @@ const VideoRender = (listVideo: MediaDataType[]) => {
 
                             {(video.mediaType == 1 || video.mediaType == 2) && (
                                 <div
-                                    className={`${
-                                        video.mediaType == 1
+                                    className={`${video.mediaType == 1
                                             ? "bg-red-600"
                                             : "bg-slate-600"
-                                    } text-white px-1 py-[1px] absolute bottom-1 left-1 text-xs`}
+                                        } text-white px-1 py-[1px] absolute bottom-1 left-1 text-xs`}
                                 >
                                     Trực tiếp
                                 </div>
@@ -236,8 +224,8 @@ const VideoRender = (listVideo: MediaDataType[]) => {
                                 {video.mediaType == 0
                                     ? ""
                                     : video.mediaType == 1
-                                    ? "Đã bắt đầu "
-                                    : "Đã phát trực tiếp "}
+                                        ? "Đã bắt đầu "
+                                        : "Đã phát trực tiếp "}
                                 {FormatDateTime(video.createdTime)}
                             </p>
                         </div>
@@ -250,7 +238,7 @@ const VideoRender = (listVideo: MediaDataType[]) => {
                                         <div className="flex gap-3 items-center">
                                             <div className="relative w-[40px] aspect-square">
                                                 {video.Channels &&
-                                                video.Channels.avatarImage ? (
+                                                    video.Channels.avatarImage ? (
                                                     <Image
                                                         src={
                                                             video.Channels
