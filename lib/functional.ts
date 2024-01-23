@@ -62,17 +62,17 @@ export const getFileExt = (fileName: File) => {
     return fileName.name.substring(fileName.name.lastIndexOf(".") + 1);
 };
 
-// export const baseURL = 'https://erinasaiyukii.com'
-// export const fileURL = 'https://file.lyart.pro.vn'
-// export const liveURL = 'https://live.lyart.pro.vn'
-// export const liveSocketURL = 'https://socket.lyart.pro.vn/live'
-// export const chatSocketURL = 'https://socket.lyart.pro.vn/chat'
+export const baseURL = 'https://lyart.pro.vn'
+export const fileURL = 'https://file.lyart.pro.vn'
+export const liveURL = 'https://live.lyart.pro.vn'
+export const liveSocketURL = 'https://socket.lyart.pro.vn/live'
+export const chatSocketURL = 'https://socket.lyart.pro.vn/chat'
 
-export const baseURL = 'http://localhost:3000'
-export const fileURL = 'http://localhost:5001'
-export const liveURL = 'http://localhost:5001'
-export const liveSocketURL = 'http://localhost:6074/live'
-export const chatSocketURL = 'http://localhost:6074/chat'
+// export const baseURL = 'http://localhost:3000'
+// export const fileURL = 'http://localhost:5001'
+// export const liveURL = 'http://localhost:5001'
+// export const liveSocketURL = 'http://localhost:6074/live'
+// export const chatSocketURL = 'http://localhost:6074/chat'
 
 const formatHelper = (time: number) => {
     if (time >= 3600) {
