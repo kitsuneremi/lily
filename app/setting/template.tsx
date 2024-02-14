@@ -19,7 +19,7 @@ const sideMenuItem = [
 ];
 
 
-export default function Template({children}:{children:React.ReactNode}){
+export default function Template({ children }: { children: React.ReactNode }) {
     const path = usePathname();
 
 
@@ -42,32 +42,33 @@ export default function Template({children}:{children:React.ReactNode}){
     return (
         <div className="w-full flex flex-col h-screen">
             <div className="w-screen h-16 flex justify-between fixed top-0 left-0 px-3 lg:px-8 py-4 bg-white dark:bg-[#020817] z-10">
-                <Navbar/>
+                <Navbar />
             </div>
             <div className="flex mt-16 h-[calc(100vh-64px)] overflow-y-clip">
-                <Sidebar/>
-                <div className="flex">
-                    <div className="grid grid-flow-row grid-cols-1 gap-2 h-fit pl-3">
+                <Sidebar />
+                <div className="flex gap-5  ">
+                    <div className="w-[220px] grid grid-flow-row grid-cols-1 gap-2 h-fit pl-3">
                         {sideMenuItem.map((item, index) => {
                             return (
-                                <div
-                                    className={`px-5 py-2 w-max rounded-xl hover:bg-slate-300 dark:hover:bg-slate-700 ${
-                                        tab == item.id
-                                            ? "shadow-[0_0_5px_purple_inset]"
-                                            : ""
-                                    }`}
+                                <Link
+                                    className="w-full h-full"
+                                    href={`${item.href}`}
                                     key={index}
-                                    onClick={() => {
-                                        redirect(item.href);
-                                    }}
                                 >
-                                    <Link
-                                        className="w-full h-full"
-                                        href={`${item.href}`}
+                                    <div
+                                        className={`px-5 py-2 w-full rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 ${tab == item.id
+                                            ? "shadow-lg bg-slate-300 dark:bg-slate-800"
+                                            : ""
+                                            }`}
+
+                                        onClick={() => {
+                                            redirect(item.href);
+                                        }}
                                     >
                                         {item.name}
-                                    </Link>
-                                </div>
+
+                                    </div>
+                                </Link>
                             );
                         })}
                     </div>
