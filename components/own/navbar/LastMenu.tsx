@@ -58,7 +58,7 @@ export default function LastMenu() {
                 >
                     <AccountAvatarRender />
                 </div>
-                {(showPopover.click || showPopover.menuFocus) && (
+                {(showPopover.click || showPopover.menuFocus || true) && (
                     <div
                         className="absolute w-max top-11 right-0 h-fit rounded-xl px-3 py-2 bg-white dark:bg-[#020817] shadow-2xl border-[1px] border-solid border-slate-800 border-opacity-50"
                         ref={popoverContentRef}
