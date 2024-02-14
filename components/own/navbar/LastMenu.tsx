@@ -15,7 +15,6 @@ export default function LastMenu() {
     const popoverTriggerRef = useRef<HTMLDivElement>(null);
     const popoverContentRef = useRef<HTMLDivElement>(null);
 
-    const router = useRouter();
     const { data: session, status: authenStatus } = useSession();
 
     const [showPopover, setShowPopover] = useState<{
@@ -24,22 +23,14 @@ export default function LastMenu() {
     }>({ click: false, menuFocus: false });
 
     useOnClickOutside(popoverTriggerRef, () => {
-        setTimeout(
-            () =>
-                setShowPopover((prev) => {
-                    return { click: false, menuFocus: prev.menuFocus };
-                }),
-            200
-        );
+        setShowPopover((prev) => {
+            return { click: false, menuFocus: prev.menuFocus };
+        })
     });
     useOnClickOutside(popoverContentRef, () => {
-        setTimeout(
-            () =>
-                setShowPopover((prev) => {
-                    return { click: prev.click, menuFocus: false };
-                }),
-            200
-        );
+        setShowPopover((prev) => {
+            return { click: prev.click, menuFocus: false };
+        })
     });
 
 
