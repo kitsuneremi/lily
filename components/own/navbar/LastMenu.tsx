@@ -58,16 +58,11 @@ export default function LastMenu() {
                 >
                     <AccountAvatarRender />
                 </div>
-                {(showPopover.click || showPopover.menuFocus || true) && (
+                {(showPopover.click || showPopover.menuFocus) && (
                     <div
                         className="absolute w-max top-11 right-0 h-fit rounded-xl px-3 py-2 bg-white dark:bg-[#020817] shadow-2xl border-[1px] border-solid border-slate-800 border-opacity-50"
                         ref={popoverContentRef}
-                        onClick={() => {
-                            setShowPopover({
-                                click: false,
-                                menuFocus: true,
-                            });
-                        }}
+                        
                     >
                         {session?.user ? (
                             <div className="">
@@ -84,12 +79,10 @@ export default function LastMenu() {
                                         Đăng xuất
                                     </div>
                                 </MenuItem>
-                                <MenuItem
-                                    onClick={() => {
-                                        router.push("setting/account");
-                                    }}
-                                >
-                                    Cài đặt
+                                <MenuItem>
+                                    <Link className='w-full h-full' href={'setting/account'}>
+                                        Cài đặt
+                                    </Link>
                                 </MenuItem>
                                 <ModeSetting />
                             </div>
@@ -100,12 +93,10 @@ export default function LastMenu() {
                                         Đăng nhập
                                     </Link>
                                 </MenuItem>
-                                <MenuItem
-                                    onClick={() => {
-                                        router.push("setting/account");
-                                    }}
-                                >
-                                    Cài đặt
+                                <MenuItem>
+                                    <Link className='w-full h-full' href={'setting/account'}>
+                                        Cài đặt
+                                    </Link>
                                 </MenuItem>
                                 <ModeSetting />
                             </div>
