@@ -74,7 +74,7 @@ export default function LastMenu() {
                                 <ChannelRender />
                                 <MenuItem className="text-start">
                                     <div
-                                        onClick={() => {
+                                        onClickCapture={() => {
                                             signOut({
                                                 redirect: true,
                                                 callbackUrl: "/register",
