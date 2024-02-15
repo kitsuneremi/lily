@@ -23,7 +23,7 @@ const fetchChannelData = async (accountId: number) => {
 export default async function Page() {
     const session: SessionDataType | null = await getServerSession(authOptions);
     const channelData = session
-        ? await fetchChannelData(session.user.id)
+        ? await fetchChannelData(session.user.id) 
         : null;
 
     return (

@@ -7,7 +7,8 @@ import { signIn, useSession } from "next-auth/react"
 import { useToast } from "@/components/ui/use-toast"
 import axios from 'axios'
 import { redirect, useRouter } from "next/navigation"
-
+import { FaGithub } from "react-icons/fa6";
+import { FcGoogle } from "react-icons/fc";
 export default function Page() {
     const { data: session, status } = useSession();
 
@@ -112,8 +113,9 @@ export default function Page() {
                 <p className="my-3 text-lg font-semibold underline cursor-pointer text-center" onClick={e => setMode(prev => !prev)}>{!mode ? 'Chưa có tài khoản? -> đăng ký ngay' : 'Đã có tài khoản? -> đăng nhập'}</p>
                 <button className={`w-full h-14 py-2 rounded-sm text-xl font-bold bg-emerald-500 ${theme == 'light' ? 'text-black' : 'text-white'}`} onClick={() => { handleRegister() }}>{!mode ? 'Đăng nhâp' : 'Đăng ký'}</button>
 
-                <div className="w-full mt-3">
-                    <button className={`w-1/3 h-14 py-2 rounded-sm text-xl font-bold bg-slate-900 text-white`} onClick={() => { signIn("github") }}>github</button>
+                <div className="w-full mt-3 flex gap-3">
+                    <button className={`w-1/3 flex justify-center items-center gap-2 h-14 py-2 rounded-sm text-xl font-bold bg-slate-900 text-white`} onClick={() => { signIn("github") }}><FaGithub /> github</button>
+                    <button className={`w-1/3 flex justify-center items-center gap-2 h-14 py-2 rounded-sm text-xl font-bold bg-slate-900 text-white`} onClick={() => { signIn("google") }}><FcGoogle /> google</button>
                 </div>
             </div>
         </div>

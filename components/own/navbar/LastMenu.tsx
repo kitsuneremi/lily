@@ -10,56 +10,28 @@ import Link from 'next/link'
 import { useSession, signOut } from "next-auth/react";
 import { CiMenuBurger } from "react-icons/ci";
 import ChannelRender from "@/components/own/navbar/CheckChannel";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+
 
 export default function LastMenu() {
-    const popoverTriggerRef = useRef<HTMLDivElement>(null);
-    const popoverContentRef = useRef<HTMLDivElement>(null);
-
     const { data: session, status: authenStatus } = useSession();
-
-    const [showPopover, setShowPopover] = useState<{
-        click: boolean;
-        menuFocus: boolean;
-    }>({ click: false, menuFocus: false });
-
-    useOnClickOutside(popoverTriggerRef, () => {
-        setShowPopover((prev) => {
-            return { click: false, menuFocus: prev.menuFocus };
-        })
-    });
-    useOnClickOutside(popoverContentRef, () => {
-        setShowPopover((prev) => {
-            return { click: prev.click, menuFocus: false };
-        })
-    });
-
-
-
     return (
         <>
-            <div className="relative">
-                <div
-                    className="w-6 h-6 lg:w-8 lg:h-8 relative shadow-sm"
-                    onClick={() => {
-                        setShowPopover((prev) => {
-                            return { click: !prev.click, menuFocus: false };
-                        });
-                    }}
-                    ref={popoverTriggerRef}
-                >
-                    <AccountAvatarRender />
-                </div>
-                {(showPopover.click || showPopover.menuFocus) && (
-                    <div
-                        className="absolute w-max top-11 right-0 h-fit rounded-xl px-3 py-2 bg-white dark:bg-[#020817] shadow-2xl border-[1px] border-solid border-slate-800 border-opacity-50"
-                        ref={popoverContentRef}
-                        onClickCapture={() => {
-                            setShowPopover({
-                                click: false,
-                                menuFocus: true,
-                            });
-                        }}
-                    >
+            <DropdownMenu>
+                <DropdownMenuTrigger>
+                    <div className='w-6 h-6 lg:w-8 lg:h-8 relative shadow-sm'>
+                        <AccountAvatarRender />
+                    </div>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className='mt-5' align='end'>
+                    <div className='p-2'>
                         {session?.user ? (
                             <div className="">
                                 <ChannelRender />
@@ -98,8 +70,8 @@ export default function LastMenu() {
                             </div>
                         )}
                     </div>
-                )}
-            </div>
+                </DropdownMenuContent>
+            </DropdownMenu>
         </>
     );
 }

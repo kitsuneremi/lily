@@ -61,18 +61,13 @@ export function makeid() {
 export const getFileExt = (fileName: File) => {
     return fileName.name.substring(fileName.name.lastIndexOf(".") + 1);
 };
-
-export const baseURL = 'https://lyart.pro.vn'
-export const fileURL = 'https://file.lyart.pro.vn'
-export const liveURL = 'https://live.lyart.pro.vn'
-export const liveSocketURL = 'https://socket.lyart.pro.vn/live'
-export const chatSocketURL = 'https://socket.lyart.pro.vn/chat'
-
-// export const baseURL = 'http://localhost:3000'
-// export const fileURL = 'http://localhost:5001'
-// export const liveURL = 'http://localhost:5001'
-// export const liveSocketURL = 'http://localhost:6074/live'
-// export const chatSocketURL = 'http://localhost:6074/chat'
+const domain = 'lyart.pro.vn'
+const protocol = 'https'
+export const baseURL = protocol + '://' + domain
+export const fileURL = protocol + '://file.' + domain
+export const liveURL = protocol + '://live.' + domain
+export const liveSocketURL = `${protocol}://socket.${domain}/live`
+export const chatSocketURL = `${protocol}://socket.${domain}/chat`
 
 const formatHelper = (time: number) => {
     if (time >= 3600) {
