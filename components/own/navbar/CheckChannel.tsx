@@ -9,6 +9,7 @@ import { ChannelDataType } from "@/types/type";
 import { useDispatch } from "react-redux";
 import { set, fetchChannelData } from '@/redux/features/current-channel-slice'
 import { AppDispatch, useAppSelector } from "@/redux/storage";
+
 const ChannelRender = () => {
     const { data: session } = useSession();
     const router = useRouter();

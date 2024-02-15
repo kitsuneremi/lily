@@ -174,8 +174,9 @@ model Member {
   Account   Accounts  @relation(fields: [accountId], references: [id])
   Room      Room      @relation(fields: [roomId], references: [id])
   Message   Message[]
-  createdAt DateTime @default(now())
+  createdAt DateTime  @default(now())
   deletedAt DateTime?
+
   @@index([accountId], map: "Member_accountId_fkey")
   @@index([roomId], map: "Member_roomId_fkey")
 }
@@ -199,6 +200,7 @@ model Accounts {
   name          String
   password      String
   username      String
+  avatarLink    String          @default("")
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
   streamKey     String          @unique
@@ -224,13 +226,13 @@ model SearchHistory {
 }
 
 model ViewHistory {
-  id        Int      @id @default(autoincrement())
-  accountId Int
-  mediaId   Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  account   Accounts @relation(fields: [accountId], references: [id])
-  media     Media    @relation(fields: [mediaId], references: [id])
+  id            Int      @id @default(autoincrement())
+  accountId     Int
+  mediaId       Int
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  account       Accounts @relation(fields: [accountId], references: [id])
+  media         Media    @relation(fields: [mediaId], references: [id])
   mediaProgress Int
 
   @@index([accountId], map: "ViewHistory_accountId_fkey")
