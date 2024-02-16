@@ -63,6 +63,8 @@ export const getFileExt = (fileName: File) => {
 };
 const domain = 'lyart.pro.vn'
 const protocol = 'https'
+// const domain = 'localhost:3000'
+// const protocol = 'http'
 export const baseURL = protocol + '://' + domain
 export const fileURL = protocol + '://file.' + domain
 export const liveURL = protocol + '://live.' + domain

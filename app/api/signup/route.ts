@@ -1,3 +1,4 @@
+import { baseURL, fileURL } from "@/lib/functional";
 import { signJWTToken } from "@/lib/jwt";
 import prisma from "@/lib/prisma";
 import * as bcrypt from "bcrypt";
@@ -30,10 +31,20 @@ export async function POST(request: Request) {
                     email: body.email,
                     // password: await bcrypt.hash(body.password, 10),
                     password: body.password,
+
                     name: body.username,
                     streamKey: uuid(),
                 }
             })
+            const userId = user.id;
+
+            // Cập nhật lại avatarLink với ID của tài khoản
+            await prisma.accounts.update({
+                where: { id: userId },
+                data: {
+                    avatarLink: `${fileURL}/image/account/${userId}`
+                }
+            });
             if (user) {
                 const { password, ...userWithoutPassword } = user;
                 return new Response(JSON.stringify(userWithoutPassword), { status: 201 })

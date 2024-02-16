@@ -2,7 +2,7 @@ import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GithubProvider from "next-auth/providers/github";
 import GoogleProvider from 'next-auth/providers/google'
-import { baseURL } from "./functional";
+import { baseURL, fileURL } from "./functional";
 import { PrismaAdapter } from '@auth/prisma-adapter'
 import prisma from "./prisma";
 import { getDownloadURL, ref } from "firebase/storage";
@@ -78,8 +78,7 @@ export const authOptions: NextAuthOptions = {
         async session({ session, token, user }) {
             if (user) {
                 if (!user.image) {
-                    const imageRef = ref(storage, `account/avatars/${token.id}`)
-                    const image = await getDownloadURL(imageRef)
+                    const image = `${fileURL}/api/image?path=-1`
                     return { ...session, user: { image: image, ...token } };
                 }
                 return { ...session, user };
@@ -90,7 +89,7 @@ export const authOptions: NextAuthOptions = {
         async signIn({ account, user, credentials, email, profile }) {
             console.log(account, user, profile)
             if (account?.provider === 'github') {
-                if (user.email) {
+                if (user.email && user.image) {
                     await prisma.accounts.upsert({
                         where: {
                             email: user.email
@@ -102,6 +101,7 @@ export const authOptions: NextAuthOptions = {
                             password: profile!.login,
                             //@ts-ignore
                             username: profile!.login,
+                            avatarLink: user.image,
                             streamKey: uuid(),
                         },
                         update: {
@@ -124,12 +124,13 @@ export const authOptions: NextAuthOptions = {
                         password: profile!.given_name + profile!.family_name,
                         //@ts-ignore
                         username: profile!.given_name + profile!.family_name,
+                        avatarLink: user.image!,
                         streamKey: uuid(),
                     },
                     update: {
                         updatedAt: new Date()
                     }
-                })
+                }) 
                 return true;
             }else{
                 return true;
