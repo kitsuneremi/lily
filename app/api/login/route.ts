@@ -7,25 +7,27 @@ interface RequestBody {
 }
 
 export async function POST(request: Request) {
-    const body: RequestBody = await request.json();
+    const body = await request.json();
 
-    const user = await prisma.accounts.findFirst({
-        where: {
-            username: body.username,
- 
-        }
-    })
+    if (body && body.username) {
+        const user = await prisma.accounts.findFirst({
+            where: {
+                username: body.username,
 
-    if (user && body.password == user.password) {
-        const { password, ...UserWithoutPass } = user
-        const accessToken = signJWTToken(UserWithoutPass)
-        const result = {
-            ...UserWithoutPass,
-            accessToken
+            }
+        })
+
+        if (user && body.password == user.password) {
+            const { password, ...UserWithoutPass } = user
+            const accessToken = signJWTToken(UserWithoutPass)
+            const result = {
+                ...UserWithoutPass,
+                accessToken
+            }
+            return new Response(JSON.stringify(result))
+        } else {
+            return new Response(JSON.stringify(null));
         }
-        return new Response(JSON.stringify(result))
-    } else {
-        return new Response(JSON.stringify(null));
     }
 }
 

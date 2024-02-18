@@ -39,6 +39,12 @@ export const authOptions: NextAuthOptions = {
             },
 
             async authorize(credentials, req) {
+                // const user = await prisma.accounts.findFirst({
+                //     where: {
+                //         username: credentials?.username,
+                //         password: credentials?.password
+                //     }
+                // })
                 // Add logic here to look up the user from the credentials supplied
                 const res = await fetch(`${baseURL}/api/login`, {
                     method: 'POST',
@@ -52,6 +58,7 @@ export const authOptions: NextAuthOptions = {
                 })
 
                 const user = await res.json();
+
                 if (user) {
                     // Any object returned will be saved in `user` property of the JWT
                     const { password, ...userWithoutPass } = user;
