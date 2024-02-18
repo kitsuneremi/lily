@@ -1,6 +1,5 @@
 import { signJWTToken } from "@/lib/jwt";
 import prisma from "@/lib/prisma";
-import * as bcrypt from "bcrypt";
 
 interface RequestBody {
     username: string;
@@ -13,7 +12,7 @@ export async function POST(request: Request) {
     const user = await prisma.accounts.findFirst({
         where: {
             username: body.username,
-
+ 
         }
     })
 

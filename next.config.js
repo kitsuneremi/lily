@@ -2,7 +2,7 @@
 const nextConfig = {
   experimental: {
     serverActions: {
-      allowedOrigins: ["localhost:3000","erinasaiyukii.com"],
+      allowedOrigins: ["localhost:3000","lyart.pro.vn"],
     },
   },
   reactStrictMode: true,
