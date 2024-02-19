@@ -9,7 +9,7 @@ interface RequestBody {
 export async function POST(request: Request) {
     const body = await request.json();
 
-    if (body && body.username) {
+    try {
         const user = await prisma.accounts.findFirst({
             where: {
                 username: body.username,
@@ -26,8 +26,12 @@ export async function POST(request: Request) {
             }
             return new Response(JSON.stringify(result))
         } else {
-            return new Response(JSON.stringify({message: 'wrong username or password'}));
+            return new Response(JSON.stringify({ message: 'wrong username or password' }));
         }
+    } catch (e) {
+        return new Response(JSON.stringify({ message: 'sth error' }));
     }
+
+
 }
 
