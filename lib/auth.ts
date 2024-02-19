@@ -46,7 +46,7 @@ export const authOptions: NextAuthOptions = {
                 //     }
                 // })
                 // Add logic here to look up the user from the credentials supplied
-                const res = await fetch(`${baseURL}/api/login`, {
+                const res = await fetch(`${fileURL}/api/lyart/login`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
