@@ -4,7 +4,7 @@ import { baseURL } from '@/lib/functional';
 
 
 export const fetchChannelData = createAsyncThunk('channelData/fetchData', async (id: number) => {
-    const response = await fetch(`https://www.lyart.pro.vn/api/channel/data?accountId=${id}`);
+    const response = await fetch(`${baseURL}/api/channel/data?accountId=${id}`);
     const data = await response.json();
     return data as ChannelDataType;
 });
@@ -31,6 +31,9 @@ export const channelData = createSlice({
         builder.addCase(fetchChannelData.fulfilled, (state, action) => {
             state.value.channelData = action.payload;
         });
+        builder.addDefaultCase((state, action) => {
+            state.value.channelData = action.payload;
+        })
     },
 });
 

@@ -61,7 +61,7 @@ export function makeid() {
 export const getFileExt = (fileName: File) => {
     return fileName.name.substring(fileName.name.lastIndexOf(".") + 1);
 };
-const domain = 'lyart.pro.vn'
+const domain = 'www.lyart.pro.vn'
 const protocol = 'https'
 // const domain = 'localhost:3000'
 // const protocol = 'http'
