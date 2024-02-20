@@ -9,7 +9,7 @@ import Link from "next/link";
 import { useToast } from "@/components/ui/use-toast";
 import axios from "axios";
 import { useSession } from "next-auth/react";
-import { baseURL } from "@/lib/functional";
+import { baseURL, fileURL } from "@/lib/functional";
 
 import "@pqina/pintura/pintura.css";
 import {
@@ -224,7 +224,7 @@ export default function Page() {
         if (
             originalThumbnail &&
             originalThumbnail.width / originalThumbnail.height !==
-                thumbnailRatio
+            thumbnailRatio
         ) {
             handleEditImage({
                 file: originalThumbnail.file,
@@ -240,33 +240,18 @@ export default function Page() {
             tagName.trim().length > 0 &&
             des.trim().length > 0
         ) {
-            const avatarStorageRef = ref(
-                storage,
-                `/channel/avatars/${tagName}`
-            );
-            const bannerStorageRef = ref(
-                storage,
-                `/channel/banners/${tagName}`
-            );
-            uploadBytes(avatarStorageRef, originalAvatar.file);
-            uploadBytes(bannerStorageRef, originalThumbnail.file);
-            fetch(`${baseURL}/api/channel/create`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    //@ts-ignore
-                    accountId: session?.user.id,
-                    name: name,
-                    des: des,
-                    tagName: tagName,
-                }),
+            const avatarRequestForm = new FormData
+            avatarRequestForm.append("image", originalAvatar.file)
+            const bannerRequestForm = new FormData
+            bannerRequestForm.append("image", originalThumbnail.file)
+            axios.post(`/api/channel/create`, {
+                accountId: session?.user.id,
+                name: name,
+                des: des,
+                tagName: tagName,
             }).then(async (res) => {
-                if (res.status === 201) {
-                    const channelData = await res.json();
-                    router.push(`/channel/${channelData.tagName}`);
-                }
+                axios.post(`${fileURL}/api/image/avatar/${session?.user.id}`, avatarRequestForm)
+                axios.post(`${fileURL}/api/image/banner/${session?.user.id}`, bannerRequestForm)
             });
         } else {
             toast({
@@ -387,19 +372,19 @@ export default function Page() {
                                 console.log(com);
                                 which == 0
                                     ? setOriginalAvatar({
-                                          file: com.dest,
-                                          //@ts-ignore
-                                          width: com.imageState.crop?.width,
-                                          //@ts-ignore
-                                          height: com.imageState.crop?.height,
-                                      })
+                                        file: com.dest,
+                                        //@ts-ignore
+                                        width: com.imageState.crop?.width,
+                                        //@ts-ignore
+                                        height: com.imageState.crop?.height,
+                                    })
                                     : setOriginalThumbnail({
-                                          file: com.dest,
-                                          //@ts-ignore
-                                          width: com.imageState.crop?.width,
-                                          //@ts-ignore
-                                          height: com.imageState.crop?.height,
-                                      });
+                                        file: com.dest,
+                                        //@ts-ignore
+                                        width: com.imageState.crop?.width,
+                                        //@ts-ignore
+                                        height: com.imageState.crop?.height,
+                                    });
                             }}
                         />
                     )}
@@ -431,11 +416,10 @@ export default function Page() {
                         </div>
                         <div>
                             <button
-                                className={`${
-                                    accept
+                                className={`${accept
                                         ? "bg-gradient-to-r from-cyan-200 to-cyan-600 text-slate-900 shadow-[0_0_15px_purple] hover:shadow-[0_0_25px_purple]"
                                         : "bg-red-500 text-yellow-50 border-[1px] "
-                                } py-1 rounded-md border-[1px] font-bold text-xl w-full h-10`}
+                                    } py-1 rounded-md border-[1px] font-bold text-xl w-full h-10`}
                                 disabled={!accept}
                                 onClick={handleFinish}
                             >
@@ -472,7 +456,7 @@ export default function Page() {
                             <div className="w-[70px] h-[70px] relative">
                                 {originalAvatar?.file &&
                                     originalAvatar.height ==
-                                        originalAvatar.width && (
+                                    originalAvatar.width && (
                                         <NextImage
                                             src={URL.createObjectURL(
                                                 originalAvatar.file
@@ -530,11 +514,10 @@ export default function Page() {
                 </div>
                 <div>
                     <button
-                        className={`${
-                            accept
+                        className={`${accept
                                 ? "bg-gradient-to-r from-cyan-200 to-cyan-600 text-slate-900 shadow-[0_0_15px_purple] hover:shadow-[0_0_25px_purple]"
                                 : "bg-red-500 text-yellow-50 border-[1px] "
-                        } py-1 rounded-md border-[1px] font-bold text-xl w-full h-10`}
+                            } py-1 rounded-md border-[1px] font-bold text-xl w-full h-10`}
                         disabled={!accept}
                         onClick={handleFinish}
                     >
