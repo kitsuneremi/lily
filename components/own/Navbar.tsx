@@ -1,5 +1,6 @@
 "use client";
-import { useMediaQuery, useEffectOnce } from "usehooks-ts";
+import { useMediaQuery } from "usehooks-ts";
+import { useEffect } from "react";
 import React, { useState } from "react";
 import {
     AiOutlineClose,
@@ -22,11 +23,11 @@ import { useDispatch } from "react-redux";
 import { useAppSelector } from "@/redux/storage";
 import { close, reverse } from "@/redux/features/sidebar-slice";
 import MessageBox from "./navbar/Message";
-import LastMenu from '@/components/own/navbar/LastMenu'
+// import LastMenu from '@/components/own/navbar/LastMenu'
 import UploadBox from "./navbar/Upload";
 const Notification = dynamic(() => import("@/components/own/navbar/Notification"));
 const SearchModule = dynamic(() => import("@/components/own/navbar/SearchModule"));
-// const LastMenu = dynamic(() => import("@/components/own/navbar/LastMenu"));
+const LastMenu = dynamic(() => import("@/components/own/navbar/LastMenu"));
 
 
 
@@ -45,10 +46,10 @@ export default function Navbar() {
         isMobile: useMediaQuery("(max-width: 767px)"),
     };
 
-    useEffectOnce(() => {
+    useEffect(() => {
         dispatch(close());
         setMobileShowSearch(false);
-    });
+    }, [dispatch]);
 
     return (
         <>

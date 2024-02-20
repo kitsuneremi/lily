@@ -1,20 +1,14 @@
 Dự án sử dụng nextjs 14
-Chạy trực tiếp tại (sắp đổi domain)
+Chạy trực tiếp tại
 ```bash
-    https://erinasaiyukii.com
+    https://lyart.pro.vn
 ```
 
 Bạn có thể test backend qua
 ```bash
-    https://file.erinasaiyukii.com/api/merge/cldByLt6/live
+    https://file.lyart.pro.vn/api/merge/cldByLt6/live
 ```
 mở file bằng VLC player :v
-
-Nếu thấy 1 số chức năng ko chạy thì có thể do 1 vài nguyên nhân sau
-- bọn cờ hó fpt đổi địa chỉ ip public
-- mất mạng
-- mất điện
-- đang thao tác config nginx proxy
 
 ### hãy báo cho tôi nếu thấy web sập ;~: qua [facebook](https://facebook.com/kitsuneremi)
 
@@ -27,7 +21,7 @@ Nếu thấy 1 số chức năng ko chạy thì có thể do 1 vài nguyên nhâ
 - proxy server: nginx
 
 - mô tả thêm về quy trình hoạt động
-- - ví dụ như khi mà đăng tải 1 video lên thì fe sẽ gửi http post request đến phía be là express: https://file.erinasaiyukii.com
+- - ví dụ như khi mà đăng tải 1 video lên thì fe sẽ gửi http post request đến phía be là express: https://file.lyart.pro.vn.com
 - - phía server nhận file này và dùng ffmpeg chia video thành các file dịnh dạng hls (.m3u8 và .ts) với độ phân giải gốc và nhỏ hơn 1.5 lần
 - - khi vào xem video đã được đăng lên thì call đến api be và lấy file m3u8 sau đó hls.js tự động đọc file m3u8 và lấy ra các file .ts để chạy dc video
 - - nhắc lại là đây là project clone youtube chứ không có lấy link video youtube xong gắn vào đâu nhé
