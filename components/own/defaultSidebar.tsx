@@ -48,7 +48,7 @@ const listMenu = [
 
 export default function Sidebar() {
     const { data: session, status } = useSession();
-
+    
     const deviceType = {
         isFlex: useMediaQuery("(min-width: 1200px)"),
         isAbsolute: useMediaQuery("(max-width: 1199px)"),
@@ -74,7 +74,7 @@ export default function Sidebar() {
         } else if (deviceType.isAbsolute) {
             dispatch(close());
         }
-    }, ['']);
+    }, [deviceType, dispatch]);
 
     useEffect(() => {
         if (status === "authenticated") {
@@ -88,7 +88,7 @@ export default function Sidebar() {
                     setSubscribedList(res.data);
                 });
         }
-    }, [session]);
+    }, [session, status]);
 
 
 
@@ -99,14 +99,14 @@ export default function Sidebar() {
                     return (
                         <Link href={menu.link} className="w-full" key={index}>
                             <div
-                                className={`flex justify-start items-center rounded-md hover:shadow-lg hover:scale-105 group ${openSidebar ? "gap-2" : ""
+                                className={`flex justify-start items-center rounded-md hover:shadow-lg hover:translate-x-1 group ${openSidebar ? "gap-2" : ""
                                     } w-full rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 py-2 px-2`}
                             >
-                                <div className="flex flex-col justify-center group-hover:scale-105 group-hover:text-purple-900 dark:group-hover:text-purple-400 group-hover:font-semibold">
+                                <div className="flex flex-col justify-center group-hover:translate-x-1 group-hover:text-purple-900 dark:group-hover:text-purple-400 transition">
                                     {menu.icon}
                                 </div>
                                 <div
-                                    className={`flex justify-center items-center group-hover:text-[17px] group-hover:text-purple-900 dark:group-hover:text-purple-400 group-hover:font-semibold ${openSidebar ? "" : "hidden"
+                                    className={`flex justify-center items-center group-hover:text-[17px] group-hover:text-purple-900 dark:group-hover:text-purple-400 transition ${openSidebar ? "" : "hidden"
                                         }`}
                                 >
                                     <p className="">{menu.title}</p>
@@ -117,33 +117,34 @@ export default function Sidebar() {
                 })}
 
                 <div className="w-full my-2 h-[2px] relative after:absolute after:bg-slate-300 dark:after:bg-slate-500 after:h-[90%] after:top-[5%] after:left-0 after:w-full" />
+
                 {/* tùy chọn thuộc về tài khoản kênh */}
                 <Link href={"/feed/you"} className="w-full">
                     <div
-                        className={`flex justify-start items-center ${openSidebar ? "gap-2" : ""
+                        className={`group hover:shadow-lg hover:translate-x-1 flex justify-start items-center ${openSidebar ? "gap-2" : ""
                             } w-full rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 py-1 px-2`}
                     >
                         <div
-                            className={`flex justify-center items-center ${openSidebar ? "" : "hidden"
+                            className={`flex justify-center items-center group-hover:translate-x-1 group-hover:text-purple-900 dark:group-hover:text-purple-400 transition ${openSidebar ? "" : "hidden"
                                 }`}
                         >
                             <p className="">Bạn</p>
                         </div>
-                        <div className="flex flex-col justify-center">
+                        <div className="group-hover:text-[17px] group-hover:text-purple-900 dark:group-hover:text-purple-400 transition flex flex-col justify-center">
                             <AiOutlineRight />
                         </div>
                     </div>
                 </Link>
                 <Link href={`/channel/`} className="w-full">
                     <div
-                        className={`flex justify-start items-center ${openSidebar ? "gap-2" : ""
+                        className={`group hover:shadow-lg hover:translate-x-1 flex justify-start items-center ${openSidebar ? "gap-2" : ""
                             } w-full rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 py-2 px-2`}
                     >
-                        <div className="flex flex-col justify-center">
+                        <div className="group-hover:translate-x-1 group-hover:text-purple-900 dark:group-hover:text-purple-400 transition flex flex-col justify-center">
                             <AiOutlineHome />
                         </div>
                         <div
-                            className={`flex justify-center items-center ${openSidebar ? "" : "hidden"
+                            className={`group-hover:text-[17px] group-hover:text-purple-900 dark:group-hover:text-purple-400 transition flex justify-center items-center ${openSidebar ? "" : "hidden"
                                 }`}
                         >
                             <p className="">Kênh của bạn</p>
@@ -152,14 +153,14 @@ export default function Sidebar() {
                 </Link>
                 <Link href={"/feed/later"} className="w-full">
                     <div
-                        className={`flex justify-start items-center ${openSidebar ? "gap-2" : ""
+                        className={`group hover:shadow-lg hover:translate-x-1 flex justify-start items-center ${openSidebar ? "gap-2" : ""
                             } w-full rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 py-2 px-2`}
                     >
-                        <div className="flex flex-col justify-center">
+                        <div className="group-hover:translate-x-1 group-hover:text-purple-900 dark:group-hover:text-purple-400 transition flex flex-col justify-center">
                             <AiOutlineHome />
                         </div>
                         <div
-                            className={`flex justify-center items-center ${openSidebar ? "" : "hidden"
+                            className={`group-hover:text-[17px] group-hover:text-purple-900 dark:group-hover:text-purple-400 transition flex justify-center items-center ${openSidebar ? "" : "hidden"
                                 }`}
                         >
                             <p className="">Video xem sau</p>
@@ -173,14 +174,14 @@ export default function Sidebar() {
 
                 <Link href={"/setting/account"} className="w-full">
                     <div
-                        className={`flex justify-start items-center ${openSidebar ? "gap-2" : ""
+                        className={`group hover:shadow-lg hover:translate-x-1 flex justify-start items-center ${openSidebar ? "gap-2" : ""
                             } w-full rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 py-2 px-2`}
                     >
-                        <div className="flex flex-col justify-center">
+                        <div className="group-hover:translate-x-1 group-hover:text-purple-900 dark:group-hover:text-purple-400 transition flex flex-col justify-center">
                             <AiFillSetting />
                         </div>
                         <div
-                            className={`flex justify-center items-center ${openSidebar ? "" : "hidden"
+                            className={`group-hover:text-[17px] group-hover:text-purple-900 dark:group-hover:text-purple-400 transition flex justify-center items-center ${openSidebar ? "" : "hidden"
                                 }`}
                         >
                             <p className="">Cài đặt</p>
@@ -189,14 +190,14 @@ export default function Sidebar() {
                 </Link>
                 <Link href={"/feedback"} className="w-full">
                     <div
-                        className={`flex justify-start items-center ${openSidebar ? "gap-2" : ""
+                        className={`group hover:shadow-lg hover:translate-x-1 flex justify-start items-center ${openSidebar ? "gap-2" : ""
                             } w-full rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 py-2 px-2`}
                     >
-                        <div className="flex flex-col justify-center">
+                        <div className="group-hover:translate-x-1 group-hover:text-purple-900 dark:group-hover:text-purple-400 transition flex flex-col justify-center">
                             <MdFeedback />
                         </div>
                         <div
-                            className={`flex justify-center items-center ${openSidebar ? "" : "hidden"
+                            className={`group-hover:text-[17px] group-hover:text-purple-900 dark:group-hover:text-purple-400 transition flex justify-center items-center ${openSidebar ? "" : "hidden"
                                 }`}
                         >
                             <p className="">Góp ý</p>

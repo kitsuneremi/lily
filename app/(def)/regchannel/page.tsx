@@ -250,8 +250,8 @@ export default function Page() {
                 des: des,
                 tagName: tagName,
             }).then(async (res) => {
-                axios.post(`${fileURL}/api/image/avatar/${session?.user.id}`, avatarRequestForm)
-                axios.post(`${fileURL}/api/image/banner/${session?.user.id}`, bannerRequestForm)
+                axios.post(`${fileURL}/api/image/avatar/${res.data.id}`, avatarRequestForm)
+                axios.post(`${fileURL}/api/image/banner/${res.data.id}`, bannerRequestForm)
             });
         } else {
             toast({
