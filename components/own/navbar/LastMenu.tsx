@@ -1,4 +1,3 @@
-'use server'
 import MenuItem from '@/components/own/navbar/MenuItem'
 import ModeSetting from "@/components/own/navbar/ModeSetting";
 import { Skeleton } from '@/components/ui/skeleton'
