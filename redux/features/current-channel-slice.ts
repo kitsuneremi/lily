@@ -31,9 +31,6 @@ export const channelData = createSlice({
         builder.addCase(fetchChannelData.fulfilled, (state, action) => {
             state.value.channelData = action.payload;
         });
-        builder.addDefaultCase((state, action) => {
-            state.value.channelData = action.payload;
-        })
     },
 });
 
