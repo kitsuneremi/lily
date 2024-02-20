@@ -23,7 +23,7 @@ const ChannelRender = () => {
     useEffect(() => {
         const fetchData = async () => {
             if (!personalChannelData) {
-                if (session && session.user) {
+                if (session && session.user && session.user.id) {
                     setFinishRequest(false);
                     try {
                         await dispatch(fetchChannelData(session.user.id));
