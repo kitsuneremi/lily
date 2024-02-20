@@ -36,7 +36,7 @@ const ChannelRender = () => {
         };
     
         fetchData();
-    }, [session]);
+    }, [session, personalChannelData, dispatch]);
     
     useEffect(() => {
         console.log(personalChannelData)
