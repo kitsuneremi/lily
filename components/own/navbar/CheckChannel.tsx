@@ -21,28 +21,33 @@ const ChannelRender = () => {
 
     const dispatch: AppDispatch = useDispatch();
 
-    useEffect(() => {
-        const fetchData = async () => {
-            if (!personalChannelData) {
-                if (session && session.user && session.user.id) {
-                    setFinishRequest(false);
-                    try {
-                        const p = await dispatch(fetchChannelData(session.user.id));
-                        setChannelData(p.payload as ChannelDataType);
-                        setFinishRequest(true);
-                    } catch (error) {
-                        console.error('Error fetching channel data:', error);
-                    }
-                }
-            }
-        };
+    // useEffect(() => {
+    //     const fetchData = async () => {
+    //         if (!personalChannelData) {
+    //             if (session && session.user && session.user.id) {
+    //                 setFinishRequest(false);
+    //                 try {
+    //                     const p = await dispatch(fetchChannelData(session.user.id));
+    //                     setChannelData(p.payload as ChannelDataType);
+    //                     setFinishRequest(true);
+    //                 } catch (error) {
+    //                     console.error('Error fetching channel data:', error);
+    //                 }
+    //             }
+    //         }
+    //     };
     
-        fetchData();
-    }, [session, personalChannelData, dispatch]);
+    //     fetchData();
+    // }, [session, personalChannelData, dispatch]);
     
     useEffect(() => {
-        console.log(personalChannelData)
-    },[personalChannelData])
+        if(!channelData && session){
+            axios.get(`/api/channel/data?accountId=${session.user.id}`).then(res => {
+                setChannelData(res.data);
+                set(res.data);
+            })
+        }
+    },[channelData, session])
 
     if (!finishRequest) {
         return (
