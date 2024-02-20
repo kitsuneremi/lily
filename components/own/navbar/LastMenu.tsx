@@ -60,7 +60,7 @@ export default function LastMenu() {
                                     </Link>
                                 </MenuItem>
                                 <MenuItem>
-                                    <Link className='w-full h-full' href={'setting/account'}>
+                                    <Link className='w-full h-full' href={'/setting/account'}>
                                         Cài đặt
                                     </Link>
                                 </MenuItem>
