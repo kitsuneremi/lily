@@ -1,10 +1,10 @@
+'use client'
 import MenuItem from '@/components/own/navbar/MenuItem'
 import ModeSetting from "@/components/own/navbar/ModeSetting";
 import { Skeleton } from '@/components/ui/skeleton'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useSession, signOut } from "next-auth/react";
-import { getServerSession } from 'next-auth';
 import type { Session } from 'next-auth'
 import { CiMenuBurger } from "react-icons/ci";
 import ChannelRender from "@/components/own/navbar/CheckChannel";
@@ -16,19 +16,16 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { authOptions } from '@/lib/auth';
 
 
-export default async function LastMenu() {
-    // const { data: session, status: authenStatus } = useSession();
-
-    const session = await getServerSession(authOptions);
+export default function LastMenu() {
+    const { data: session, status: authenStatus } = useSession();
     return (
         <>
             <DropdownMenu>
                 <DropdownMenuTrigger>
                     <div className='w-6 h-6 lg:w-8 lg:h-8 relative shadow-sm'>
-                        <AccountAvatarRender session={session} />
+                        <AccountAvatarRender session={session} authenStatus={authenStatus} />
                     </div>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className='mt-5' align='end'>
@@ -78,9 +75,11 @@ export default async function LastMenu() {
 }
 
 
-const AccountAvatarRender = ({ session }: { session: Session | null }): React.ReactNode => {
+const AccountAvatarRender = ({ session, authenStatus }: { session: Session | null, authenStatus: "loading" | "authenticated" | "unauthenticated" }): React.ReactNode => {
 
-    if (session && session.user.image != "") {
+    if (authenStatus == "loading") {
+        return <Skeleton className="h-full w-full rounded-full" />;
+    } else if (authenStatus == "authenticated" && session && session.user.image != "") {
         return (
             <Image
                 src={session.user.image}
