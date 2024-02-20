@@ -1,13 +1,12 @@
-'use client'
+'use server'
 import MenuItem from '@/components/own/navbar/MenuItem'
 import ModeSetting from "@/components/own/navbar/ModeSetting";
-import { redirect, useRouter } from "next/navigation";
-import { useState, useEffect, useCallback, useRef, Suspense } from "react";
 import { Skeleton } from '@/components/ui/skeleton'
-import { useOnClickOutside } from "usehooks-ts";
 import Image from 'next/image'
 import Link from 'next/link'
 import { useSession, signOut } from "next-auth/react";
+import { getServerSession } from 'next-auth';
+import type { Session } from 'next-auth'
 import { CiMenuBurger } from "react-icons/ci";
 import ChannelRender from "@/components/own/navbar/CheckChannel";
 import {
@@ -18,16 +17,19 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { authOptions } from '@/lib/auth';
 
 
-export default function LastMenu() {
-    const { data: session, status: authenStatus } = useSession();
+export default async function LastMenu() {
+    // const { data: session, status: authenStatus } = useSession();
+
+    const session = await getServerSession(authOptions);
     return (
         <>
             <DropdownMenu>
                 <DropdownMenuTrigger>
                     <div className='w-6 h-6 lg:w-8 lg:h-8 relative shadow-sm'>
-                        <AccountAvatarRender />
+                        <AccountAvatarRender session={session} />
                     </div>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className='mt-5' align='end'>
@@ -77,11 +79,9 @@ export default function LastMenu() {
 }
 
 
-const AccountAvatarRender = (): React.ReactNode => {
-    const { data: session, status: authenStatus } = useSession();
-    if (authenStatus == "loading") {
-        return <Skeleton className="h-full w-full rounded-full" />;
-    } else if (authenStatus == "authenticated" && session && session.user.image != "") {
+const AccountAvatarRender = ({ session }: { session: Session | null }): React.ReactNode => {
+
+    if (session && session.user.image != "") {
         return (
             <Image
                 src={session.user.image}
