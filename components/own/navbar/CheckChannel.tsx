@@ -16,6 +16,7 @@ const ChannelRender = () => {
     const router = useRouter();
     
     const personalChannelData = useAppSelector((state) => state.channelReducer.value.channelData);
+    const [channelData, setChannelData] = useState<ChannelDataType | null>(personalChannelData)
     const [finishRequest, setFinishRequest] = useState<boolean>(personalChannelData ? true : false);
 
     const dispatch: AppDispatch = useDispatch();
@@ -26,7 +27,8 @@ const ChannelRender = () => {
                 if (session && session.user && session.user.id) {
                     setFinishRequest(false);
                     try {
-                        await dispatch(fetchChannelData(session.user.id));
+                        const p = await dispatch(fetchChannelData(session.user.id));
+                        setChannelData(p.payload as ChannelDataType);
                         setFinishRequest(true);
                     } catch (error) {
                         console.error('Error fetching channel data:', error);
@@ -48,7 +50,7 @@ const ChannelRender = () => {
                 <Skeleton className="h-full w-full" />
             </MenuItem>
         );
-    } else if (finishRequest && session && personalChannelData == null) {
+    } else if (finishRequest && session && channelData == null) {
         return (
             <MenuItem
                 onClick={() => {
@@ -58,15 +60,15 @@ const ChannelRender = () => {
                 Chưa có kênh? Tạo ngay!
             </MenuItem>
         );
-    } else if (finishRequest && session && personalChannelData) {
+    } else if (finishRequest && session && channelData) {
         return (
             <>
                 <MenuItem className="bg-transparent">
                     <div className="flex gap-4">
                         <div className="flex items-center">
                             <div className="relative w-8 h-8">
-                                {personalChannelData.avatarImage && (
-                                    <Image className="rounded-full" src={personalChannelData.avatarImage}
+                                {channelData.avatarImage && (
+                                    <Image className="rounded-full" src={channelData.avatarImage}
                                         alt=""
                                         fill
                                         sizes="1/1"
