@@ -83,6 +83,7 @@ export const authOptions: NextAuthOptions = {
             }
         },
         async session({ session, token, user }) {
+            console.log(session, token, user)
             if (user) {
                 if (!user.image) {
                     const image = `${fileURL}/api/image?path=-1`
@@ -96,7 +97,7 @@ export const authOptions: NextAuthOptions = {
             }
         },
         async signIn({ account, user, credentials, email, profile }) {
-            console.log(account, user, profile)
+            // console.log(account, user, profile)
             if (account?.provider === 'github') {
                 if (user.email && user.image) {
                     await prisma.accounts.upsert({

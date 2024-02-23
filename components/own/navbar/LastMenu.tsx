@@ -16,16 +16,42 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { useCallback } from 'react';
 
 
 export default function LastMenu() {
     const { data: session, status: authenStatus } = useSession();
+
+
+    const AccountAvatarRender =useCallback(() => {
+
+        if (authenStatus == "loading") {
+            return <Skeleton className="h-full w-full rounded-full" />;
+        } else if (authenStatus == "authenticated" && session && session.user.image != "") {
+            return (
+                <Image
+                    src={session.user.image}
+                    className="rounded-full"
+                    fill
+                    sizes="1/1"
+                    alt=""
+                />
+            );
+        } else {
+            return (
+                <div className="flex text-xl bg-slate-200 dark:bg-slate-900 rounded-full w-full h-full items-center justify-center">
+                    <CiMenuBurger />
+                </div>
+            );
+        }
+    },[authenStatus, session]);
+
     return (
         <>
             <DropdownMenu>
                 <DropdownMenuTrigger>
                     <div className='w-6 h-6 lg:w-8 lg:h-8 relative shadow-sm'>
-                        <AccountAvatarRender session={session} authenStatus={authenStatus} />
+                        {AccountAvatarRender()}
                     </div>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className='mt-5' align='end'>
@@ -75,25 +101,3 @@ export default function LastMenu() {
 }
 
 
-const AccountAvatarRender = ({ session, authenStatus }: { session: Session | null, authenStatus: "loading" | "authenticated" | "unauthenticated" }): React.ReactNode => {
-
-    if (authenStatus == "loading") {
-        return <Skeleton className="h-full w-full rounded-full" />;
-    } else if (authenStatus == "authenticated" && session && session.user.image != "") {
-        return (
-            <Image
-                src={session.user.image}
-                className="rounded-full"
-                fill
-                sizes="1/1"
-                alt=""
-            />
-        );
-    } else {
-        return (
-            <div className="flex text-xl bg-slate-200 dark:bg-slate-900 rounded-full w-full h-full items-center justify-center">
-                <CiMenuBurger />
-            </div>
-        );
-    }
-};

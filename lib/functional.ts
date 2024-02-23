@@ -67,6 +67,7 @@ const protocol = 'https'
 // const protocol = 'http'
 export const baseURL = protocol + '://' + 'www.' + domain
 export const fileURL = protocol + '://file.' + 'www.' + domain
+// export const fileURL = protocol + '://file.lyart.pro.vn'
 export const liveURL = protocol + '://live.' + 'www.' + domain
 export const liveSocketURL = `${protocol}://socket.${domain}/live`
 export const chatSocketURL = `${protocol}://socket.${domain}/chat`
