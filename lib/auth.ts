@@ -86,9 +86,9 @@ export const authOptions: NextAuthOptions = {
             if (user) {
                 if (!user.image) {
                     const image = `${fileURL}/api/image?path=-1`
-                    return { ...session, user: { image: image, ...token } };
+                    return { ...session, user: { image: image, ...token, ...user } };
                 } else {
-                    return { ...session, ...user };
+                    return { ...session, user: {...token, ...user} };
                 }
             } else {
                 const image = `${fileURL}/api/image?path=-1`
