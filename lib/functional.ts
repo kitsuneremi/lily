@@ -66,8 +66,8 @@ const protocol = 'https'
 // const domain = 'localhost:3000'
 // const protocol = 'http'
 export const baseURL = protocol + '://' + 'www.' + domain
-export const fileURL = protocol + '://file.' + domain
-export const liveURL = protocol + '://live.' + domain
+export const fileURL = protocol + '://file.' + 'www.' + domain
+export const liveURL = protocol + '://live.' + 'www.' + domain
 export const liveSocketURL = `${protocol}://socket.${domain}/live`
 export const chatSocketURL = `${protocol}://socket.${domain}/chat`
 
