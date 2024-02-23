@@ -64,7 +64,6 @@ export default function Notification() {
     });
 
     useEffect(() => {
-        console.log(session?.user);
         if (session && session.user && session.user.id) {
             axios.get(`/api/notification?accountid=${session.user.id}`)
                 .then((response) => {

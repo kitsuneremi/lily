@@ -84,14 +84,15 @@ export const authOptions: NextAuthOptions = {
         },
         async session({ session, token, user }) {
             if (user) {
-                if (!user.image) {
+                if (user.image) {
                     const image = `${fileURL}/api/image?path=-1`
                     return { ...session, user: { image: image, ...token } };
-                }else{
+                } else {
                     return { ...session, user };
                 }
             } else {
-                return { ...session }
+                const image = `${fileURL}/api/image?path=-1`
+                return { ...session, user: { image: image, ...token } }
             }
         },
         async signIn({ account, user, credentials, email, profile }) {
@@ -117,10 +118,10 @@ export const authOptions: NextAuthOptions = {
                         }
                     })
                     return true;
-                }else{
+                } else {
                     return false;
                 }
-            }else if(account?.provider === 'google'){
+            } else if (account?.provider === 'google') {
                 await prisma.accounts.upsert({
                     where: {
                         email: user.email!
@@ -138,12 +139,12 @@ export const authOptions: NextAuthOptions = {
                     update: {
                         updatedAt: new Date()
                     }
-                }) 
+                })
                 return true;
-            }else{
+            } else {
                 return true;
             }
-            
+
         }
     },
     session: {
