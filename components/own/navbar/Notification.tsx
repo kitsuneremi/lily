@@ -64,23 +64,14 @@ export default function Notification() {
     });
 
     useEffect(() => {
-        if (session && session.user) {
-            axios
-                //@ts-ignore
-                .get(`/api/notification?accountId=${session.user.id}`)
+        console.log(session?.user);
+        if (session && session.user && session.user.id) {
+            axios.get(`/api/notification?accountid=${session.user.id}`)
                 .then((response) => {
                     setData(response.data);
                 });
         }
     }, [session]);
-
-    // if (session) {
-    //     return <>
-
-    //     </>
-    // } else {
-    //     return <>not logged</>;
-    // }
 
     return (
         <div className="relative flex items-center">

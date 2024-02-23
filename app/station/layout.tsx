@@ -6,14 +6,6 @@ import { authOptions } from "@/lib/auth";
 import { redirect } from 'next/navigation'
 import { baseURL, RedirectIfNotAuthen } from "@/lib/functional";
 import { ChannelDataType } from "@/types/type";
-// const channelDataFetch = async () => {
-//     const channels = await prisma.channels.findFirst({
-//         where: {
-//             accountId: 1
-//         }
-//     })
-//     return channels
-// }
 
 export const medata: Metadata = {
     title: "studio page",
