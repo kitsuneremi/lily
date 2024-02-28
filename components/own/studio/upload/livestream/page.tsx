@@ -8,7 +8,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
-import { baseURL } from "@/lib/functional";
+import { baseURL, chatSocketURL, rtmpUrl } from "@/lib/functional";
 import { ChannelDataType, MediaDataType } from "@/types/type";
 import axios from "axios";
 import { Session } from "next-auth";
@@ -28,7 +28,7 @@ type Message = {
     room: number;
 };
 
-const socket = io("https://socket.erinasaiyukii.com").connect();
+const socket = io(chatSocketURL).connect();
 
 export default function Page({
     session,
@@ -375,7 +375,7 @@ export default function Page({
                                                 title: "đã lưu vào bộ nhớ tạm",
                                             });
                                         }
-                                    }}
+                                    }} 
                                 >
                                     Sao chép
                                 </button>
@@ -385,12 +385,12 @@ export default function Page({
                             <p>url máy chủ phát trực tiếp</p>
                             <div className="flex justify-between items-center gap-3">
                                 <p className="relative w-full after:absolute after:bottom-0 after:left-0 after:w-full after:h-[1px] after:bg-slate-600">
-                                    rtmp://erinasaiyukii.com/live
+                                    {rtmpUrl}
                                 </p>
                                 <button
                                     className="flex-shrink-0 px-3 py-1 my-1 border-slate-500 border-2"
                                     onClick={() => {
-                                        copy("rtmp://erinasaiyukii.com/live");
+                                        copy(rtmpUrl);
                                         toast({
                                             title: "đã lưu vào bộ nhớ tạm",
                                         });

@@ -71,6 +71,7 @@ export const fileURL = protocol + '://file.' + 'www.' + domain
 export const liveURL = protocol + '://live.' + 'www.' + domain
 export const liveSocketURL = `${protocol}://socket.${domain}/live`
 export const chatSocketURL = `${protocol}://socket.${domain}/chat`
+export const rtmpUrl = `rtmp://${domain}/live`
 
 const formatHelper = (time: number) => {
     if (time >= 3600) {
