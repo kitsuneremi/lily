@@ -13,6 +13,6 @@ export const metadata: Metadata = {
 export default function Page({ params, searchParams }: Props) {
 
     return <div className="flex w-screen justify-center items-center">
-        <p className="font-bold text-lg hover:scale-105">@{params.tag} chưa livestream, quay lại sau nhé</p>
+        <p className="font-bold text-lg hover:scale-105 glow">@{params.tag} chưa livestream, quay lại sau nhé</p>
     </div>
 }
