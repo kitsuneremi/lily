@@ -109,12 +109,12 @@
 
   .glow {
     color: #fff;
-    text-shadow: 0 0 10px #4fd1c5, 0 0 20px #4fd1c5, 0 0 30px #4fd1c5, 0 0 40px #4fd1c5, 0 0 50px #4fd1c5, 0 0 60px #4fd1c5, 0 0 70px #4fd1c5;
-    transition: text-shadow 0.5s ease-in-out;
+    box-shadow: 0 0 10px #4fd1c5, 0 0 20px #4fd1c5, 0 0 30px #4fd1c5, 0 0 40px #4fd1c5, 0 0 50px #4fd1c5, 0 0 60px #4fd1c5, 0 0 70px #4fd1c5;
+    transition: box-shadow 0.5s ease-in-out;
   }
 
   .glow:hover {
-    text-shadow: 0 0 20px #4fd1c5, 0 0 40px #4fd1c5, 0 0 60px #4fd1c5, 0 0 80px #4fd1c5, 0 0 100px #4fd1c5, 0 0 120px #4fd1c5, 0 0 140px #4fd1c5;
+    box-shadow: 0 0 20px #4fd1c5, 0 0 40px #4fd1c5, 0 0 60px #4fd1c5, 0 0 80px #4fd1c5, 0 0 100px #4fd1c5, 0 0 120px #4fd1c5, 0 0 140px #4fd1c5;
   }
 }
 
