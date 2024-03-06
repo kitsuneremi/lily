@@ -15,7 +15,7 @@ export async function POST(request: Request) {
         return new Response('Invalid', { status: 400 })
     }
 
-    const user = await prisma.accounts.findFirst({
+    const user = await prisma.account.findFirst({
         where: {
             username: body.username
         }
@@ -25,13 +25,12 @@ export async function POST(request: Request) {
         return new Response(JSON.stringify({ message: 'username already exist' }), { status: 406 })
     } else {
         try {
-            const user = await prisma.accounts.create({
+            const user = await prisma.account.create({
                 data: {
                     username: body.username,
                     email: body.email,
                     // password: await bcrypt.hash(body.password, 10),
                     password: body.password,
-
                     name: body.username,
                     streamKey: uuid(),
                 }
@@ -39,10 +38,10 @@ export async function POST(request: Request) {
             const userId = user.id;
 
             // Cập nhật lại avatarLink với ID của tài khoản
-            await prisma.accounts.update({
+            await prisma.account.update({
                 where: { id: userId },
                 data: {
-                    avatarLink: `${fileURL}/image/account/${userId}`
+                    avatarLink: `${fileURL}/image/avatar?id=${userId}`
                 }
             });
             if (user) {

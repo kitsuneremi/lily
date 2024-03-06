@@ -14,11 +14,6 @@ export async function POST(request: Request) {
     if(!data){
         return new Response(null, { status: 400 })
     }
-    // const findm = await Likes.findOne({
-    //     $where: () => {
-    //         return 
-    //     }
-    // })
     const find = await prisma.likes.findFirst({
         where: {
             accountId: data.accountId,

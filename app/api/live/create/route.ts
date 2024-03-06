@@ -6,16 +6,16 @@ export async function POST(req: NextRequest, res: NextResponse) {
 
     const body = await req.json();
     console.log(body)
-    const channel = await prisma.channels.findUnique({
+    const channel = await prisma.account.findUnique({
         where: {
-            accountId: body.accountId
+            id: body.accountId
         }
     })
     console.log(channel)
     if (channel && channel.live) {
         const newLive = await prisma.media.create({
             data: {
-                channelId: channel.id,
+                accountId: channel.id,
                 des: body.des,
                 isLive: true,
                 title: body.title,

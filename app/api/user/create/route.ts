@@ -11,7 +11,7 @@ interface RequestBody {
 
 export async function POST(request: Request) {
     const body: RequestBody = await request.json();
-    const user = await prisma.accounts.create({
+    const user = await prisma.account.create({
         data: {
             name: body.name,
             email: body.email,

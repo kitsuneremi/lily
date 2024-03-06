@@ -4,7 +4,7 @@ export async function POST(request: Request) {
     if (body.videoId) {
         const video = await prisma.media.update({
             where: {
-                id: body.videoId
+                id: body.mediaId
             },
             data: {
                 view: {

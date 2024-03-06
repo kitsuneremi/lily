@@ -77,13 +77,9 @@ export default function Sidebar() {
     }, [deviceType, dispatch]);
 
     useEffect(() => {
-        if (status === "authenticated") {
+        if (status === "authenticated" && session.user.id) {
             axios
-                .get("/api/account/subcribed", {
-                    params: {
-                        accountId: session.user.id,
-                    },
-                })
+                .get(`/api/account/subcribed?accountId=${session.user.id}`)
                 .then((res) => {
                     setSubscribedList(res.data);
                 });

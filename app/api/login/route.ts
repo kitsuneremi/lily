@@ -10,7 +10,7 @@ export async function POST(request: Request) {
     const body = await request.json();
 
     try {
-        const user = await prisma.accounts.findFirst({
+        const user = await prisma.account.findFirst({
             where: {
                 username: body.username,
 

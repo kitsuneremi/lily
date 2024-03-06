@@ -1,13 +1,4 @@
-import { Channel } from "diagnostics_channel"
-
-export type BigVideoDataType = {
-    videoData: MediaDataType,
-    channelData: ChannelDataType,
-    commentData: CommentDataType[]
-}
-
-
-export type CommentDataType = {
+export type Comment = {
     id: number,
     mediaId: number,
     accountId: number,
@@ -19,23 +10,20 @@ export type CommentDataType = {
     accountImage?: string | null,
 }
 
-
-export type ChannelDataType = {
+export type Account = {
     id: number,
     name: string,
     tagName: string,
     des: string,
-    accountId: number,
-    createdAt: Date,
-    updatedAt: Date,
-    sub?: number,
-    avatarImage?: string,
-    bannerImage?: string | null,
+    avatarImage: string,
+    bannerImage: string,
     streamKey: string
     live: Boolean
+    createdAt: Date,
+    updatedAt: Date,
 }
 
-export type MediaDataType = {
+export type Media = {
     id: number,
     title: string,
     des: string,
@@ -50,7 +38,7 @@ export type MediaDataType = {
     like?: number,
     comment?: number,
     thumbnail?: string,
-    Channels?: ChannelDataType,
+    Account?: Account,
 }
 
 export type SessionDataType = {
@@ -75,22 +63,6 @@ export type SubcribeType = {
     createdAt: Date,
     updatedAt: Date
 }
-
-export type VideoWithoutComment = {
-    videoData: MediaDataType,
-    channelData: {
-        avatarImage: string,
-        id: number,
-        name: string,
-        tagName: string,
-        des: string,
-        accountId: 1,
-        createdAt: Date,
-        updatedAt: Date,
-        streamKey: string
-    }
-}
-
 
 export type LiveData = {
     id: number;

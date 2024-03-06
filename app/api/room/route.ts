@@ -54,7 +54,7 @@ export async function POST(req: Request) {
         return new Response(JSON.stringify(existingRoom))
     } else {
         // create one if no room between current account and target account exists yet
-        const target = await prisma.accounts.findFirst({
+        const target = await prisma.account.findFirst({
             where: {
                 id: body.targetId
             }

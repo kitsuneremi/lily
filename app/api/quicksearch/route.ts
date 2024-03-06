@@ -1,11 +1,8 @@
-import { storage } from "@/lib/firebase";
 import prisma from "@/lib/prisma";
-import { ChannelDataType, MediaDataType } from "@/types/type";
-import { ref, getDownloadURL } from "firebase/storage";
 import { NextRequest } from "next/server";
 
 const channelQuery = async (keyword: string) => {
-    const channels = await prisma.channels.findMany({
+    const channels = await prisma.account.findMany({
         where: {
             OR: [
                 {

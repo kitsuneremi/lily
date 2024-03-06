@@ -7,7 +7,7 @@ export async function GET(req: NextRequest) {
     const searchParams = req.nextUrl.searchParams;
     const id = searchParams.get('id');
     if (id) {
-        const account = await prisma.accounts.findUnique({
+        const account = await prisma.account.findUnique({
             where: {
                 id: Number.parseInt(id)
             }
@@ -16,10 +16,7 @@ export async function GET(req: NextRequest) {
 
         if (account) {
             const { password, streamKey, username, ...user } = account
-            const imageRef = ref(storage, `account/avatars/${account.id}`)
-            const image = await getDownloadURL(imageRef)
-
-            return new NextResponse(JSON.stringify({ avatarImage: image, ...user }), { status: 201 })
+            return new NextResponse(JSON.stringify(user), { status: 201 })
         } else {
             return new NextResponse(JSON.stringify({
                 message: 'cannot find user'

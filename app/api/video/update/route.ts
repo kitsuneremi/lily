@@ -14,7 +14,7 @@ export async function POST(request: Request) {
         }
     })
     if (video != null) {
-        const newvideo = await prisma.media.update({
+        const updatedMedia = await prisma.media.update({
             where: {
                 id: body.id
             },
@@ -24,8 +24,8 @@ export async function POST(request: Request) {
             }
         })
 
-        if (newvideo != null) {
-            return new Response(JSON.stringify(newvideo), { status: 200 })
+        if (updatedMedia != null) {
+            return new Response(JSON.stringify(updatedMedia), { status: 200 })
         } else {
             return new Response(JSON.stringify(null), { status: 400 })
         }

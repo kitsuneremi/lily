@@ -7,7 +7,7 @@ export async function GET(req: NextRequest) {
     const searchParams = req.nextUrl.searchParams;
     const id = searchParams.get('id');
     if (id) {
-        const account = await prisma.accounts.findUnique({
+        const account = await prisma.account.findUnique({
             where: {
                 id: Number.parseInt(id)
             }

@@ -1,11 +1,11 @@
 import { storage } from "@/lib/firebase";
 import prisma from "@/lib/prisma";
-import { ChannelDataType, MediaDataType } from "@/types/type";
+import { Account, Media } from "@/types/type";
 import { ref, getDownloadURL } from "firebase/storage";
 import { NextRequest } from "next/server";
 
 const channelQuery = async (keyword: string) => {
-    const channels = await prisma.channels.findMany({
+    const channels = await prisma.account.findMany({
         where: {
             OR: [
                 {
@@ -21,31 +21,7 @@ const channelQuery = async (keyword: string) => {
             ]
         }
     })
-
-    const subPromise = channels.map(channel => {
-        return prisma.subcribes.count({
-            where: {
-                channelId: channel.id
-            }
-        })
-    }) 
-
-    const imagePromise = channels.map(channel => {
-        const avatarRef = ref(storage, `/channel/avatars/${channel.tagName}`)
-        return getDownloadURL(avatarRef)
-    })
-    const subResult = await Promise.all(subPromise)
-    const imageResult = await Promise.all((await Promise.resolve(imagePromise)))
-    const newChannels: ChannelDataType[] = channels.map((channel, index) => {
-        return {
-            ...channel,
-            live: channel.live ? channel.live : false,
-            avatarImage: imageResult[index],
-            sub: subResult[index]
-        }
-    })
-
-    return newChannels
+    return channels
 }
 
 const videosQuery = async (keyword: string) => {
@@ -60,37 +36,7 @@ const videosQuery = async (keyword: string) => {
         }
     })
 
-    const avatarPromise = videos.map(video => {
-        const avatarRef = ref(storage, `/channel/avatars/${video.Channels.tagName}`);
-        return getDownloadURL(avatarRef)
-    })
-
-    const videoThumbnailPromise = videos.map(video => {
-        let videoThumbnailRef = null;
-        if (video.mediaType == 1 || video.mediaType == 2) {
-            videoThumbnailRef = ref(storage, `/channel/avatars/${video.Channels.tagName}`)
-        } else {
-            videoThumbnailRef = ref(storage, `/video/thumbnails/${video.link}`)
-        }
-        return getDownloadURL(videoThumbnailRef)
-    })
-
-    const videoThumbnail = await Promise.all(videoThumbnailPromise)
-    const avatarImage = await Promise.all(avatarPromise)
-
-    const videoData: MediaDataType[] = videos.map((video, index) => {
-        return {
-            ...video,
-            Channels: {
-                ...video.Channels,
-                avatarImage: avatarImage[index]
-            },
-            thumbnail: videoThumbnail[index]
-        }
-
-    })
-
-    return videoData
+    return videos
 }
 
 

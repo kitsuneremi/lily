@@ -16,46 +16,35 @@ const ChannelRender = () => {
     const router = useRouter();
     
     const personalChannelData = useAppSelector((state) => state.channelReducer.value.channelData);
-    const [channelData, setChannelData] = useState<ChannelDataType | null>(personalChannelData)
     const [finishRequest, setFinishRequest] = useState<boolean>(personalChannelData ? true : false);
 
     const dispatch: AppDispatch = useDispatch();
 
-    // useEffect(() => {
-    //     const fetchData = async () => {
-    //         if (!personalChannelData) {
-    //             if (session && session.user && session.user.id) {
-    //                 setFinishRequest(false);
-    //                 try {
-    //                     const p = await dispatch(fetchChannelData(session.user.id));
-    //                     setChannelData(p.payload as ChannelDataType);
-    //                     setFinishRequest(true);
-    //                 } catch (error) {
-    //                     console.error('Error fetching channel data:', error);
-    //                 }
-    //             }
-    //         }
-    //     };
-    
-    //     fetchData();
-    // }, [session, personalChannelData, dispatch]);
-    
     useEffect(() => {
-        if(!channelData && session){
-            axios.get(`/api/channel/data?accountId=${session.user.id}`).then(res => {
-                setChannelData(res.data);
-                set(res.data);
-            })
-        }
-    },[channelData, session])
-
+        const fetchData = async () => {
+            if (!personalChannelData) {
+                if (session && session.user && session.user.id) {
+                    try {
+                        dispatch(fetchChannelData(session.user.id)).then(() => {
+                            setFinishRequest(true);
+                        });
+                    } catch (error) {
+                        console.error('Error fetching channel data:', error);
+                    }
+                }
+            }
+        };
+     
+        fetchData();
+    }, [session, personalChannelData, dispatch]);
+    
     if (!finishRequest) {
         return (
             <MenuItem className="text-start">
-                <Skeleton className="h-full w-full" />
+                <Skeleton className="h-full w-full min-h-[50px]" />
             </MenuItem>
         );
-    } else if (finishRequest && session && channelData == null) {
+    } else if (finishRequest && session && personalChannelData == null) {
         return (
             <MenuItem
                 onClick={() => {
@@ -65,15 +54,15 @@ const ChannelRender = () => {
                 Chưa có kênh? Tạo ngay!
             </MenuItem>
         );
-    } else if (finishRequest && session && channelData) {
+    } else if (finishRequest && session && personalChannelData) {
         return (
             <>
                 <MenuItem className="bg-transparent">
                     <div className="flex gap-4">
                         <div className="flex items-center">
                             <div className="relative w-8 h-8">
-                                {channelData.avatarImage && (
-                                    <Image className="rounded-full" src={channelData.avatarImage}
+                                {personalChannelData.avatarImage && (
+                                    <Image className="rounded-full" src={personalChannelData.avatarImage}
                                         alt=""
                                         fill
                                         sizes="1/1"
@@ -98,4 +87,4 @@ const ChannelRender = () => {
     }
 }
 
-export default memo(ChannelRender)
+export default ChannelRender

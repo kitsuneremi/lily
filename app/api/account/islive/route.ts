@@ -6,9 +6,9 @@ export async function GET(req: NextRequest) {
     const searchParams = req.nextUrl.searchParams;
     const accountId = searchParams.get('accountId');
     if (accountId) {
-        const channel = await prisma.channels.findUnique({
+        const channel = await prisma.account.findUnique({
             where: {
-                accountId: Number.parseInt(accountId)
+                id: Number.parseInt(accountId)
             }
         })
         if (channel) {

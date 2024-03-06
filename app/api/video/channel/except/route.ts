@@ -8,7 +8,7 @@ export async function GET(req: NextRequest, res: NextResponse) {
     if (videoId && Number.parseInt(videoId) && channelId && Number.parseInt(channelId)) {
         const allVideos = await prisma.media.findMany({
             where: {
-                channelId: Number.parseInt(channelId),
+                accountId: Number.parseInt(channelId),
                 AND: {
                     mediaType: 0
                 }

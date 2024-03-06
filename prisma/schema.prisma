@@ -8,30 +8,13 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Channels {
-  id            Int             @id @default(autoincrement())
-  name          String
-  tagName       String          @unique
-  des           String          @default("")
-  accountId     Int             @unique
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
-  streamKey     String          @unique
-  live          Boolean         @default(false)
-  account       Accounts        @relation(fields: [accountId], references: [id])
-  ListVideo     ListVideo[]
-  Media         Media[]
-  Notifications Notifications[]
-  Posts         Posts?
-  Subcribes     Subcribes[]
-}
-
 model Media {
   id              Int               @id @default(autoincrement())
   title           String            @db.VarChar(45)
   des             String            @db.VarChar(45)
   status          Int               @default(0)
-  channelId       Int
+  accountId       Int
+  thumbnailLink   String
   view            Int               @default(0)
   createdTime     DateTime          @default(now()) @db.DateTime(0)
   endTime         DateTime?         @db.DateTime(0)
@@ -43,10 +26,10 @@ model Media {
   DetailListVideo DetailListVideo[]
   DetailTags      DetailTags?
   Likes           Likes[]
-  Channels        Channels          @relation(fields: [channelId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "channelId")
+  Account         Account           @relation(fields: [accountId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "accountId")
   ViewHistory     ViewHistory[]
 
-  @@index([channelId], map: "channelId")
+  @@index([accountId], map: "accountId")
 }
 
 model Categories {
@@ -63,7 +46,7 @@ model Comment {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   mediaId     Int
-  account     Accounts  @relation(fields: [accountId], references: [id])
+  account     Account   @relation(fields: [accountId], references: [id])
   media       Media     @relation(fields: [mediaId], references: [id])
   reference   Comment?  @relation("ParentComment", fields: [referenceId], references: [id])
   comments    Comment[] @relation("ParentComment")
@@ -75,12 +58,12 @@ model Comment {
 
 model ListVideo {
   id              Int               @id @default(autoincrement())
-  channelId       Int
+  accountId       Int
   name            String            @default("")
   DetailListVideo DetailListVideo[]
-  channel         Channels          @relation(fields: [channelId], references: [id])
+  account         Account           @relation(fields: [accountId], references: [id])
 
-  @@index([channelId], map: "ListVideo_channelId_fkey")
+  @@index([accountId], map: "ListVideo_accountId_fkey")
 }
 
 model DetailListVideo {
@@ -115,48 +98,58 @@ model Likes {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   mediaId   Int
-  account   Accounts @relation(fields: [accountId], references: [id])
+  account   Account  @relation(fields: [accountId], references: [id])
   media     Media    @relation(fields: [mediaId], references: [id])
 
   @@index([accountId], map: "Likes_accountId_fkey")
   @@index([mediaId], map: "Likes_mediaId_fkey")
 }
 
-model Notifications {
+model Notification {
   id        Int      @id @default(autoincrement())
-  accountId Int
-  channelId Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   title     String
   content   String
-  account   Accounts @relation(fields: [accountId], references: [id])
-  channel   Channels @relation(fields: [channelId], references: [id])
+  accountId Int      @unique
+  account   Account  @relation(fields: [accountId], references: [id])
 
-  @@index([accountId], map: "Notifications_accountId_fkey")
-  @@index([channelId], map: "Notifications_channelId_fkey")
+  NotificationDetail NotificationDetail[]
+}
+
+model NotificationDetail {
+  id              Int          @id @default(autoincrement())
+  notificationId  Int
+  notification    Notification @relation(fields: [notificationId], references: [id])
+  targetAccount   Account      @relation(fields: [targetAccountId], references: [id])
+  targetAccountId Int
 }
 
 model Subcribes {
-  accountId Int
-  channelId Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  account   Accounts @relation(fields: [accountId], references: [id])
-  channel   Channels @relation(fields: [channelId], references: [id])
+  id             Int              @id @default(autoincrement())
+  accountId      Int              @unique
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  account        Account          @relation(fields: [accountId], references: [id])
+  DetailSubcribe DetailSubcribe[]
+}
 
-  @@id([accountId, channelId])
-  @@index([channelId], map: "Subcribes_channelId_fkey")
+model DetailSubcribe {
+  id                 Int       @id @default(autoincrement())
+  subcribeId         Int
+  subcribe           Subcribes @relation(fields: [subcribeId], references: [id])
+  subcribedAccountId Int
+  subcribedAccount   Account   @relation(fields: [subcribedAccountId], references: [id])
 }
 
 model Posts {
   id          Int      @id @unique @default(autoincrement())
-  channelId   Int      @unique
+  accountId   Int      @unique
   title       String
   description String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  channel     Channels @relation(fields: [channelId], references: [id])
+  account     Account  @relation(fields: [accountId], references: [id])
 }
 
 model Room {
@@ -171,7 +164,7 @@ model Member {
   roomId    Int
   accountId Int
   name      String
-  Account   Accounts  @relation(fields: [accountId], references: [id])
+  Account   Account   @relation(fields: [accountId], references: [id])
   Room      Room      @relation(fields: [roomId], references: [id])
   Message   Message[]
   createdAt DateTime  @default(now())
@@ -194,24 +187,32 @@ model Message {
   @@index([memberId], map: "Messages_memberId_fkey")
 }
 
-model Accounts {
-  id            Int             @id @default(autoincrement())
-  email         String          @unique
-  name          String
-  password      String
-  username      String
-  avatarLink    String          @default("")
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
-  streamKey     String          @unique
-  channel       Channels?
-  comment       Comment[]
-  Likes         Likes[]
-  Member        Member[]
-  Notifications Notifications[]
-  Subcribes     Subcribes[]
-  SearchHistory SearchHistory[]
-  ViewHistory   ViewHistory[]
+model Account {
+  id                 Int                  @id @default(autoincrement())
+  email              String               @unique
+  name               String
+  password           String
+  tagName            String               @unique @default(dbgenerated("uuid()"))
+  username           String
+  description        String?
+  avatarLink         String               @default("https://file.lyart.pro.vn/image/avatar?id=-1")
+  bannerLink         String               @default("https://file.lyart.pro.vn/image/banner?id=-1")
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+  streamKey          String               @unique
+  live               Boolean              @default(false)
+  ListVideo          ListVideo[]
+  Media              Media[]
+  Posts              Posts[]
+  comment            Comment[]
+  Likes              Likes[]
+  Member             Member[]
+  SearchHistory      SearchHistory[]
+  ViewHistory        ViewHistory[]
+  Notification       Notification[]
+  NotificationDetail NotificationDetail[]
+  Subcribes          Subcribes[]
+  DetailSubcribe     DetailSubcribe[]
 }
 
 model SearchHistory {
@@ -220,7 +221,7 @@ model SearchHistory {
   content   String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  account   Accounts @relation(fields: [accountId], references: [id])
+  account   Account  @relation(fields: [accountId], references: [id])
 
   @@index([accountId], map: "SearchHistory_accountId_fkey")
 }
@@ -231,7 +232,7 @@ model ViewHistory {
   mediaId       Int
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
-  account       Accounts @relation(fields: [accountId], references: [id])
+  account       Account  @relation(fields: [accountId], references: [id])
   media         Media    @relation(fields: [mediaId], references: [id])
   mediaProgress Int
 

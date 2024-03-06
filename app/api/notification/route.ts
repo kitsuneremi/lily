@@ -7,9 +7,9 @@ export async function GET(req: NextRequest){
     const accountId = searchParams.get('accountid');
 
     if(accountId){
-        const data = await prisma.notifications.findMany({
+        const data = await prisma.notificationDetail.findMany({
             where: {
-                accountId: Number.parseInt(accountId)
+                targetAccountId: Number.parseInt(accountId)
             }
         })
 

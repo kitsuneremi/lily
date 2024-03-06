@@ -1,7 +1,4 @@
-import { storage } from "@/lib/firebase";
 import prisma from "@/lib/prisma";
-import { getDownloadURL, ref } from "firebase/storage";
-import { NextApiRequest } from "next";
 import { NextResponse, NextRequest } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -18,21 +15,13 @@ export async function GET(req: NextRequest) {
         if (list && list.length > 0) {
             // Sử dụng Promise.all để lặp qua danh sách và tìm thông tin kênh tương ứng
             const channelPromises = list.map(async (target) => {
-                const channel = await prisma.channels.findUnique({
+                
+                const channel = await prisma.account.findUnique({
                     where: {
-                        id: target.channelId
+                        id: target.accountId
                     }
                 });
-                if (channel) {
-                    const { id, accountId, des, createdAt, updatedAt, ...channelWithoutId } = channel
-
-                    const imageRef = ref(storage, `/channel/avatars/${channel.tagName}`)
-                    const image = await getDownloadURL(imageRef);
-                    return { image: image, ...channelWithoutId };
-                } else {
-                    return null;
-                }
-
+                return channel;
             });
 
             // Đợi cho tất cả các promises hoàn thành

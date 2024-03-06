@@ -2,23 +2,40 @@ import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GithubProvider from "next-auth/providers/github";
 import GoogleProvider from 'next-auth/providers/google'
-import { baseURL, fileURL } from "./functional";
-import { PrismaAdapter } from '@auth/prisma-adapter'
+import { baseURL, fileURL, makeid } from "./functional";
 import prisma from "./prisma";
-import { getDownloadURL, ref } from "firebase/storage";
-import { storage } from "./firebase";
 import { v4 as uuid } from 'uuid'
-type result = {
-    accessToken: string;
-    id: number;
-    email: string;
-    name: string;
-    username: string;
-    isAdmin: boolean;
-    createdAt: Date;
-    updatedAt: Date;
+import { cookies } from 'next/headers'
+import { SignJWT, jwtVerify } from 'jose'
+import { NextRequest, NextResponse } from 'next/server'
+const key = new TextEncoder().encode(process.env.SECRET_KEY)
+
+async function encrypt(payload: any) {
+    return await new SignJWT(payload).setProtectedHeader({ alg: 'HS256' }).setIssuedAt().setExpirationTime('15 sec from now').sign(key)
 }
 
+async function decrypt(input: string): Promise<any> {
+    const { payload } = await jwtVerify(input, key, {
+        algorithms: ['HS256'],
+    });
+    return payload;
+}
+
+async function updateSession(request: NextRequest) {
+    const session = request.cookies.get('session')?.value;
+    if (!session) return
+    const parsed = await decrypt(session);
+    parsed.experied = new Date(Date.now() + 15 * 100);
+    const res = NextResponse.next();
+    res.cookies.set({
+        name: 'session',
+        value: await encrypt(parsed),
+        httpOnly: true,
+        expires: parsed.experied
+    });
+
+    return res;
+}
 
 export const authOptions: NextAuthOptions = {
     providers: [
@@ -34,39 +51,42 @@ export const authOptions: NextAuthOptions = {
         CredentialsProvider({
             name: "credentials",
             credentials: {
-                username: { label: "Username", type: "text", placeholder: "test" },
+                username: { label: "Username", type: "text" },
                 password: { label: "Password", type: "password" }
             },
 
             async authorize(credentials, req) {
-                // const user = await prisma.accounts.findFirst({
-                //     where: {
-                //         username: credentials?.username,
-                //         password: credentials?.password
-                //     }
-                // })
-                // Add logic here to look up the user from the credentials supplied
+                // let details = {
+                //     'username': credentials?.username,
+                //     'password': credentials?.password,
+                //     'grant_type': 'password'
+                // };
+
+                // var formBody = [];
+                // for (var property in details) {
+                //   var encodedKey = encodeURIComponent(property);
+                //   var encodedValue = encodeURIComponent(details[property]);
+                //   formBody.push(encodedKey + "=" + encodedValue);
+                // }
+                // formBody = formBody.join("&");
+
                 const res = await fetch(`${fileURL}/api/lyart/login`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
                     body: JSON.stringify({
-                        username: credentials?.username,
-                        password: credentials?.password,
+                        'username': credentials?.username,
+                        'password': credentials?.password,
                     })
                 })
 
                 const user = await res.json();
-
-                if (user) {
-                    // Any object returned will be saved in `user` property of the JWT
-                    const { password, ...userWithoutPass } = user;
-                    return userWithoutPass
-                } else {
-                    // If you return null then an error will be displayed advising the user to check their details.
-                    return null
-                }
+                console.log(user);
+                return {
+                    id: user.id,
+                    email: user.email,
+                    name: user.name,
+                    username: user.username,
+                    streamKey: user.streamKey
+                };
             }
 
         })
@@ -83,13 +103,13 @@ export const authOptions: NextAuthOptions = {
             }
         },
         async session({ session, token, user }) {
-            console.log(session, token, user)
+            // console.log(session, token, user)
             if (user) {
                 if (!user.image) {
                     const image = `${fileURL}/api/image?path=-1`
                     return { ...session, user: { image: image, ...token, ...user } };
                 } else {
-                    return { ...session, user: {...token, ...user} };
+                    return { ...session, user: { ...token, ...user } };
                 }
             } else {
                 const image = `${fileURL}/api/image?path=-1`
@@ -100,7 +120,7 @@ export const authOptions: NextAuthOptions = {
             // console.log(account, user, profile)
             if (account?.provider === 'github') {
                 if (user.email && user.image) {
-                    await prisma.accounts.upsert({
+                    await prisma.account.upsert({
                         where: {
                             email: user.email
                         },
@@ -113,6 +133,7 @@ export const authOptions: NextAuthOptions = {
                             username: profile!.login,
                             avatarLink: user.image,
                             streamKey: uuid(),
+                            tagName: makeid()
                         },
                         update: {
                             updatedAt: new Date()
@@ -123,7 +144,7 @@ export const authOptions: NextAuthOptions = {
                     return false;
                 }
             } else if (account?.provider === 'google') {
-                await prisma.accounts.upsert({
+                await prisma.account.upsert({
                     where: {
                         email: user.email!
                     },
@@ -136,6 +157,7 @@ export const authOptions: NextAuthOptions = {
                         username: profile!.given_name + profile!.family_name,
                         avatarLink: user.image!,
                         streamKey: uuid(),
+                        tagName: makeid()
                     },
                     update: {
                         updatedAt: new Date()

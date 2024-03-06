@@ -15,9 +15,10 @@ export async function POST(req: Request, res: Response) {
             des: body.des,
             view: 0,
             link: body.link,
-            channelId: body.channelId,
+            accountId: body.channelId,
             status: 0,
-            mediaType: 0
+            mediaType: 0,
+            thumbnailLink: ""
         }
     });
     return new Response(JSON.stringify(user))

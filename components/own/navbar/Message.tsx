@@ -87,7 +87,7 @@ export default function MessageBox() {
     }, [session, targetRoom]);
 
     useEffect(() => {
-        if (session && session.user) {
+        if (session && session.user && session.user.id) {
             axios.get(`/api/room?id=${session.user.id}`).then(res => {
                 setAvailableRoom(res.data)
             })
