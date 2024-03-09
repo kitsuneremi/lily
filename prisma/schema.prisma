@@ -191,7 +191,7 @@ model Account {
   id                 Int                  @id @default(autoincrement())
   email              String               @unique
   name               String
-  password           String
+  password           String?
   tagName            String               @unique @default(dbgenerated("uuid()"))
   username           String
   description        String?
@@ -199,8 +199,9 @@ model Account {
   bannerLink         String               @default("https://file.lyart.pro.vn/image/banner?id=-1")
   createdAt          DateTime             @default(now())
   updatedAt          DateTime             @updatedAt
-  streamKey          String               @unique
+  streamKey          String               @unique @default(dbgenerated("uuid()"))
   live               Boolean              @default(false)
+  provider           String
   ListVideo          ListVideo[]
   Media              Media[]
   Posts              Posts[]

@@ -1,11 +1,8 @@
 'use client'
 import VideoItem from "@/components/own/home/VideoItem";
-import { ChannelDataType, MediaDataType } from "@/types/type";
 
 export default function DirectHomePage({
     listVideo,
-}: {
-    listVideo: { videoData: MediaDataType; channelData: ChannelDataType }[];
 }) {
     const VideoItemRender = () => {
         if (listVideo) {

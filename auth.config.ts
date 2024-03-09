@@ -1,0 +1,45 @@
+import GitHub from "next-auth/providers/github"
+import Credentials from 'next-auth/providers/credentials'
+import Google from 'next-auth/providers/google'
+
+import type { NextAuthConfig } from "next-auth"
+
+export default {
+    providers: [GitHub, Google, Credentials({
+        name: "credentials",
+        credentials: {
+            username: { label: "Username", type: "text" },
+            password: { label: "Password", type: "password" }
+        },
+        authorize: async (credentials) => {
+            console.log('auth cfg ' + credentials.password + ' ' + credentials?.username);
+            if (credentials) {
+
+                //@ts-ignore
+                const username:string = credentials.username;
+                //@ts-ignore
+                const password:string = credentials.password;
+
+                const res = await fetch(`https://file.lyart.pro.vn/api/lyart/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+                    body: `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`
+                })
+                const user = await res.json();
+                console.log(user);
+                return {
+                    id: user.id,
+                    email: user.email,
+                    name: user.name,
+                    avatarLink: user.avatarLink,
+                    bannerLink: user.bannerLink,
+                    username: user.username,
+                    streamKey: user.streamKey
+                };
+            } else {
+                return {}
+            }
+
+        }
+    })],
+} satisfies NextAuthConfig 
