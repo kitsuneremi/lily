@@ -1,9 +1,7 @@
-import { authOptions } from "@/lib/auth"
 import prisma from "@/lib/prisma"
 import { Metadata } from "next"
-import { getServerSession } from "next-auth"
 import { redirect } from "next/navigation"
-
+import { auth } from '@/auth'
 export const metadata: Metadata = {
     title: 'register page',
     description: 'register page'
@@ -11,24 +9,24 @@ export const metadata: Metadata = {
 
 
 const hadChannelFetch = async () => {
-    const session = await getServerSession(authOptions);
-    if(session){
-        const channel = await prisma.channels.findFirst({
+    const session = await auth();
+    if (session) {
+        const channel = await prisma.account.findFirst({
             where: {
-                accountId: session.user.id
+                id: session.user.id
             }
         })
         return channel;
-    }else{
+    } else {
         redirect('/register')
     }
 }
 
 export default async function Layout({ children }: { children: React.ReactElement }) {
     const data = await hadChannelFetch();
-    if(data){
+    if (data) {
         return redirect(`/channel/${data.tagName}`)
-    }else{
+    } else {
         return (
             <>{children}</>
         )

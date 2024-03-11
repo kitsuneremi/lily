@@ -1,17 +1,10 @@
-'use client'
-import { authOptions } from "@/lib/auth";
-import { useSession } from "next-auth/react";
-import { useEffect } from "react";
-
-export default function TestPage() {
-    const { data: session } = useSession();
-    useEffect(() => {
-        console.log(session)
-    }, [session])
-
+import { auth } from '@/auth'
+export default async function TestPage() {
+    const session = await auth();
+    console.log(session)
     return (
         <div>
-            {session?.user.email}
+            {JSON.stringify(session?.user)}
         </div>
     )
 

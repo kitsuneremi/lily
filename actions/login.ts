@@ -24,18 +24,19 @@ export const login = async (values: z.infer<typeof loginSchema>) => {
         if (!await compare(values.password, account.password)) return { error: 'sai mật khẩu' }
 
         const { username, password } = account;
-        try{
+        try {
             const res = await signIn('credentials', {
                 username, password: values.password, redirectTo: '/'
             })
-            return Response.redirect(new URL('/'))
-        }catch(error){
-            if(error instanceof AuthError){
-                switch(error.type){
-                    case "CredentialsSignin": 
-                    return {error: 'invalid credentials'}
-                    default: 
-                    return {error: 'lỗi chưa xác định'} 
+            await Response.redirect(new URL('/'))
+            return { success: 'ok' }
+        } catch (error) {
+            if (error instanceof AuthError) {
+                switch (error.type) {
+                    case "CredentialsSignin":
+                        return { error: 'invalid credentials' }
+                    default:
+                        return { error: 'lỗi chưa xác định' }
                 }
             }
         }

@@ -5,7 +5,6 @@ import { Skeleton } from '@/components/ui/skeleton'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useSession, signOut } from "next-auth/react";
-import type { Session } from 'next-auth'
 import { CiMenuBurger } from "react-icons/ci";
 import ChannelRender from "@/components/own/navbar/CheckChannel";
 import {
@@ -16,21 +15,26 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
+import { auth } from '@/auth';
 
 
 export default function LastMenu() {
-    const { data: session, status: authenStatus } = useSession();
+    // const session = auth();
+    const { status: authenStatus, data: session } = useSession();
 
+    useEffect(() => {
 
-    const AccountAvatarRender =useCallback(() => {
+    }, [session])
+
+    const AccountAvatarRender = useCallback(() => {
 
         if (authenStatus == "loading") {
             return <Skeleton className="h-full w-full rounded-full" />;
-        } else if (authenStatus == "authenticated" && session && session.user.image != "") {
+        } else if (authenStatus == "authenticated" && session && session.user.avatarLink != "") {
             return (
                 <Image
-                    src={session.user.image}
+                    src={session.user.avatarLink}
                     className="rounded-full"
                     fill
                     sizes="1/1"
@@ -44,7 +48,7 @@ export default function LastMenu() {
                 </div>
             );
         }
-    },[authenStatus, session]);
+    }, [authenStatus, session]);
 
     return (
         <>

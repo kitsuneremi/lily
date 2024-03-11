@@ -1,6 +1,5 @@
 import { baseURL } from '@/lib/functional';
 import type { Metadata, ResolvingMetadata } from 'next'
-import { type  BigVideoDataType } from '@/types/type';
 import Watch from '@/indirect/watch/watch'
 type Props = {
     params: { link: string }
@@ -10,7 +9,7 @@ type Props = {
 export async function generateMetadata({ params, searchParams }: Props, parent: ResolvingMetadata): Promise<Metadata> {
 
     const link = params.link;
-    const data: BigVideoDataType = await fetchVideoData({ link: link });
+    const data = await fetchVideoData({ link: link });
     return {
         title: data.videoData.title,
         description: data.videoData.des
@@ -25,7 +24,7 @@ const fetchVideoData = async ({ link }: { link: string }) => {
             revalidate: 5
         }
     })
-    const data: BigVideoDataType = await res.json();
+    const data = await res.json();
     return data;
 }
 

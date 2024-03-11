@@ -1,11 +1,9 @@
 import Sidebar from "@/components/own/studio/sidebar";
 import Navbar from "@/components/own/studio/navbar";
 import { Metadata } from "next";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { auth } from "@/auth";
 import { redirect } from 'next/navigation'
 import { baseURL, RedirectIfNotAuthen } from "@/lib/functional";
-import { ChannelDataType } from "@/types/type";
 
 export const medata: Metadata = {
     title: "studio page",
@@ -31,9 +29,9 @@ export default async function Layout({
     children: React.ReactNode;
 }) {
 
-    const session = await getServerSession(authOptions);
+    const session = await auth();
     if (session) {
-        const channelData: ChannelDataType = await fetchChannelData(session.user.id)
+        const channelData = await fetchChannelData(session.user.id)
         if (channelData) {
             return (
                 <div className="w-screen h-screen">

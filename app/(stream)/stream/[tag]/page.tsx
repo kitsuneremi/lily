@@ -1,7 +1,5 @@
 import { baseURL } from '@/lib/functional';
 import type { Metadata, ResolvingMetadata } from 'next'
-import { type MediaDataType, BigVideoDataType, LiveData, ChannelDataType } from '@/types/type';
-import Watch from '@/indirect/watch/watch'
 import { redirect } from 'next/navigation'
 import StreamPage from '@/indirect/stream/stream'
 type Props = {
@@ -11,7 +9,7 @@ type Props = {
 
 export async function generateMetadata({ params, searchParams }: Props, parent: ResolvingMetadata): Promise<Metadata> {
     // const data: LiveData = await fetchVideoData({ tag: params.tag });
-    const channelData: ChannelDataType = await fetchChannelData({ tagName: params.tag });
+    const channelData = await fetchChannelData({ tagName: params.tag });
     return {
         title: `buổi phát trực tiếp của ${channelData.name}`,
         description: `buổi phát trực tiếp của ${channelData.name}`
@@ -31,7 +29,7 @@ const fetchVideoData = async ({ tag }: { tag: string }) => {
     } else if (res.status == 404) {
         return redirect(`/stream/${tag}/no-stream`)
     } else {
-        const data: MediaDataType = await res.json();
+        const data = await res.json();
         if (data.mediaType == 2) {
             return redirect(`/watch/${data.link}`)
         }
@@ -44,13 +42,13 @@ const fetchChannelData = async ({ tagName }: { tagName: string }) => {
         method: 'GET',
     })
 
-    const data: ChannelDataType = await res.json();
+    const data = await res.json();
     return data;
 }
 
-export default async ({ params, searchParams }: Props) => {
-    const data: MediaDataType = await fetchVideoData({ tag: params.tag })
-    const channelData: ChannelDataType = await fetchChannelData({ tagName: params.tag });
+export default async ({ params }: Props) => {
+    const data = await fetchVideoData({ tag: params.tag })
+    const channelData = await fetchChannelData({ tagName: params.tag });
     return (
         <StreamPage streamData={data} channelData={channelData} />
     )

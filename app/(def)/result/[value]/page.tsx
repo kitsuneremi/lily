@@ -1,9 +1,7 @@
 import ResultPage from "@/indirect/result/Result";
-import { authOptions } from "@/lib/auth";
 import { baseURL } from "@/lib/functional";
-import { ChannelDataType, MediaDataType } from "@/types/type";
 import { ResolvingMetadata, Metadata } from "next";
-import { getServerSession } from "next-auth";
+import { auth } from '@/auth'
 type Props = {
     params: { value: string };
     searchParams: { [key: string]: string | string[] | undefined };
@@ -29,10 +27,7 @@ const prefetch = async ({ value }: { value: string }) => {
 };
 
 export default async function Page({ params, searchParams }: Props) {
-    const data: {
-        channels: ChannelDataType[];
-        videos: MediaDataType[];
-    } = await prefetch({ value: params.value });
-    const session = await getServerSession(authOptions);
-    return <ResultPage data={data} session={session}/>;
+    const data = await prefetch({ value: params.value });
+    const session = await auth();
+    return <ResultPage data={data} session={session} />;
 }

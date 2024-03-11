@@ -1,5 +1,4 @@
 "use client";
-import { ChannelDataType } from "@/types/type";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { redirect, useParams, usePathname, useRouter } from "next/navigation";
@@ -7,7 +6,6 @@ import axios from "axios";
 import { baseURL } from "@/lib/functional";
 import { Skeleton } from "@/components/ui/skeleton";
 import SubcribeButton from "@/components/own/SubcribeButton";
-import { useSession } from "next-auth/react";
 type menuItem = {
     id: number;
     name: string;
@@ -35,10 +33,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     const [tab, setTab] = useState<number>(0);
     const params: { tagName: string } = useParams();
     const url = usePathname();
-
-    const { data: session, status: authenStatus } = useSession()
     const router = useRouter();
-    const [channelData, setChannelData] = useState<ChannelDataType>();
+    const [channelData, setChannelData] = useState();
 
     useEffect(() => {
         axios
@@ -48,7 +44,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 },
             })
             .then((res) => setChannelData(res.data));
-    }, ['']);
+    }, [params.tagName]);
 
     useEffect(() => {
         listMenuItem.map((item) => {

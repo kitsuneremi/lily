@@ -62,8 +62,8 @@ export const getFileExt = (fileName: File) => {
     return fileName.name.substring(fileName.name.lastIndexOf(".") + 1);
 };
 
-export const baseURL = 'http://localhost:3000'
-// export const baseURL = 'https://www.lyart.pro.vn'
+// export const baseURL = 'http://localhost:3000'
+export const baseURL = 'https://www.lyart.pro.vn'
 export const fileURL = 'https://file.lyart.pro.vn'
 export const liveURL = 'https://live.lyart.pro.vn'
 export const liveSocketURL = `https://socket.lyart.pro.vn/live`
@@ -71,9 +71,6 @@ export const chatSocketURL = `https://socket.lyart.pro.vn/chat`
 
 
 export const rtmpUrl = `rtmp://lyart.pro.vn/live`
-
-
-
 
 const formatHelper = (time: number) => {
     if (time >= 3600) {

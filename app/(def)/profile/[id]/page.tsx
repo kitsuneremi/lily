@@ -1,9 +1,6 @@
 'use server'
-import { authOptions } from "@/lib/auth";
 import { baseURL } from "@/lib/functional";
-import { ChannelDataType, MediaDataType } from "@/types/type";
 import { ResolvingMetadata, Metadata } from "next";
-import { getServerSession } from "next-auth";
 import dynamic from 'next/dynamic'
 import { Suspense } from "react";
 

@@ -3,7 +3,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { FormatDateTime, ReduceString } from "@/lib/functional";
 import { useCallback, useEffect, useState } from "react";
-import { MediaDataType, ChannelDataType } from "@/types/type";
 import {
     Tooltip,
     TooltipContent,
@@ -31,9 +30,6 @@ const borderTransition = {
 export default function VideoItem({
     videoData,
     channelData,
-}: {
-    videoData: MediaDataType;
-    channelData: ChannelDataType;
 }) {
     const genLink = useCallback(() => {
         if (videoData.mediaType == 1) {

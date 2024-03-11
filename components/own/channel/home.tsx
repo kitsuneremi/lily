@@ -1,11 +1,7 @@
 "use client";
-import { BigVideoDataType, ChannelDataType, MediaDataType } from "@/types/type";
-import { FaPlay } from "react-icons/fa";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { FormatDateTime } from "@/lib/functional";
-import { ref, getDownloadURL } from "firebase/storage";
-import { storage } from "@/lib/firebase";
 import axios from "axios";
 import { redirect } from "next/navigation";
 import {
@@ -19,10 +15,8 @@ import {
 
 export default function ChannelHome({
     channelData,
-}: {
-    channelData: ChannelDataType;
 }) {
-    const [listPo, setListPo] = useState<BigVideoDataType[]>([]);
+    const [listPo, setListPo] = useState([]);
 
     useEffect(() => {
         axios
@@ -34,7 +28,7 @@ export default function ChannelHome({
             .then((res) => {
                 setListPo(res.data);
             });
-    }, []);
+    }, [channelData.id]);
 
     return (
         <div className="flex flex-col">
@@ -63,7 +57,7 @@ export default function ChannelHome({
     );
 }
 
-const VideoItem = ({ videoData }: { videoData: MediaDataType }) => {
+const VideoItem = ({ videoData }) => {
     return (
         <div
             className="flex flex-col cursor-pointer w-full h-max shadow-lg p-3 border-[1px] border-slate-600 border-opacity-10 rounded-xl hover:scale-105   "

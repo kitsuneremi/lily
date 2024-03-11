@@ -3,8 +3,6 @@ import NextImage from "next/image";
 import { useState, useCallback, useRef, useEffect } from "react";
 import { useDropzone, Accept } from "react-dropzone";
 import { PinturaEditorModal } from "@pqina/react-pintura";
-import { uploadBytes, ref } from "firebase/storage";
-import { storage } from "@/lib/firebase";
 import Link from "next/link";
 import { useToast } from "@/components/ui/use-toast";
 import axios from "axios";
@@ -107,7 +105,7 @@ export default function Page() {
                     }
                 });
         }
-    }, [session]);
+    }, [router, session]);
 
     const PinturaRef = useRef<PinturaEditorModal>(null);
 

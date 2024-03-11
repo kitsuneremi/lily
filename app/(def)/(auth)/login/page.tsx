@@ -24,6 +24,7 @@ import { FormSuccess } from '@/components/form-success'
 import { login } from '@/actions/login'
 import { loginSchema } from "@/schema/Schema"
 import Link from 'next/link'
+import { stringify } from "querystring"
 
 export default function Page() {
 
@@ -44,10 +45,10 @@ export default function Page() {
     function onSubmit(values: z.infer<typeof loginSchema>) {
         startTransition(async () => {
             const res = await login(values);
-            if (res && res.error) {
+            if (res?.error) {
                 setError(res.error)
             } else {
-                setSuccess('Thành công, hãy chờ chút')
+                setSuccess(res?.success)
             }
         })
     }

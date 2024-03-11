@@ -1,7 +1,6 @@
 import { Metadata } from "next"
 import { redirect } from 'next/navigation'
 import prisma from '@/lib/prisma'
-import { ChannelDataType } from '@/types/type'
 import Videos from "@/components/own/channel/videos"
 
 export const metadata: Metadata = {
@@ -10,7 +9,7 @@ export const metadata: Metadata = {
 }
 
 const fetchData = async ({ tagName }: { tagName: string }) => {
-    const channel = await prisma.channels.findUnique({
+    const channel = await prisma.account.findUnique({
         where: {
             tagName: tagName
         }
@@ -20,10 +19,10 @@ const fetchData = async ({ tagName }: { tagName: string }) => {
     if (channel) {
         const sub = await prisma.subcribes.count({
             where: {
-                channelId: channel.id
+                accountId: channel.id
             }
         })
-        const channelData: ChannelDataType = { sub: sub, ...channel };
+        const channelData = { sub: sub, ...channel };
         return channelData;
     } else {
         redirect('/channel/not-found')

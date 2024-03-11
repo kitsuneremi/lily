@@ -4,9 +4,7 @@ import { useRouter } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 import MenuItem from "./MenuItem";
 import Image from "next/image";
-import axios from 'axios'
 import { useState, useEffect, memo } from "react";
-import { ChannelDataType } from "@/types/type";
 import { useDispatch } from "react-redux";
 import { set, fetchChannelData } from '@/redux/features/current-channel-slice'
 import { AppDispatch, useAppSelector } from "@/redux/storage";

@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useState } from "react";
-import { ChannelDataType, MediaDataType } from "@/types/type";
 import { FaPlay } from "react-icons/fa";
 import Image from "next/image";
 import { FormatDateTime } from "@/lib/functional";
@@ -11,10 +10,8 @@ import { redirect } from "next/navigation";
 import { useEffectOnce } from "usehooks-ts";
 export default function Videos({
     channelData,
-}: {
-    channelData: ChannelDataType;
 }) {
-    const [listVideoData, setListVideoData] = useState<MediaDataType[]>([]);
+    const [listVideoData, setListVideoData] = useState([]);
 
     useEffectOnce(() => {
         axios
@@ -39,7 +36,7 @@ export default function Videos({
     );
 }
 
-const VideoItem = ({ videoData }: { videoData: MediaDataType }) => {
+const VideoItem = ({ videoData }: { videoData }) => {
     const [img, setImg] = useState<string>("");
     const videoImageStorageRef = ref(
         storage,

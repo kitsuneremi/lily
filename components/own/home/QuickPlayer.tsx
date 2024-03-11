@@ -1,4 +1,3 @@
-import { MediaDataType } from '@/types/type';
 import React, { useRef, useEffect } from 'react';
 import videojs from 'video.js';
 import 'video.js/dist/video-js.css';
@@ -19,7 +18,7 @@ const QuickPlayer = (
     {
         className,
         mediaData
-    }: { className?: string, mediaData: MediaDataType }) => {
+    }) => {
     const videoRef = useRef<HTMLDivElement>(null);
     const playerRef = useRef<any>(null)
 
