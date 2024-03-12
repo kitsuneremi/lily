@@ -32,7 +32,7 @@ const videosQuery = async (keyword: string) => {
             }
         },
         include: {
-            Channels: true
+            Account: true
         }
     })
 
