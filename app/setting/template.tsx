@@ -1,13 +1,11 @@
 "use client";
-import React, { Ref, useEffect, useState, useRef, Suspense } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { redirect, usePathname, useRouter } from "next/navigation";
+import { redirect, usePathname } from "next/navigation";
 
 import Sidebar from "@/components/own/AbsoluteSidebar";
 import Navbar from "@/components/own/Navbar";
-import { useOnClickOutside } from "usehooks-ts";
 import { useDispatch } from "react-redux";
-import { close, reverse, open } from "@/redux/features/sidebar-slice";
 
 const sideMenuItem = [
     { id: 0, name: "Tài khoản", href: "/setting/account" },

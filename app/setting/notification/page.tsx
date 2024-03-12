@@ -1,9 +1,8 @@
-import { ChannelDataType, SessionDataType } from "@/types/type"
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { auth } from "@/auth"
+
 export default async function Page() {
 
-    const session: SessionDataType | null = await getServerSession(authOptions);
+    const session = await auth();
 
     return (
         <div className="flex-1 flex justify-center">

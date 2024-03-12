@@ -3,15 +3,8 @@ import NextImage from "next/image";
 import { useState, useCallback, useRef, useEffect } from "react";
 import { useDropzone, Accept } from "react-dropzone";
 import { PinturaEditorModal } from "@pqina/react-pintura";
-import { uploadBytes, ref, getDownloadURL } from "firebase/storage";
-import { storage } from "@/lib/firebase";
 import Link from "next/link";
-import { useToast } from "@/components/ui/use-toast";
-import axios from "axios";
-import { useSession } from "next-auth/react";
-import { baseURL } from "@/lib/functional";
-import { ChannelDataType, SessionDataType } from "@/types/type";
-
+import axios from 'axios'
 import "@pqina/pintura/pintura.css";
 import {
     // editor
@@ -35,17 +28,14 @@ import {
     markup_editor_defaults,
     markup_editor_locale_en_gb,
 } from "@pqina/pintura";
-import { redirect, useRouter } from "next/navigation";
-import { useEffectOnce } from "usehooks-ts";
 import { Skeleton } from "@/components/ui/skeleton";
+import { fileURL } from "@/lib/functional";
+import { useSession } from "next-auth/react";
 setPlugins(plugin_crop, plugin_finetune, plugin_filter, plugin_annotate);
 
 const editorDefaults = {
     utils: [
         "crop",
-        // "finetune",
-        // "filter",
-        // "annotate"
     ],
     imageReader: createDefaultImageReader(),
     imageWriter: createDefaultImageWriter(),
@@ -64,53 +54,17 @@ const editorDefaults = {
 };
 
 export default function Page({
-    session,
     channelData,
-}: {
-    session: SessionDataType | null;
-    channelData: ChannelDataType;
 }) {
-    const [accountImg, setAccountImg] = useState<string | undefined>("");
-    const [channelImg, setChannelImg] = useState<string>();
     const [originalAvatar, setOriginalAvatar] = useState<{
         file: File;
         width: number;
         height: number;
     } | null>(null);
 
-    const [visible, setVisible] = useState<boolean>(false);
+    const { data: session, status: authenStatus } = useSession();
 
-    useEffect(() => {
-        if (session && session.user) {
-            const accountAvatarRef = ref(
-                storage,
-                `/account/avatars/${session.user.id}`
-            );
-            getDownloadURL(accountAvatarRef)
-                .then((url) => {
-                    setAccountImg(url);
-                })
-                .catch((e) => {
-                    console.log(e);
-                    setAccountImg(undefined);
-                });
-        }
-    }, [session]);
-    useEffectOnce(() => {
-        if (channelData) {
-            const channelAvatarRef = ref(
-                storage,
-                `/channel/avatars/${channelData.tagName}`
-            );
-            getDownloadURL(channelAvatarRef)
-                .then((url) => {
-                    setChannelImg(url);
-                })
-                .catch((e) => {
-                    console.log(e);
-                });
-        }
-    });
+    const [visible, setVisible] = useState<boolean>(false);
 
     const PinturaRef = useRef<PinturaEditorModal>(null);
 
@@ -168,59 +122,32 @@ export default function Page({
 
     const handleUploadImage = () => {
         if (originalAvatar && originalAvatar.height == originalAvatar.width) {
-            const accountAvatarRef = ref(
-                storage,
-                `/account/avatars/${session?.user?.id}`
-            );
-            uploadBytes(accountAvatarRef, originalAvatar.file).then(
-                (snapshot) => {
-                    console.log(snapshot);
-                    getDownloadURL(accountAvatarRef)
-                        .then((url) => {
-                            setAccountImg(url);
-                        })
-                        .catch((e) => {
-                            console.log(e);
-                        });
-                }
-            );
+            const formData = new FormData;
+            formData.append("image", originalAvatar.file);
+            axios.post(`${fileURL}/api/image/avatar?id=${session}`)
         }
     };
 
     const AccountAvatarRender = () => {
-        if (accountImg == "") {
+        if (authenStatus == "loading") {
             return (
                 <div>
                     <Skeleton className="h-24 w-24 rounded-full" />
                     <p className="text-center">loading...</p>
                 </div>
             );
-        } else if (accountImg == undefined) {
-            return (
-                <div className="relative w-24 h-24">
-                    <NextImage
-                        alt=""
-                        fill
-                        src={
-                            "https://danviet.mediacdn.vn/upload/2-2019/images/2019-04-02/Vi-sao-Kha-Banh-tro-thanh-hien-tuong-dinh-dam-tren-mang-xa-hoi-khabanh-1554192528-width660height597.jpg"
-                        }
-                        sizes={"1/1"}
-                        className="rounded-full animate-spin"
-                    />
-                </div>
-            );
         } else {
-            return (
-                <div className="relative w-24 h-24">
-                    <NextImage
-                        alt=""
-                        fill
-                        src={accountImg}
-                        sizes={"1/1"}
-                        className="rounded-full"
-                    />
-                </div>
-            );
+            return <div className="relative w-24 h-24">
+                <NextImage
+                    alt=""
+                    fill
+                    src={
+                        session?.user.avatarLink ? session.user.avatarLink : "https://danviet.mediacdn.vn/upload/2-2019/images/2019-04-02/Vi-sao-Kha-Banh-tro-thanh-hien-tuong-dinh-dam-tren-mang-xa-hoi-khabanh-1554192528-width660height597.jpg"
+                    }
+                    sizes={"1/1"}
+                    className="rounded-full animate-spin"
+                />
+            </div>
         }
     };
 
@@ -233,9 +160,9 @@ export default function Page({
                         <div className="flex gap-3 items-center">
                             <AccountAvatarRender />
                             <div className="flex flex-col gap-2">
-                                {!accountImg && (
+                                {!session.user.avatarLink && (
                                     <>
-                                        <p className="text-sm">
+                                        <p className="text-sm font-semibold text-slate-600">
                                             bạn chưa tải ảnh lên cho tài khoản.
                                             hãy bấm để thay đổi ảnh mặc định
                                         </p>
@@ -337,42 +264,6 @@ export default function Page({
                         cần có một kênh để tải video của riêng mình lên, bình
                         luận về các video hoặc tạo danh sách phát.
                     </p>
-                    <div className="flex lg:gap-7 md:gap-5 sm:gap-3">
-                        <p>Kênh của bạn</p>
-                        <div className="flex flex-col gap-2">
-                            {channelData ? (
-                                <>
-                                    <div className="flex items-center gap-3">
-                                        {channelImg && (
-                                            <div className="relative w-10 h-10">
-                                                <NextImage
-                                                    alt=""
-                                                    fill
-                                                    src={channelImg}
-                                                    sizes={"1/1"}
-                                                    className="rounded-full"
-                                                />
-                                            </div>
-                                        )}
-                                        <p>{channelData?.name}</p>
-                                    </div>
-                                    <Link
-                                        href={"/station"}
-                                        className="text-cyan-600"
-                                    >
-                                        Quản lý kênh của bạn
-                                    </Link>
-                                </>
-                            ) : (
-                                <>
-                                    <Link href={"/regchannel"}>
-                                        Tạo 1 kênh để đăng tải nội dung mình
-                                        thích
-                                    </Link>
-                                </>
-                            )}
-                        </div>
-                    </div>
                 </div>
             </div>
         </>

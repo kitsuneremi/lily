@@ -1,9 +1,4 @@
-import Link from "next/link";
-import Image from "next/image";
-import axios from "axios";
-import { ChannelDataType, SessionDataType } from "@/types/type";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { auth } from '@/auth'
 import { baseURL } from "@/lib/functional";
 import ChildPage from '@/components/own/setting/account/Page'
 
@@ -21,14 +16,14 @@ const fetchChannelData = async (accountId: number) => {
 };
 
 export default async function Page() {
-    const session: SessionDataType | null = await getServerSession(authOptions);
+    const session = await auth();
     const channelData = session
-        ? await fetchChannelData(session.user.id) 
+        ? await fetchChannelData(session.user.id)
         : null;
 
     return (
         <div className="flex-1 flex flex-col">
-            <ChildPage session={session} channelData={channelData}/>
+            <ChildPage channelData={channelData} />
         </div>
     );
 }
