@@ -23,8 +23,6 @@ export default {
 
                 const res = await fetch(`${baseURL}/api/account/data`, {
                     method: 'POST',
-                    // headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
-                    // body: `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`
                     body: JSON.stringify({
                         username: username,
                         password: password

@@ -31,7 +31,7 @@ export default function LastMenu() {
 
         if (authenStatus == "loading") {
             return <Skeleton className="h-full w-full rounded-full" />;
-        } else if (authenStatus == "authenticated" && session && session.user.avatarLink != "") {
+        } else if (authenStatus == "authenticated" && session && session.user && session.user.avatarLink != "") {
             return (
                 <Image
                     src={session.user.avatarLink}
@@ -68,7 +68,7 @@ export default function LastMenu() {
                                         onClickCapture={() => {
                                             signOut({
                                                 redirect: true,
-                                                callbackUrl: "/register",
+                                                callbackUrl: "/login",
                                             });
                                         }}
                                     >
@@ -85,7 +85,7 @@ export default function LastMenu() {
                         ) : (
                             <div className="flex flex-col gap-2">
                                 <MenuItem className="bg-gradient-to-r from-cyan-200 to-cyan-400 dark:from-cyan-400 dark:to-cyan-200 dark:hover:from-cyan-600 dark:hover:to-cyan-300 hover:bg-gradient-to-l hover:from-cyan-300 hover:to-cyan-600">
-                                    <Link href={"/register"}>
+                                    <Link href={"/login"}>
                                         Đăng nhập
                                     </Link>
                                 </MenuItem>

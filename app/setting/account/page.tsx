@@ -1,28 +1,26 @@
 import { auth } from '@/auth'
-import { baseURL } from "@/lib/functional";
 import ChildPage from '@/components/own/setting/account/Page'
+import prisma from '@/lib/prisma';
+import { redirect } from 'next/navigation';
 
 const fetchChannelData = async (accountId: number) => {
-    const data = await fetch(
-        `${baseURL}/api/channel/data?accountId=${accountId}`,
-        {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-            },
+    const data = await prisma.account.findUnique({
+        where: {
+            id: accountId
         }
-    );
-    return data.json();
+    })
+
+    return data
 };
 
 export default async function Page() {
     const session = await auth();
-    const channelData = session
-        ? await fetchChannelData(session.user.id)
-        : null;
+    if(!session) return redirect('/login');
+    const channelData = await fetchChannelData(session.user.id);
 
     return (
         <div className="flex-1 flex flex-col">
+            {/* @ts-ignore */}
             <ChildPage channelData={channelData} />
         </div>
     );
