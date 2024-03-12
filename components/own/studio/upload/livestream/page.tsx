@@ -9,7 +9,6 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
 import { baseURL, chatSocketURL, rtmpUrl } from "@/lib/functional";
-import { ChannelDataType, MediaDataType } from "@/types/type";
 import axios from "axios";
 import { Session } from "next-auth";
 import { useCallback, useEffect, useState } from "react";
@@ -19,6 +18,7 @@ import { useMediaQuery, useOnClickOutside } from "usehooks-ts";
 import Image from "next/image";
 import { Skeleton } from "@/components/ui/skeleton";
 import io from "socket.io-client";
+import { Account, Media } from "@/prisma/type";
 
 type Message = {
     accountId: number;
@@ -35,7 +35,7 @@ export default function Page({
     channelData,
 }: {
     session: Session;
-    channelData: ChannelDataType;
+    channelData: Account;
 }) {
     const [value, copy] = useCopyToClipboard();
     const [title, setTitle] = useState<string>("");
@@ -43,7 +43,7 @@ export default function Page({
     const [mode, setMode] = useState<number>(0);
 
     const [tab, setTab] = useState<number>(0);
-    const [streamData, setStreamData] = useState<MediaDataType | null>();
+    const [streamData, setStreamData] = useState<Media | null>();
     const [isLive, setIsLive] = useState<boolean>(
         channelData.live ? true : false
     );
@@ -86,7 +86,7 @@ export default function Page({
             const data = {
                 accountId: session.user.id,
                 name: channelData.name,
-                image: channelData.avatarImage || session.user.image,
+                image: channelData.avatarLink || session.user.avatarLink,
                 content: commentValue,
                 room: streamData.id,
             };
@@ -159,7 +159,7 @@ export default function Page({
                     }
                 });
         }
-    }, [streamData]);
+    }, [des, mode, session.user.id, streamData, title, toast]);
 
     const handleUpdateStreamData = () => {
         if (streamData) {
@@ -281,9 +281,9 @@ export default function Page({
                                 <div className="h-full flex items-center">
                                     <div className="w-7 h-7 relative">
                                         {channelData &&
-                                        channelData.avatarImage ? (
+                                        channelData.avatarLink ? (
                                             <Image
-                                                src={channelData.avatarImage}
+                                                src={channelData.avatarLink}
                                                 alt=""
                                                 fill
                                                 className="rounded-full"
@@ -330,7 +330,7 @@ export default function Page({
                 </div>
             </>
         );
-    }, [channelData, list, streamData]);
+    }, [channelData, commentValue, list, sendComment, streamData]);
 
     const tabRender = () => {
         if (tab == 0) {

@@ -2,6 +2,7 @@ import React, { useRef, useEffect } from 'react';
 import videojs from 'video.js';
 import 'video.js/dist/video-js.css';
 import { fileURL } from '@/lib/functional'
+import { Media } from '@/prisma/type';
 
 const genlink = ({ type, link }: { type: number, link: string }) => {
     if (type == 0) {
@@ -18,7 +19,7 @@ const QuickPlayer = (
     {
         className,
         mediaData
-    }) => {
+    }: {className: string, mediaData: Media}) => {
     const videoRef = useRef<HTMLDivElement>(null);
     const playerRef = useRef<any>(null)
 

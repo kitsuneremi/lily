@@ -1,8 +1,5 @@
 "use client";
-import { authOptions } from "@/lib/auth";
-import { baseURL } from "@/lib/functional";
 import axios from "axios";
-import { Session, getServerSession } from "next-auth";
 import { useSession } from "next-auth/react";
 import { useEffect, useState, useRef } from "react";
 import {

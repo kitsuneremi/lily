@@ -1,5 +1,4 @@
 "use client";
-import { CommentDataType } from "@/types/type";
 import { FormatDateTime, baseURL } from "@/lib/functional";
 import { useEffect, useState } from "react";
 import {
@@ -11,10 +10,8 @@ import {
 } from "react-icons/ai";
 import axios from "axios";
 import Image from "next/image";
-import { ref, getDownloadURL } from "firebase/storage";
-import { storage } from "@/lib/firebase";
-import { Skeleton } from "@/components/ui/skeleton";
 import { useEffectOnce } from "usehooks-ts";
+import { Comment } from "@/prisma/type";
 
 type AccountDataType = {
     id: number;
@@ -26,7 +23,7 @@ type AccountDataType = {
     updatedAt: Date;
 };
 
-export default function CommentItem({ cmt }: { cmt: CommentDataType }) {
+export default function CommentItem({ cmt }: { cmt: Comment }) {
     const [like, setLike] = useState<boolean>(false);
     const [dislike, setDislike] = useState<boolean>(false);
     const [accountData, setAccountData] = useState<AccountDataType>();
@@ -43,9 +40,9 @@ export default function CommentItem({ cmt }: { cmt: CommentDataType }) {
     });
 
     const ImageRender = () => {
-        if (cmt.accountImage) {
+        if (cmt.account.avatarLink) {
             return (
-                <Image src={cmt.accountImage} fill alt="" className="rounded-full" />
+                <Image src={cmt.account.avatarLink} fill alt="" className="rounded-full" />
             );
         } else {
             return (

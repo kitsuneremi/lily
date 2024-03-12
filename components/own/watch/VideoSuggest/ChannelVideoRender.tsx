@@ -1,6 +1,6 @@
-import { MediaDataType, VideoWithoutComment } from "@/types/type";
 import ThisChannelVideoItem from "@/components/own/watch/ThisChannelVideoItem";
-export default  function ChannelVideoRender({ thisChannelVideo }: { thisChannelVideo: MediaDataType[] }) {
+import { Media } from "@/prisma/type";
+export default  function ChannelVideoRender({ thisChannelVideo }: { thisChannelVideo: Media[] }) {
     return (
         <>
             {thisChannelVideo?.map((video, index) => {

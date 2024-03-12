@@ -8,9 +8,10 @@ import { storage } from "@/lib/firebase";
 import axios from "axios";
 import { redirect } from "next/navigation";
 import { useEffectOnce } from "usehooks-ts";
+import { Account, Media } from "@/prisma/type";
 export default function Videos({
     channelData,
-}) {
+}: { channelData: Account }) {
     const [listVideoData, setListVideoData] = useState([]);
 
     useEffectOnce(() => {
@@ -36,22 +37,14 @@ export default function Videos({
     );
 }
 
-const VideoItem = ({ videoData }: { videoData }) => {
-    const [img, setImg] = useState<string>("");
-    const videoImageStorageRef = ref(
-        storage,
-        `/video/thumbnails/${videoData.link}`
-    );
-    useEffect(() => {
-        getDownloadURL(videoImageStorageRef).then((url) => setImg(url));
-    }, []);
+const VideoItem = ({ videoData }: { videoData: Media }) => {
     return (
         <div
             className="flex flex-col cursor-pointer"
             onClick={() => redirect(`/watch/${videoData.link}`)}
         >
             <div className="relative w-full pt-[56.25%]">
-                <Image src={img} alt="" sizes="16/9" fill />
+                <Image src={videoData.thumbnailLink} alt="" sizes="16/9" fill />
             </div>
             <p>{videoData.title}</p>
             <div className="flex justify-between">

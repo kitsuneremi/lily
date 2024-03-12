@@ -1,4 +1,3 @@
-import { BigVideoDataType, CommentDataType } from "@/types/type";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -25,10 +24,11 @@ import VideoSuggest from "@/components/own/watch/VideoSuggest/VideoSuggest";
 import Properties from "@/components/own/watch/Properties";
 import Description from "@/components/own/watch/Description";
 import { FaXmark } from "react-icons/fa6";
+import { Media, Comment } from "@/prisma/type";
 
-export default function Expand({ fullscreen, videoData }: { fullscreen: boolean, videoData: BigVideoDataType}) {
+export default function Expand({ fullscreen, videoData }: { fullscreen: boolean, videoData: Media}) {
     const { data: session, status } = useSession();
-    const [commentData, setCommentData] = useState<CommentDataType[]>();
+    const [commentData, setCommentData] = useState<Comment[]>();
     const commentInputRef = useRef<HTMLInputElement>(null);
     const boxRef = useRef<HTMLDivElement>(null);
 
@@ -57,7 +57,7 @@ export default function Expand({ fullscreen, videoData }: { fullscreen: boolean,
         axios
             .get("/api/comments/data", {
                 params: {
-                    videoId: videoData.videoData.id,
+                    videoId: videoData.id,
                 },
             })
             .then((res) => {
@@ -71,7 +71,7 @@ export default function Expand({ fullscreen, videoData }: { fullscreen: boolean,
             if (status == "authenticated") {
                 axios
                     .post("/api/comments/create", {
-                        videoId: videoData.videoData.id,
+                        videoId: videoData.id,
                         //@ts-ignore
                         accountId: session.user.id,
                         content: commentInputRef.current?.value,
@@ -123,7 +123,7 @@ export default function Expand({ fullscreen, videoData }: { fullscreen: boolean,
                 <Image
                     alt=""
                     className="my-auto bg-transparent rounded-full"
-                    src={session.user.image}
+                    src={session.user.avatarLink}
                     sizes="1/1"
                     fill
                 />
@@ -150,8 +150,8 @@ export default function Expand({ fullscreen, videoData }: { fullscreen: boolean,
                     <div className="flex gap-2 items-center">
                         <div className="flex gap-2 max-[400px]:flex-col">
                             <div className="flex gap-2 items-center">
-                                <p>{videoData.videoData.mediaType == 0 ? 'Bình luận' : videoData.videoData.mediaType == 1 ? 'Trò chuyện trực tiếp' : 'Trò chuyện trước đó'}</p>
-                                <p>{videoData.commentData.length}</p>
+                                <p>{videoData.mediaType == 0 ? 'Bình luận' : videoData.mediaType == 1 ? 'Trò chuyện trực tiếp' : 'Trò chuyện trước đó'}</p>
+                                <p>{videoData.Comment.length}</p>
                             </div>
                             <DropdownMenu>
                                 <DropdownMenuTrigger className="outline-none">
@@ -220,11 +220,11 @@ export default function Expand({ fullscreen, videoData }: { fullscreen: boolean,
             return (
                 <>
                     <div className="flex gap-2">
-                        <p>{videoData.videoData.mediaType == 0 ? 'Bình luận' : videoData.videoData.mediaType == 1 ? 'Trò chuyện trực tiếp' : 'Bình luận'}</p>
-                        <p>{videoData.commentData.length}</p>
+                        <p>{videoData.mediaType == 0 ? 'Bình luận' : videoData.mediaType == 1 ? 'Trò chuyện trực tiếp' : 'Bình luận'}</p>
+                        <p>{videoData.Comment.length}</p>
                     </div>
 
-                    {commentData.length > 0 && videoData.videoData.mediaType == 1 ?
+                    {commentData.length > 0 && videoData.mediaType == 1 ?
                         <div className="flex gap-2">
                             <div className="w-5 h-5 relative">
                                 {HandleCurrentAccountAvatarRender()}

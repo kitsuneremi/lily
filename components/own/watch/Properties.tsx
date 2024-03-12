@@ -1,4 +1,3 @@
-import { BigVideoDataType } from "@/types/type";
 import { useState, useEffect, useCallback } from "react";
 import { AiOutlineLike, AiOutlineDislike, AiFillLike, AiFillDislike } from "react-icons/ai";
 import { MdFileDownload } from "react-icons/md";
@@ -12,8 +11,9 @@ import Link from "next/link";
 import { Skeleton } from "@/components/ui/skeleton";
 import SubcribeButton from "@/components/own/SubcribeButton";
 import { AiOutlineShareAlt } from "react-icons/ai";
+import { Media } from "@/prisma/type";
 
-export default function Properties({ videoData, fullscreen }: { videoData: BigVideoDataType, fullscreen: boolean }) {
+export default function Properties({ videoData, fullscreen }: { videoData: Media, fullscreen: boolean }) {
 
     const [like, setLike] = useState<boolean>(false);
     const [dislike, setDislike] = useState<boolean>(false);
@@ -26,7 +26,7 @@ export default function Properties({ videoData, fullscreen }: { videoData: BigVi
                 .get("/api/like/find", {
                     params: {
                         accountId: session.user.id,
-                        targetId: videoData.channelData.id,
+                        targetId: videoData.accountId,
                     },
                     headers: {
                         Authorization: `Bearer ${session.user.accessToken}`,
@@ -57,7 +57,7 @@ export default function Properties({ videoData, fullscreen }: { videoData: BigVi
                 axios.post("/api/like/delete", {
                     // @ts-ignore
                     accountId: session.user.id,
-                    targetId: videoData.channelData.id,
+                    targetId: videoData.accountId,
                 });
             } else {
                 setLike(true);
@@ -65,7 +65,7 @@ export default function Properties({ videoData, fullscreen }: { videoData: BigVi
                 axios.post("/api/like/add", {
                     // @ts-ignore
                     accountId: session.user.id,
-                    targetId: videoData.channelData.id,
+                    targetId: videoData.accountId,
                     type: 0,
                 });
             }
@@ -80,13 +80,13 @@ export default function Properties({ videoData, fullscreen }: { videoData: BigVi
                 axios.post("/api/like/delete", {
                     // @ts-ignore
                     accountId: session.user.id,
-                    targetId: videoData.channelData.id,
+                    targetId: videoData.accountId,
                 });
             } else {
                 axios.post("/api/like/add", {
                     // @ts-ignore
                     accountId: session.user.id,
-                    targetChannel: videoData.channelData.id,
+                    targetChannel: videoData.accountId,
                     type: 1,
                 });
             }
@@ -99,7 +99,7 @@ export default function Properties({ videoData, fullscreen }: { videoData: BigVi
                 }`}
         >
             <p className="text-3xl font-bold my-3">
-                {videoData.videoData.title}
+                {videoData.title}
             </p>
             <div className="flex justify-between max-sm:flex-col">
                 <div className="flex gap-2">
@@ -110,17 +110,17 @@ export default function Properties({ videoData, fullscreen }: { videoData: BigVi
                                 <Tooltip>
                                     <TooltipTrigger>
                                         <Link
-                                            href={`/channel/${videoData.channelData.tagName}`}
+                                            href={`/channel/${videoData.Account.tagName}`}
                                         >
                                             <div className="relative lg:w-[55px] lg:h-[55px] max-sm:w-[45px] max-sm:h-[45px] w-[40px] h-[40px]">
                                                 {videoData
-                                                    .channelData
-                                                    .avatarImage && (
+                                                    .Account
+                                                    .avatarLink && (
                                                         <Image
                                                             src={
                                                                 videoData
-                                                                    .channelData
-                                                                    .avatarImage
+                                                                    .Account
+                                                                    .avatarLink
                                                             }
                                                             alt=""
                                                             className="rounded-full bg-transparent"
@@ -136,7 +136,7 @@ export default function Properties({ videoData, fullscreen }: { videoData: BigVi
                                             chuyển hướng tới kênh{" "}
                                             {
                                                 videoData
-                                                    .channelData
+                                                    .Account
                                                     .name
                                             }
                                         </p>
@@ -149,12 +149,12 @@ export default function Properties({ videoData, fullscreen }: { videoData: BigVi
                                 <Tooltip>
                                     <TooltipTrigger>
                                         <Link
-                                            href={`/channel/${videoData.channelData.tagName}`}
+                                            href={`/channel/${videoData.Account.tagName}`}
                                         >
                                             <p className="text-xl font-semibold text-start">
                                                 {
                                                     videoData
-                                                        .channelData
+                                                        .Account
                                                         .name
                                                 }
                                             </p>
@@ -165,7 +165,7 @@ export default function Properties({ videoData, fullscreen }: { videoData: BigVi
                                             chuyển hướng tới kênh{" "}
                                             {
                                                 videoData
-                                                    .channelData
+                                                    .Account
                                                     .name
                                             }
                                         </p>
@@ -173,14 +173,14 @@ export default function Properties({ videoData, fullscreen }: { videoData: BigVi
                                 </Tooltip>
                             </TooltipProvider>
                             <p className="w-fit">
-                                {videoData.channelData.sub} Người
+                                {videoData.Account.Subcribes.length} Người
                                 đăng ký
                             </p>
                         </div>
                     </div>
 
                     <div className="flex px-3 py-2 max-sm:w-full">
-                        <SubcribeButton channelData={videoData.channelData} />
+                        <SubcribeButton channelData={videoData.Account} />
                     </div>
                 </div>
                 <div className="flex items-center gap-3 max-sm:overflow-x-scroll max-sm:w-full max-sm:my-2 hidden-scrollbar">
@@ -198,7 +198,7 @@ export default function Properties({ videoData, fullscreen }: { videoData: BigVi
                                     <AiOutlineLike />
                                 )}
                             </div>
-                            <p>{videoData.videoData.like}</p>
+                            <p>{videoData.Likes.length}</p>
                         </div>
                         <div className="relative after:absolute after:bg-slate-300 after:h-[80%] after:top-[10%] after:w-[1px]"></div>
                         <div

@@ -1,12 +1,12 @@
 'use client'
-import { MediaDataType, VideoWithoutComment } from "@/types/type";
 import VideoItem from "@/components/own/watch/VideoItem";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Media } from "@/prisma/type";
 
-const RenderAllVideo = ({ allVideo }: { allVideo: VideoWithoutComment[] }) => {
+const RenderAllVideo = ({ allVideo }: { allVideo: Media[] }) => {
     if (allVideo) {
         return allVideo.map((video, index) => {
-            return <VideoItem key={index} videoData={video.videoData} channelData={{ live: false, ...video.channelData }} />;
+            return <VideoItem key={index} videoData={video} channelData={video.Account} />;
         })
     } else {
         return <div className="flex flex-col items-center h-fit w-full p-3">

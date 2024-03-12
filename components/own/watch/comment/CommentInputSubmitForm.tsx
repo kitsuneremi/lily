@@ -1,7 +1,6 @@
 'use server'
 
 import prisma from "@/lib/prisma"
-import { getServerSession } from "next-auth"
 import { revalidatePath } from "next/cache"
 
 export const handleSubmit = async (formData: FormData) => {

@@ -1,35 +1,20 @@
 "use client";
-import { ref, getDownloadURL } from "firebase/storage";
-import { storage } from "@/lib/firebase";
 import Link from "next/link";
 import Image from "next/image";
 import { FormatDateTime, ReduceString } from "@/lib/functional";
-import { useEffect, useState } from "react";
-import { MediaDataType, ChannelDataType } from "@/types/type";
-
 import {
     Tooltip,
     TooltipContent,
     TooltipProvider,
     TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Media } from "@/prisma/type";
 
 export default function VideoItem({
     videoData,
 }: {
-    videoData: MediaDataType;
+    videoData: Media;
 }) {
-    const [img, setImg] = useState<string>();
-    const videoImageStorageRef = ref(
-        storage,
-        `/video/thumbnails/${videoData.link}`
-    );
-    useEffect(() => {
-        getDownloadURL(videoImageStorageRef).then((url) => setImg(url));
-    }, ['']);
-
-    // const {img, channelAvatar} = Promise.all([fetchImg])
-
     return (
         <Link
             href={`/watch/${videoData.link}`}
@@ -37,12 +22,12 @@ export default function VideoItem({
         >
             <div className="flex gap-3 w-full items-center">
                 <div className="relative flex-0 w-[40%] pt-[25%] h-fit rounded-md bg-transparent">
-                    {img ? (
+                    {videoData ? (
                         <Image
                             alt=""
                             className="rounded-md bg-transparent"
                             fill
-                            src={img}
+                            src={videoData.thumbnailLink}
                             priority={true}
                             sizes="16/9"
                         />

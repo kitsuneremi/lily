@@ -1,14 +1,8 @@
 'use client'
-import { ChannelDataType, VideoWithoutComment, MediaDataType } from '@/types/type'
 import { useState } from 'react';
-import { useEffectOnce } from 'usehooks-ts';
-import axios from 'axios';
-import VideoItem from "@/components/own/watch/VideoItem";
-import ThisChannelVideoItem from "@/components/own/watch/ThisChannelVideoItem";
-import { Skeleton } from "@/components/ui/skeleton";
-import dynamic from 'next/dynamic';
 import AllVideoRender from '@/components/own/watch/VideoSuggest/AllVideoRender'
 import ChannelVideoRender from '@/components/own/watch/VideoSuggest/ChannelVideoRender'
+import { Media, Account } from '@/prisma/type';
 // const AllVideoRender = dynamic(() => import('@/components/own/watch/VideoSuggest/AllVideoRender'))
 // const ChannelVideoRender = dynamic(() => import('@/components/own/watch/VideoSuggest/ChannelVideoRender'))
 
@@ -17,9 +11,9 @@ export default function VideoSuggest({
     otherVideoInChannel,
     channelData
 }: {
-    otherVideo: VideoWithoutComment[];
-    otherVideoInChannel: MediaDataType[];
-    channelData: ChannelDataType
+    otherVideo: Media[];
+    otherVideoInChannel: Media[];
+    channelData: Account
 }) {
     const [tab, setTab] = useState<number>(0);
 

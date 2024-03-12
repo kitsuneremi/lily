@@ -1,5 +1,4 @@
 "use client";
-import { ChannelDataType, MediaDataType } from "@/types/type";
 import Image from "next/image";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useRef, useState, useEffect } from "react";
@@ -8,6 +7,7 @@ import io from "socket.io-client";
 import { Session } from "next-auth";
 import axios from "axios";
 import { liveSocketURL } from '@/lib/functional'
+import { Account, Media } from "@/prisma/type";
 type Message = {
     accountId: number;
     name: string;
@@ -23,9 +23,9 @@ export default function LiveChat({
     session,
     streamData,
 }: {
-    channelData: ChannelDataType;
+    channelData: Account;
     session: Session | null;
-    streamData: MediaDataType;
+    streamData: Media;
 }) {
     const [commentValue, setCommentValue] = useState<string>("");
     const [list, setList] = useState<Message[]>([]);
@@ -66,7 +66,7 @@ export default function LiveChat({
             const data = {
                 accountId: session.user.id,
                 name: session.user.name,
-                image: session.user.image,
+                image: session.user.avatarLink,
                 content: commentValue,
                 room: streamData.id,
             };
@@ -119,7 +119,7 @@ export default function LiveChat({
                         <div className="w-7 h-7 relative">
                             {session && session.user ? (
                                 <Image
-                                    src={session.user.image}
+                                    src={session.user.avatarLink}
                                     alt=""
                                     fill
                                     className="rounded-full"

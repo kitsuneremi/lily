@@ -13,6 +13,7 @@ import { motion } from 'framer-motion';
 import { Skeleton } from "@/components/ui/skeleton";
 import QuickPlayer from './QuickPlayer'
 import { useRouter } from "next/navigation";
+import { Account, Media } from "@/prisma/type";
 
 const borderVariants = {
     start: { borderColor: 'red' },
@@ -30,7 +31,7 @@ const borderTransition = {
 export default function VideoItem({
     videoData,
     channelData,
-}) {
+}: { videoData: Media, channelData: Account }) {
     const genLink = useCallback(() => {
         if (videoData.mediaType == 1) {
             return `/stream/${channelData.tagName}`;
@@ -71,13 +72,13 @@ export default function VideoItem({
                             ?
                             <QuickPlayer mediaData={videoData} className="w-full h-full rounded-md" />
                             :
-                            videoData && videoData.thumbnail ? (
+                            videoData && videoData.thumbnailLink ? (
                                 <Image
                                     alt=""
                                     className="rounded-md bg-transparent"
                                     fill
                                     sizes="16/9"
-                                    src={videoData.thumbnail}
+                                    src={videoData.thumbnailLink}
                                     loading="lazy"
                                 />
                             ) : (
@@ -89,13 +90,13 @@ export default function VideoItem({
                 ) : (
                     <div className="relative w-full aspect-video rounded-md bg-opacity-40 bg-slate-100 flex justify-center" onMouseEnter={() => { mouseEnter() }} onMouseOutCapture={() => { mouseOut() }}>
                         {hover ? <QuickPlayer mediaData={videoData} className="absolute left-0 top-0 w-full h-full rounded-md" /> : <div className="h-full aspect-square relative">
-                            {videoData && videoData.thumbnail ? (
+                            {videoData && videoData.thumbnailLink ? (
                                 <Image
                                     alt=""
                                     className="rounded-md bg-transparent"
                                     fill
                                     sizes="1/1"
-                                    src={videoData.thumbnail}
+                                    src={videoData.thumbnailLink}
                                     loading="lazy"
                                 />
                             ) : (
@@ -125,14 +126,14 @@ export default function VideoItem({
                                         href={`/channel/${channelData.tagName}`}
                                     >
                                         {channelData &&
-                                            channelData.avatarImage ? (
+                                            channelData.avatarLink ? (
                                             <Image
                                                 className="rounded-full bg-transparent"
                                                 alt="img"
                                                 width={30}
                                                 height={30}
                                                 loading="lazy"
-                                                src={channelData.avatarImage}
+                                                src={channelData.avatarLink}
                                             />
                                         ) : (
                                             <></>

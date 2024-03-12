@@ -8,12 +8,8 @@ import { ReactElement, useEffect, useState, useRef } from "react";
 import { redirect, usePathname, useRouter } from "next/navigation";
 import { FcBullish } from 'react-icons/fc'
 import Link from "next/link";
-import { ref, getDownloadURL } from "firebase/storage";
-import { storage } from '@/lib/firebase'
-import { ChannelDataType } from "@/types/type";
 import axios from "axios";
 import { BsUpload } from 'react-icons/bs'
-import { authOptions } from "@/lib/auth";
 import { useEffectOnce, useMediaQuery, useOnClickOutside } from "usehooks-ts";
 
 import {
@@ -23,6 +19,7 @@ import {
     AccordionTrigger,
 } from "@/components/ui/accordion"
 import { Skeleton } from "@/components/ui/skeleton";
+import { Account } from "@/prisma/type";
 
 const Sidebar = () => {
 
@@ -38,7 +35,7 @@ const Sidebar = () => {
         if (sidebar) { setTimeout(() => dispatch(close()), 200) }
     })
 
-    const [channelData, setChannelData] = useState<ChannelDataType>();
+    const [channelData, setChannelData] = useState<Account>();
     const [tab, setTab] = useState<number>(0)
 
     const deviceType = {
@@ -91,8 +88,8 @@ const Sidebar = () => {
             <div className="flex-0 bg-transparent h-full justify-between flex flex-col pb-6">
                 <div>
                     <div className="flex flex-col gap-3 px-3 text-center items-center">
-                        {channelData?.avatarImage ?
-                            <Image src={channelData.avatarImage} className="bg-transparent rounded-full" alt="" sizes="1/1" width={sidebar ? 90 : 30} height={sidebar ? 90 : 30} />
+                        {channelData?.avatarLink ?
+                            <Image src={channelData.avatarLink} className="bg-transparent rounded-full" alt="" sizes="1/1" width={sidebar ? 90 : 30} height={sidebar ? 90 : 30} />
                             :
                             <Skeleton className="w-[90px] h-[90px] rounded-full" />}
                         {sidebar && <p>{channelData?.name}</p>}
@@ -177,8 +174,8 @@ const Sidebar = () => {
                 <div className="flex-0 bg-transparent h-full justify-between flex flex-col pb-6" ref={sidebarRef}>
                     <div>
                         <div className="flex flex-col gap-3 px-3 text-center items-center">
-                            {channelData?.avatarImage ?
-                                <Image src={channelData.avatarImage} className="bg-transparent rounded-full" alt="" sizes="1/1" width={90} height={90} />
+                            {channelData?.avatarLink ?
+                                <Image src={channelData.avatarLink} className="bg-transparent rounded-full" alt="" sizes="1/1" width={90} height={90} />
                                 :
                                 <></>}
                             <p>{channelData?.name}</p>

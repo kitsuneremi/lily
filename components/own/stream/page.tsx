@@ -1,11 +1,11 @@
 'use client'
 import { fileURL } from '@/lib/functional';
-import { type MediaDataType, BigVideoDataType, LiveData, ChannelDataType } from '@/types/type';
+import { Media } from '@/prisma/type';
 import React, { useRef, useEffect } from 'react';
 import videojs from 'video.js';
 import 'video.js/dist/video-js.css';
 
-export default function LivePlayer({ name, streamData }: { name: string, streamData: MediaDataType }) {
+export default function LivePlayer({ name, streamData }: { name: string, streamData: Media }) {
     const videoRef = useRef<HTMLDivElement>(null);
     const playerRef = useRef<any>(null)
 
@@ -48,11 +48,7 @@ export default function LivePlayer({ name, streamData }: { name: string, streamD
                 player.src(videoJsOptions.sources);
             }
         }
-    }, []);
-
-    useEffect(() => {
-        console.log(playerRef.current)
-    }, [playerRef.current])
+    }, [videoJsOptions]);
 
     // Dispose the Video.js player when the functional component unmounts
     useEffect(() => {

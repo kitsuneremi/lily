@@ -1,15 +1,15 @@
 'use client'
-import { ChannelDataType, VideoWithoutComment, MediaDataType } from '@/types/type'
 import { baseURL } from '@/lib/functional';
 import VideoSuggest from './VideoSuggest';
 import { useEffectOnce } from 'usehooks-ts';
 import { useState } from 'react'
+import { Account } from '@/prisma/type';
 export default function SuggestVideo({
     videoId,
     channelData,
 }: {
     videoId: number;
-    channelData: ChannelDataType;
+    channelData: Account;
 }) {
     const [otherVideoInChannel, setOtherVideoInChannel] = useState<any>();
     const [otherVideo, setOtherVideo] = useState<any>();

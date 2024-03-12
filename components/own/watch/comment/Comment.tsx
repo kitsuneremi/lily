@@ -1,37 +1,13 @@
 "use client";
 import VideoSuggest from "@/components/own/watch/VideoSuggest/VideoSuggest";
-import React, {
-    useEffect,
-    useRef,
-    useState,
-    useLayoutEffect,
-    FormEvent,
-} from "react";
-import {
-    BigVideoDataType,
-    ChannelDataType,
-    CommentDataType,
-    SubcribeType,
-    MediaDataType,
-    VideoWithoutComment,
-} from "@/types/type";
+import React from "react";
 
 import CommentItem from "@/components/own/watch/comment/CommentItem";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { NotificationOutlined } from "@ant-design/icons";
-import Link from "next/link";
-import {
-    Tooltip,
-    TooltipContent,
-    TooltipProvider,
-    TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { useLocalStorage, useEffectOnce } from "usehooks-ts";
-import { redirect } from "next/navigation";
-import { useToast } from "@/components/ui/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Comment, Media } from "@/prisma/type";
 
-export default function Comment({ fullscreen, commentData, videoData }: { fullscreen: boolean, commentData: CommentDataType[], videoData: BigVideoDataType }) {
+export default function Comment({ fullscreen, commentData, videoData }: { fullscreen: boolean, commentData: Comment[], videoData: Media }) {
 
     const CommentRender = () => {
         if (commentData == undefined) {
@@ -88,8 +64,8 @@ export default function Comment({ fullscreen, commentData, videoData }: { fullsc
                             <VideoSuggest
                                 //@ts-ignore
                                 accountId={session?.user.id}
-                                channelData={videoData.channelData}
-                                videoId={videoData.videoData.id}
+                                channelData={videoData.Account}
+                                videoId={videoData.id}
                             />
                         </div>
                     </TabsContent>

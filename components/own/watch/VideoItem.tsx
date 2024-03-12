@@ -1,11 +1,7 @@
 "use client";
-import { ref, getDownloadURL } from "firebase/storage";
-import { storage } from "@/lib/firebase";
 import Link from "next/link";
 import Image from "next/image";
 import { FormatDateTime, ReduceString } from "@/lib/functional";
-import { useEffect, useState } from "react";
-import { MediaDataType, ChannelDataType } from "@/types/type";
 
 import {
     Tooltip,
@@ -14,13 +10,14 @@ import {
     TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Account, Media } from "@/prisma/type";
 
 export default function VideoItem({
     videoData,
     channelData,
 }: {
-    videoData: MediaDataType;
-    channelData: ChannelDataType;
+    videoData: Media;
+    channelData: Account;
 }) {
     return (
         <Link
@@ -29,12 +26,12 @@ export default function VideoItem({
         >
             <div className="grid items-center h-fit w-full">
                 <div className="relative w-full h-fit min-h-[120px] pt-[56.25%] rounded-md bg-transparent">
-                    {videoData.thumbnail ? (
+                    {videoData.thumbnailLink ? (
                         <Image
                             alt=""
                             className="rounded-md bg-transparent"
                             fill
-                            src={videoData.thumbnail}
+                            src={videoData.thumbnailLink}
                             priority={true}
                         />
                     ) : (
@@ -49,14 +46,14 @@ export default function VideoItem({
                                     <Link
                                         href={`/channel/${channelData.tagName}`}
                                     >
-                                        {channelData && channelData.avatarImage ? (
+                                        {channelData && channelData.avatarLink ? (
                                             <Image
                                                 className="rounded-full bg-transparent"
                                                 alt="img"
                                                 width={30}
                                                 height={30}
                                                 loading="lazy"
-                                                src={channelData.avatarImage}
+                                                src={channelData.avatarLink}
                                             />
                                         ) : (
                                             <Skeleton className="w-[30px] h-[30px] rounded-full" />

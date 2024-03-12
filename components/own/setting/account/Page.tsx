@@ -31,6 +31,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { fileURL } from "@/lib/functional";
 import { useSession } from "next-auth/react";
+import { Account } from "@/prisma/type";
 setPlugins(plugin_crop, plugin_finetune, plugin_filter, plugin_annotate);
 
 const editorDefaults = {
@@ -55,7 +56,7 @@ const editorDefaults = {
 
 export default function Page({
     channelData,
-}) {
+}: {channelData: Account}) {
     const [originalAvatar, setOriginalAvatar] = useState<{
         file: File;
         width: number;
