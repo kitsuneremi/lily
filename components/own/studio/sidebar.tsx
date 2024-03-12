@@ -27,7 +27,6 @@ const Sidebar = () => {
     const dispatch = useDispatch();
     const { data: session } = useSession({ required: true, onUnauthenticated: () => redirect('/register') });
     const url = usePathname();
-    const router = useRouter();
 
     const sidebarRef = useRef<HTMLDivElement>(null);
 
