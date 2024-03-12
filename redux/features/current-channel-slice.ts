@@ -1,17 +1,17 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import type { ChannelDataType } from '@/types/type';
 import { baseURL } from '@/lib/functional';
+import { Account } from '@/prisma/type';
 
 
 export const fetchChannelData = createAsyncThunk('channelData/fetchData', async (id: number) => {
     const response = await fetch(`${baseURL}/api/channel/data?accountId=${id}`);
     const data = await response.json();
-    return data as ChannelDataType;
+    return data as Account;
 });
 
 type Init = {
     value: {
-        channelData: ChannelDataType | null;
+        channelData: Account | null;
     };
 };
 

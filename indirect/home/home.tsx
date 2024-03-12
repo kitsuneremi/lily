@@ -1,16 +1,17 @@
 'use client'
 import VideoItem from "@/components/own/home/VideoItem";
+import { Media } from "@/prisma/type";
 
 export default function DirectHomePage({
     listVideo,
-}) {
+}: {listVideo: Media[]}) {
     const VideoItemRender = () => {
         if (listVideo) {
             return listVideo.map((item, index) => {
                 return (
                     <VideoItem
-                        videoData={item.videoData}
-                        channelData={item.channelData}
+                        videoData={item}
+                        channelData={item.Account}
                         key={index}
                     />
                 );

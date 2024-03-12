@@ -1,5 +1,4 @@
 "use client";
-import { ChannelDataType, MediaDataType, SessionDataType } from "@/types/type";
 import Image from "next/image";
 import { ReduceString, FormatDateTime } from "@/lib/functional";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -13,22 +12,19 @@ import {
     TooltipTrigger,
 } from "@/components/ui/tooltip";
 import SubcribeButton from "@/components/own/SubcribeButton";
-
+import { Account, Media } from "@/prisma/type";
+import type { Session } from 'next-auth'
 export default function ResultPage({
     data,
     session,
 }: {
     data: {
-        channels: ChannelDataType[];
-        videos: MediaDataType[];
+        channels: Account[];
+        videos: Media[];
     };
-    session: SessionDataType | null;
+    session: Session | null;
 }) {
     const [tab, setTab] = useState<number>(0);
-
-    useEffectOnce(() => {
-        console.log(data.channels[0]);
-    });
 
     const tabViewRender = () => {
         if (tab == 0) {
@@ -49,11 +45,11 @@ export default function ResultPage({
                                         <div className="w-72 aspect-video flex justify-center items-center">
                                             <div className="relative h-full aspect-square">
                                                 {data.channels[0]
-                                                    .avatarImage ? (
+                                                    .avatarLink ? (
                                                     <Image
                                                         src={
                                                             data.channels[0]
-                                                                .avatarImage
+                                                                .avatarLink
                                                         }
                                                         alt="avatar"
                                                         fill
@@ -74,17 +70,16 @@ export default function ResultPage({
                                                     <p className="text-sm">
                                                         @
                                                         {
-                                                            data.channels[0]
-                                                                .tagName
+                                                            data.channels[0].tagName
                                                         }
                                                     </p>
                                                     <p className="text-sm">
-                                                        {data.channels[0].sub}{" "}
+                                                        {data.channels[0].Subcribes.length}{" "}
                                                         người đăng ký
                                                     </p>
                                                 </div>
                                                 <p className="text-sm">
-                                                    {data.channels[0].des}
+                                                    {data.channels[0].description}
                                                 </p>
                                             </div>
                                             <div className="flex h-full flex-col justify-center items-center">
@@ -156,7 +151,7 @@ export default function ResultPage({
     );
 }
 
-const VideoRender = (listVideo: MediaDataType[]) => {
+const VideoRender = (listVideo: Media[]) => {
     return listVideo.map((video, index) => {
         return (
             <Link
@@ -167,13 +162,13 @@ const VideoRender = (listVideo: MediaDataType[]) => {
                 <div className="flex gap-6 w-max items-stretch p-4 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700">
                     {video.mediaType == 0 ? (
                         <div className="relative w-72 aspect-video rounded-md bg-transparent">
-                            {video && video.thumbnail ? (
+                            {video && video.thumbnailLink ? (
                                 <Image
                                     alt=""
                                     className="rounded-md bg-transparent max-h-[220px]"
                                     fill
                                     sizes="16/9"
-                                    src={video.thumbnail}
+                                    src={video.thumbnailLink}
                                     loading="lazy"
                                 />
                             ) : (
@@ -183,13 +178,13 @@ const VideoRender = (listVideo: MediaDataType[]) => {
                     ) : (
                         <div className="relative w-72 aspect-video rounded-md bg-opacity-40 bg-slate-200 flex justify-center items-stretch">
                             <div className="relative aspect-square h-full inset-0 flex items-center justify-center">
-                                {video && video.thumbnail ? (
+                                {video && video.thumbnailLink ? (
                                     <Image
                                         alt=""
                                         className="rounded-md bg-transparent  max-h-[220px]"
                                         fill
                                         sizes="1/1"
-                                        src={video.thumbnail}
+                                        src={video.thumbnailLink}
                                         loading="lazy"
                                     />
                                 ) : (
@@ -200,8 +195,8 @@ const VideoRender = (listVideo: MediaDataType[]) => {
                             {(video.mediaType == 1 || video.mediaType == 2) && (
                                 <div
                                     className={`${video.mediaType == 1
-                                            ? "bg-red-600"
-                                            : "bg-slate-600"
+                                        ? "bg-red-600"
+                                        : "bg-slate-600"
                                         } text-white px-1 py-[1px] absolute bottom-1 left-1 text-xs`}
                                 >
                                     Trực tiếp
@@ -233,17 +228,14 @@ const VideoRender = (listVideo: MediaDataType[]) => {
                             <Tooltip>
                                 <TooltipTrigger>
                                     <Link
-                                        href={`/channel/${video.Channels?.tagName}`}
+                                        href={`/channel/${video.Account.tagName}`}
                                     >
                                         <div className="flex gap-3 items-center">
                                             <div className="relative w-[40px] aspect-square">
-                                                {video.Channels &&
-                                                    video.Channels.avatarImage ? (
+                                                {video.Account &&
+                                                    video.Account.avatarLink ? (
                                                     <Image
-                                                        src={
-                                                            video.Channels
-                                                                .avatarImage
-                                                        }
+                                                        src={ video.Account.avatarLink}
                                                         fill
                                                         loading="lazy"
                                                         className="rounded-full"
@@ -253,9 +245,9 @@ const VideoRender = (listVideo: MediaDataType[]) => {
                                                     <></>
                                                 )}
                                             </div>
-                                            {video.Channels ? (
+                                            {video.Account ? (
                                                 <p className="text-lg hover:text-xl hover:text-slate-700 dark:hover:text-slate-300">
-                                                    {video.Channels.name}
+                                                    {video.Account.name}
                                                 </p>
                                             ) : (
                                                 <Skeleton className="w-10 h-4 rounded-lg" />
@@ -266,7 +258,7 @@ const VideoRender = (listVideo: MediaDataType[]) => {
                                 <TooltipContent align="start">
                                     <p>
                                         chuyển hướng tới kênh{" "}
-                                        {video.Channels?.name}
+                                        {video.Account.name}
                                     </p>
                                 </TooltipContent>
                             </Tooltip>

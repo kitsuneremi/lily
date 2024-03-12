@@ -5,7 +5,6 @@ import React, {
     useState
 } from "react";
 import axios from "axios";
-import { BigVideoDataType, MediaDataType } from "@/types/type";
 import { fileURL, videoTimeFormater } from "@/lib/functional";
 
 import Hls from "hls.js";
@@ -33,6 +32,7 @@ import { redirect } from "next/navigation";
 import dynamic from "next/dynamic";
 import { useToast } from "@/components/ui/use-toast";
 import VideoSuggestPrefetch from '@/components/own/watch/VideoSuggest/PrefetchData'
+import { Media } from "@/prisma/type";
 // const VideoSuggestPrefetch = dynamic(() => import('@/components/own/watch/VideoSuggest/PrefetchData'))
 
 
@@ -46,9 +46,9 @@ let timer: any;
 
 /**
  * 
- * @param mediaData: MediaDataType 
+ * @param mediaData: Media 
  */
-const sourceURL = (mediaData: MediaDataType) => {
+const sourceURL = (mediaData: Media) => {
     if (mediaData.mediaType == 0) {
         return `${fileURL}/api/video/${mediaData.link}`;
     } else if (mediaData.mediaType == 1 && mediaData.isLive) {
@@ -62,8 +62,8 @@ const sourceURL = (mediaData: MediaDataType) => {
     }
 }
 
-export default function Page({ videoData }: { videoData: BigVideoDataType }) {
-    const src = sourceURL(videoData.videoData);
+export default function Page({ videoData }: { videoData: Media }) {
+    const src = sourceURL(videoData);
     const { toast } = useToast();
 
     const ref = useRef<HTMLVideoElement>(null);
@@ -133,7 +133,7 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
         if (ref.current) {
             if (ref.current?.currentTime == ref.current?.duration) {
                 axios.post("/api/video/updateview", {
-                    videoId: videoData.videoData.id,
+                    videoId: videoData.id,
                 });
             }
         }
@@ -469,8 +469,8 @@ export default function Page({ videoData }: { videoData: BigVideoDataType }) {
                 </div>
                 <div className="lg:flex flex-grow w-full flex-1 px-5 pt-3">
                     <VideoSuggestPrefetch
-                        channelData={videoData.channelData}
-                        videoId={videoData.videoData.id}
+                        channelData={videoData.Account}
+                        videoId={videoData.id}
                     />
                 </div>
             </div>

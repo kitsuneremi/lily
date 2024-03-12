@@ -3,8 +3,6 @@ import LivePlayer from "@/components/own/stream/page";
 import Sidebar from "@/components/own/AbsoluteSidebar";
 import Navbar from "@/components/own/Navbar";
 import Image from "next/image";
-import VideoItem from "@/components/own/watch/VideoItem";
-import ThisChannelVideoItem from "@/components/own/watch/ThisChannelVideoItem";
 import React, {
   useEffect,
   useRef,
@@ -14,14 +12,6 @@ import React, {
 } from "react";
 import axios from "axios";
 import {
-  BigVideoDataType,
-  ChannelDataType,
-  CommentDataType,
-  SubcribeType,
-  MediaDataType,
-  VideoWithoutComment,
-} from "@/types/type";
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -29,8 +19,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { BiMenuAltLeft } from "react-icons/bi";
-import { GrNotification } from "react-icons/gr";
 import {
   AiOutlineDown,
   AiFillLike,
@@ -41,31 +29,6 @@ import {
 } from "react-icons/ai";
 import { FormatDateTime, fileURL, videoTimeFormater } from "@/lib/functional";
 import { useSession } from "next-auth/react";
-import CommentItem from "@/components/own/watch/comment/CommentItem";
-import { ref as fireRef, getDownloadURL } from "firebase/storage";
-import { storage } from "@/lib/firebase";
-import Hls from "hls.js";
-import {
-  ImVolumeHigh,
-  ImVolumeMedium,
-  ImVolumeLow,
-  ImVolumeMute,
-  ImVolumeMute2,
-} from "react-icons/im";
-import {
-  BsFillPlayFill,
-  BsFillPauseFill,
-  BsArrowsFullscreen,
-  BsFullscreenExit,
-} from "react-icons/bs";
-import { MdSkipNext } from "react-icons/md";
-import { AiFillSetting } from "react-icons/ai";
-import { Slider } from "antd";
-import type { MenuProps } from "antd";
-import { Dropdown, Space } from "antd";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CiPlay1, CiPause1 } from "react-icons/ci";
-import { RxTrackNext } from "react-icons/rx";
 import { NotificationOutlined } from "@ant-design/icons";
 import Link from "next/link";
 import {
@@ -81,6 +44,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import dynamic from "next/dynamic";
 import LiveChat from "@/components/own/stream/LiveChat";
+import { Media, Account, Subcribes } from "@/prisma/type";
 // const LiveChat = dynamic(() => import('@/components/own/stream/LiveChat'),{
 //     loading: () => <p>loading...</p>,
 //     ssr: true
@@ -90,8 +54,8 @@ export default function Page({
   streamData,
   channelData,
 }: {
-  streamData: MediaDataType;
-  channelData: ChannelDataType;
+  streamData: Media,
+  channelData: Account
 }) {
   const commentInputRef = useRef<HTMLInputElement>(null);
   const ref = useRef<HTMLVideoElement>(null);
@@ -101,11 +65,10 @@ export default function Page({
   const { data: session, status } = useSession();
   const [like, setLike] = useState<boolean>(false);
   const [dislike, setDislike] = useState<boolean>(false);
-  const [hide, setHide] = useState<boolean>(false);
   const [fullscreen, setFullscreen] = useState<boolean>(false);
   const [loadedContent, setLoadedContent] = useState<boolean>(false);
 
-  const [subcribe, setSubcribe] = useState<SubcribeType>();
+  const [subcribe, setSubcribe] = useState<Subcribes>();
 
   useEffect(() => {
     if (fullRef.current && document) {
@@ -127,7 +90,7 @@ export default function Page({
 
   useEffect(() => {
     if (session && session.user) {
-      if (session.user.id !== channelData.accountId) {
+      if (session.user.id !== channelData.id) {
         axios
           .get("/api/subcribe", {
             params: {
@@ -140,7 +103,7 @@ export default function Page({
           });
       }
     }
-  }, [session]);
+  }, [channelData.id, session]);
 
   // useEffect(() => {
   //     if (session && session.user) {
@@ -230,7 +193,7 @@ export default function Page({
 
   const Subcribe = () => {
     if (session && session.user) {
-      if (session.user.id === channelData.accountId) {
+      if (session.user.id === channelData.id) {
         return (
           <div
             className="px-4 py-2 cursor-pointer rounded-[24px] border-[1px] hover:bg-slate-300 dark:bg-slate-900 dark:hover:bg-slate-800"
@@ -338,9 +301,9 @@ export default function Page({
                               <TooltipTrigger>
                                 <Link href={`/channel/${channelData.tagName}`}>
                                   <div className="relative lg:w-[55px] lg:h-[55px] max-sm:w-[45px] max-sm:h-[45px] w-[40px] h-[40px]">
-                                    {channelData.avatarImage && (
+                                    {channelData.avatarLink && (
                                       <Image
-                                        src={channelData.avatarImage}
+                                        src={channelData.avatarLink}
                                         alt=""
                                         className="rounded-full bg-transparent"
                                         sizes="1/1"
@@ -371,7 +334,7 @@ export default function Page({
                               </TooltipContent>
                             </Tooltip>
                           </TooltipProvider>
-                          <p>{channelData.sub} Người đăng ký</p>
+                          <p>{channelData.Subcribes.length} Người đăng ký</p>
                         </div>
                       </div>
 
@@ -390,7 +353,7 @@ export default function Page({
                           >
                             {like ? <AiFillLike /> : <AiOutlineLike />}
                           </div>
-                          <p>{streamData.like}</p>
+                          <p>{streamData.Likes.length}</p>
                         </div>
                         <div className="relative after:absolute after:bg-slate-300 after:h-[80%] after:top-[10%] after:w-[1px]"></div>
                         <div

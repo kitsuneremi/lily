@@ -59,8 +59,8 @@ const ChannelRender = () => {
                     <div className="flex gap-4">
                         <div className="flex items-center">
                             <div className="relative w-8 h-8">
-                                {personalChannelData.avatarImage && (
-                                    <Image className="rounded-full" src={personalChannelData.avatarImage}
+                                {personalChannelData.avatarLink && (
+                                    <Image className="rounded-full" src={personalChannelData.avatarLink}
                                         alt=""
                                         fill
                                         sizes="1/1"
