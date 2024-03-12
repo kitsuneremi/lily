@@ -1,12 +1,8 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import { ChannelDataType, MediaDataType } from "@/types/type";
 import { useSession } from "next-auth/react";
 import axios from "axios";
-import { ref, getDownloadURL } from "firebase/storage";
-import { storage } from "@/lib/firebase";
-
 import { AiFillLike } from "react-icons/ai";
 import { TfiBarChart } from "react-icons/tfi";
 import { BiCommentDetail } from "react-icons/bi";
@@ -16,11 +12,11 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Account, Media } from "@/prisma/type";
 
 export default function Page() {
-    const [videoThumbnail, setVideoThumbnail] = useState<string>("");
-    const [channelData, setChannelData] = useState<ChannelDataType>();
-    const [latestVideoData, setLatestVideoData] = useState<MediaDataType>();
+    const [channelData, setChannelData] = useState<Account>();
+    const [latestVideoData, setLatestVideoData] = useState<Media>();
     const { data: session } = useSession();
 
     useEffect(() => {
@@ -52,18 +48,6 @@ export default function Page() {
         }
     }, [channelData]);
 
-    useEffect(() => {
-        if (latestVideoData) {
-            const videoThumbnailStorageRef = ref(
-                storage,
-                `/video/thumbnails/${latestVideoData.link}`
-            );
-            getDownloadURL(videoThumbnailStorageRef).then((url) =>
-                setVideoThumbnail(url)
-            );
-        }
-    }, [latestVideoData]);
-
     return (
         <div className="h-[calc(100vh-64px)] overflow-y-scroll hidden-scroll w-full">
             <p className="text-3xl font-extrabold mb-7">
@@ -76,7 +60,7 @@ export default function Page() {
                     </p>
                     <div className="relative w-full pt-[56.25%]">
                         <Image
-                            src={videoThumbnail}
+                            src={latestVideoData?.thumbnailLink ? latestVideoData?.thumbnailLink : ''}
                             fill
                             alt=""
                             sizes="16/9"
@@ -106,7 +90,7 @@ export default function Page() {
                                 <TooltipTrigger>
                                     <div className="flex gap-1 items-center">
                                         <BiCommentDetail />
-                                        <p>{latestVideoData?.comment}</p>
+                                        <p>{latestVideoData?.Comment.length}</p>
                                     </div>
                                 </TooltipTrigger>
                                 <TooltipContent>
@@ -120,7 +104,7 @@ export default function Page() {
                                 <TooltipTrigger>
                                     <div className="flex gap-1 items-center">
                                         <AiFillLike />
-                                        <p>{latestVideoData?.like}</p>
+                                        <p>{latestVideoData?.Likes.length}</p>
                                     </div>
                                 </TooltipTrigger>
                                 <TooltipContent>
@@ -136,7 +120,7 @@ export default function Page() {
                     <div className="flex flex-col">
                         <div className="flex flex-col">
                             <p>Số người đăng ký hiện tại</p>
-                            <p>{channelData?.sub}</p>
+                            <p>{channelData?.Subcribes.length}</p>
                         </div>
                     </div>
                     <div className="h-[1px] my-2 w-full relative after:absolute after:w-[90%] after:h-[1px] after:bg-slate-400 after:bottom-0 after:left-[5%]"></div>
