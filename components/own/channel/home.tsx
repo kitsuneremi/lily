@@ -11,10 +11,13 @@ import {
     CarouselNext,
     CarouselPrevious,
 } from "@/components/ui/carousel"
+import { Account, Media } from "@/prisma/type";
 
 
 export default function ChannelHome({
     channelData,
+}: {
+    channelData: Account
 }) {
     const [listPo, setListPo] = useState([]);
 
@@ -46,6 +49,7 @@ export default function ChannelHome({
                 <Carousel>
                     <CarouselContent>
                         {listPo.map((video, index) => {
+                            // @ts-ignore
                             return <CarouselItem key={index} className="basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5"><VideoItem videoData={video.videoData} key={index} /></CarouselItem>;
                         })}
                     </CarouselContent>
@@ -57,7 +61,7 @@ export default function ChannelHome({
     );
 }
 
-const VideoItem = ({ videoData }) => {
+const VideoItem = ({ videoData }: {videoData: Media}) => {
     return (
         <div
             className="flex flex-col cursor-pointer w-full h-max shadow-lg p-3 border-[1px] border-slate-600 border-opacity-10 rounded-xl hover:scale-105   "
@@ -65,13 +69,13 @@ const VideoItem = ({ videoData }) => {
         >
             {videoData.mediaType == 0 ? (
                 <div className="relative w-full aspect-video rounded-md bg-transparent">
-                    {videoData && videoData.thumbnail ? (
+                    {videoData && videoData.thumbnailLink ? (
                         <Image
                             alt=""
                             className="rounded-md bg-transparent"
                             fill
                             sizes="16/9"
-                            src={videoData.thumbnail}
+                            src={videoData.thumbnailLink}
                             loading="lazy"
                         />
                     ) : (
@@ -81,13 +85,13 @@ const VideoItem = ({ videoData }) => {
             ) : (
                 <div className="relative w-full aspect-video rounded-md bg-opacity-40 bg-slate-100 flex justify-center">
                     <div className="h-full aspect-square relative">
-                        {videoData && videoData.thumbnail ? (
+                        {videoData && videoData.thumbnailLink ? (
                             <Image
                                 alt=""
                                 className="rounded-md bg-transparent"
                                 fill
                                 sizes="1/1"
-                                src={videoData.thumbnail}
+                                src={videoData.thumbnailLink}
                                 loading="lazy"
                             />
                         ) : (
