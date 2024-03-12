@@ -1,19 +1,18 @@
 import { Metadata } from "next"
 import StreamPage from '@/components/own/studio/upload/livestream/page'
-import { Session, getServerSession } from "next-auth"
-import { authOptions } from "@/lib/auth"
-import { ChannelDataType } from "@/types/type"
+import { Session } from "next-auth"
 import { baseURL } from "@/lib/functional"
 import { redirect } from "next/navigation"
-
+import { auth } from '@/auth'
+import { Account } from '@/prisma/type'
 export const metadata: Metadata = {
     title: 'thiết lập buổi phát trực tiếp',
     description: 'thiết lập buổi phát trực tiếp'
 }
 
 const fetchChannelData = async (session: Session) => {
-    const data = await fetch(`${baseURL}/api/channel/data?accountId=${session.user.id}`,{
-        next:{
+    const data = await fetch(`${baseURL}/api/channel/data?accountId=${session.user.id}`, {
+        next: {
             revalidate: 5
         }
     })
@@ -23,9 +22,9 @@ const fetchChannelData = async (session: Session) => {
 
 export default async function Page() {
 
-    const session = await getServerSession(authOptions);
+    const session = await auth();
     if (session) {
-        const channelData: ChannelDataType = await fetchChannelData(session);
+        const channelData: Account = await fetchChannelData(session);
         return (
             <>
                 <StreamPage session={session} channelData={channelData}></StreamPage>

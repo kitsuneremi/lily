@@ -21,7 +21,8 @@ export async function POST(req: NextRequest, res: NextResponse) {
                 title: body.title,
                 status: body.status,
                 mediaType: 1,
-                link: channel.tagName
+                link: channel.tagName,
+                thumbnailLink: 'https://file.lyart.pro.vn/api/image/thumbnail?id=-1'
             }
         })
         return new Response(JSON.stringify(newLive), { status: 201 })
