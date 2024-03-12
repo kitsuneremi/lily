@@ -2,23 +2,21 @@ import Home from '@/components/own/channel/home'
 import prisma from '@/lib/prisma'
 import { redirect } from 'next/navigation'
 import { Metadata } from "next"
+import { Account } from '@/prisma/type'
 
 const fetchData = async ({ tagName }: { tagName: string }) => {
     const channel = await prisma.account.findUnique({
         where: {
             tagName: tagName
-        }
+        },
+        // include: {
+        //     Subcribes: true
+        // }
     })
 
 
     if (channel) {
-        const sub = await prisma.subcribes.count({
-            where: {
-                accountId: channel.id
-            }
-        })
-        const channelData = { sub: sub, ...channel };
-        return channelData;
+        return channel as Account;
     } else {
         redirect('/channel/not-found')
     }
