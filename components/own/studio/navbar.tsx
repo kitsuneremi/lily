@@ -16,7 +16,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { BsBell, BsChatLeftDots } from "react-icons/bs";
 import dynamic from "next/dynamic";
-import { ChannelDataType } from "@/types/type";
 import {
     Tooltip,
     TooltipContent,
@@ -35,6 +34,7 @@ import { signOut, useSession } from "next-auth/react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
+import { Account } from "@/prisma/type";
 const Notification = dynamic(() => import("@/components/own/navbar/Notification"));
 
 const StudioNavbar = () => {
@@ -48,7 +48,6 @@ const StudioNavbar = () => {
     const [searchValue, setSearchValue] = useState<string>("");
     const [focusing, setFocus] = useState<boolean>(false);
     const [visible, setVisible] = useState<boolean>(false);
-    const [personalChannelData, setPersonalChannelData] = useState<ChannelDataType>();
     const [showPopover, setShowPopover] = useState<{
         click: boolean;
         menuFocus: boolean;
@@ -76,10 +75,10 @@ const StudioNavbar = () => {
     const AccountAvatarRender = useCallback(() => {
         if (status == "loading") {
             return <Skeleton className="h-full w-full rounded-full" />;
-        } else if (session && session.user.image != "") {
+        } else if (session && session.user.avatarLink != "") {
             return (
                 <Image
-                    src={session.user.image}
+                    src={session.user.avatarLink}
                     className="rounded-full"
                     fill
                     sizes="1/1"
@@ -159,34 +158,24 @@ const StudioNavbar = () => {
     }, []);
 
     const ChannelRender = useCallback(() => {
-        if (!session && personalChannelData == undefined) {
+        if (!session) {
             return (
                 <MenuItem className="text-start">
                     <Skeleton className="h-full w-full" />
                 </MenuItem>
             );
-        } else if (session && personalChannelData == null) {
-            return (
-                <MenuItem
-                    onClick={() => {
-                        router.push("regchannel");
-                    }}
-                >
-                    Chưa có kênh? Tạo ngay!
-                </MenuItem>
-            );
-        } else if (session && personalChannelData) {
+        } else{
             return (
                 <>
                     <MenuItem className="bg-transparent">
                         <div className="flex gap-4">
                             <div className="flex items-center">
                                 <div className="relative w-8 h-8">
-                                    {personalChannelData.avatarImage && (
+                                    {session.user.avatarLink && (
                                         <Image
                                             className="rounded-full"
                                             src={
-                                                personalChannelData.avatarImage
+                                                session.user.avatarLink
                                             }
                                             alt=""
                                             fill
@@ -210,7 +199,7 @@ const StudioNavbar = () => {
                 </>
             );
         }
-    }, [session, personalChannelData]);
+    }, [router, session]);
 
     const DropMenu = useCallback(() => {
         return (
