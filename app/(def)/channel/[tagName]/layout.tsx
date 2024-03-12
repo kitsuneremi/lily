@@ -6,6 +6,7 @@ import axios from "axios";
 import { baseURL } from "@/lib/functional";
 import { Skeleton } from "@/components/ui/skeleton";
 import SubcribeButton from "@/components/own/SubcribeButton";
+import { Account } from '@/prisma/type'
 type menuItem = {
     id: number;
     name: string;
@@ -34,7 +35,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     const params: { tagName: string } = useParams();
     const url = usePathname();
     const router = useRouter();
-    const [channelData, setChannelData] = useState();
+    const [channelData, setChannelData] = useState<Account>();
 
     useEffect(() => {
         axios
@@ -57,8 +58,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     return (
         <div className="flex flex-1 flex-col overflow-y-scroll gap-5">
             <div className="w-full pt-[18%] relative">
-                {channelData && channelData.bannerImage ? (
-                    <Image src={channelData.bannerImage} alt="" fill />
+                {channelData && channelData.bannerLink ? (
+                    <Image src={channelData.bannerLink} alt="" fill />
                 ) : (
                     <Skeleton className="absolute w-full h-full top-0 left-0" />
                 )}
@@ -66,9 +67,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <div className="flex justify-between">
                 <div className="flex gap-4 items-center px-6">
                     <div className="relative w-20 aspect-square">
-                        {channelData && channelData.avatarImage ? (
+                        {channelData && channelData.avatarLink ? (
                             <Image
-                                src={channelData.avatarImage}
+                                src={channelData.avatarLink}
                                 alt=""
                                 fill
                                 sizes="1/1"
@@ -81,7 +82,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     <div className="flex flex-col">
                         <p className="text-2xl font-bold">{channelData?.name}</p>
                         <p className="text-lg font-semibold">{channelData ? `@${channelData.tagName}` : ""}</p>
-                        <p>{channelData?.des}</p>
+                        <p>{channelData?.description}</p>
                     </div>
                 </div>
                 <div className="flex items-center pr-4">
