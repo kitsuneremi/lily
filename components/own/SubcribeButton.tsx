@@ -1,4 +1,3 @@
-import { ChannelDataType, MediaDataType, SessionDataType, SubcribeType } from "@/types/type";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -14,18 +13,19 @@ import { NotificationOutlined } from "@ant-design/icons";
 import { AiOutlineDown } from "react-icons/ai";
 import { useSession } from "next-auth/react";
 import { Skeleton } from "../ui/skeleton";
+import { Account, Subcribes } from "@/prisma/type";
 
 export default function SubcribeButton({
     channelData
 }: {
-    channelData: ChannelDataType;
+    channelData: Account;
 }) {
     const { data: session, status: authenStatus } = useSession();
-    const [subcribe, setSubcribe] = useState<SubcribeType>();
+    const [subcribe, setSubcribe] = useState<Subcribes>();
 
     useEffect(() => {
         if (session && session.user) {
-            if (session.user.id !== channelData.accountId) {
+            if (session.user.id !== channelData.id) {
                 axios
                     .get("/api/subcribe", {
                         params: {
@@ -38,13 +38,12 @@ export default function SubcribeButton({
                     });
             }
         }
-    }, [channelData.accountId, channelData.id, session]);
+    }, [channelData.id, session]);
 
     const handleSubcribe = useCallback(() => {
         if (session && session.user) {
             axios
                 .post("/api/subcribe/addordelete", {
-                    //@ts-ignore
                     accountId: session.user.id,
                     channelId: channelData.id,
                 })
@@ -57,7 +56,7 @@ export default function SubcribeButton({
     }, [channelData, session]);
 
     if (session && session.user) {
-        if (session.user.id === channelData.accountId) {
+        if (session.user.id === channelData.id) {
             return (
                 <div
                     className="px-4 py-2 h-fit text-lg font-semibold cursor-pointer rounded-[24px] border-[1px] bg-slate-50 border-slate-600 border-opacity-20 shadow-md hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800"
