@@ -2,15 +2,12 @@
 import NextImage from "next/image";
 import { useState, useCallback, useRef, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
-import { uploadBytes, ref } from "firebase/storage";
-import { storage } from "@/lib/firebase";
 import Link from "next/link";
 import { PinturaEditorModal } from "@pqina/react-pintura";
 import { AiOutlineCopy } from "react-icons/ai";
 import { useToast } from "@/components/ui/use-toast";
 import axios from "axios";
 import { getSession, useSession } from "next-auth/react";
-import { ChannelDataType } from "@/types/type";
 import { useCopyToClipboard } from "usehooks-ts";
 import { fileURL } from "@/lib/functional";
 import { Progress } from "@/components/ui/progress"
@@ -46,6 +43,7 @@ import {
     markup_editor_locale_en_gb,
 } from "@pqina/pintura";
 import { redirect, useRouter } from "next/navigation";
+import { Account } from "@/prisma/type";
 
 setPlugins(plugin_crop, plugin_finetune, plugin_filter, plugin_annotate);
 
@@ -104,7 +102,7 @@ export default function Page() {
 
     const [step, setStep] = useState<number>(0);
     const [visible, setVisible] = useState<boolean>(false);
-    const [channelData, setChannelData] = useState<ChannelDataType>();
+    const [channelData, setChannelData] = useState<Account>();
 
     const [videoFile, setVideoFile] = useState<File | null>(null);
     const [originalThumbnail, setOriginalThumbnail] = useState<{
@@ -247,6 +245,9 @@ export default function Page() {
                                 title: res.data.title,
                                 description: res.data.content,
                             });
+                            const t = new FormData;
+                            t.append('image', originalThumbnail.file);
+                            axios.post(`${fileURL}/api/image/thumbnail?id=${res.data.id}`, t)
                         } else {
                             toast({
                                 title: "Lỗi",
@@ -255,13 +256,6 @@ export default function Page() {
                             });
                         }
                     });
-                const thumbnailStorageRef = ref(
-                    storage,
-                    `/video/thumbnails/${link}`
-                );
-                uploadBytes(thumbnailStorageRef, originalThumbnail.file).then(() => {
-                    console.log("thumbnail uploaded");
-                });
             }
         }
     };
